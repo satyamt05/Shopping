@@ -1,14 +1,23 @@
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const fs = require('fs');
 const multer = require('multer');
 const passport = require('passport');
 const session = require('express-session');
+const { protect, admin } = require('./middleware/authMiddleware');
 
+// Load environment variables
 dotenv.config();
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('Created uploads directory');
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -86,13 +95,22 @@ app.get('/', (req, res) => {
 
 // Image upload route
 app.post('/api/upload', protect, admin, upload.single('image'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ message: 'No file uploaded' });
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+        
+        // For Render, use the backend URL
+        const imagePath = `https://shopping-ivig.onrender.com/uploads/${req.file.filename}`;
+        
+        res.json({
+            message: 'Image uploaded successfully',
+            imagePath: imagePath
+        });
+    } catch (error) {
+        console.error('Upload error:', error);
+        res.status(500).json({ message: 'Error uploading image: ' + error.message });
     }
-    res.json({
-        message: 'Image uploaded successfully',
-        imagePath: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
-    });
 });
 
 app.use('/api/auth', require('./routes/authRoutes'));
