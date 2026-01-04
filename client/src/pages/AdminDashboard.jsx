@@ -27,7 +27,7 @@ const AdminDashboard = () => {
 
     const fetchProducts = async () => {
         try {
-            const { data } = await axios.get('/api/products');
+            const { data } = await axios.get('/products');
             setProducts(data);
         } catch (error) {
             console.error(error);
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
 
     const fetchCategories = async () => {
         try {
-            const { data } = await axios.get('/api/categories');
+            const { data } = await axios.get('/categories');
             setCategories(data);
         } catch (error) {
             console.error('Error fetching categories:', error);
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
 
     const fetchOrders = async () => {
         try {
-            const { data } = await axios.get('/api/orders');
+            const { data } = await axios.get('/orders');
             setOrders(data);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
 
     const fetchUsers = async () => {
         try {
-            const { data } = await axios.get('/api/auth/users');
+            const { data } = await axios.get('/auth/users');
             setUsers(data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -66,10 +66,10 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
         try {
             const [productsRes, categoriesRes, ordersRes, usersRes] = await Promise.all([
-                axios.get('/api/products'),
-                axios.get('/api/categories'),
-                axios.get('/api/orders'),
-                axios.get('/api/auth/users')
+                axios.get('/products'),
+                axios.get('/categories'),
+                axios.get('/orders'),
+                axios.get('/auth/users')
             ]);
 
             const totalRevenue = ordersRes.data.reduce((sum, order) => sum + order.totalPrice, 0);
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
     const deleteHandler = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
-                await axios.delete(`/api/products/${id}`);
+                await axios.delete(`/products/${id}`);
                 fetchProducts();
             } catch (error) {
                 console.error(error);
@@ -154,7 +154,7 @@ const AdminDashboard = () => {
     const deleteCategoryHandler = async (id) => {
         if (window.confirm('Are you sure you want to delete this category?')) {
             try {
-                await axios.delete(`/api/categories/${id}`);
+                await axios.delete(`/categories/${id}`);
                 fetchCategories();
             } catch (error) {
                 console.error(error);
@@ -165,7 +165,7 @@ const AdminDashboard = () => {
 
     const updateOrderStatus = async (orderId, newStatus) => {
         try {
-            await axios.put(`/api/orders/${orderId}/status`, { status: newStatus });
+            await axios.put(`/orders/${orderId}/status`, { status: newStatus });
             fetchOrders();
         } catch (error) {
             console.error('Error updating order status:', error);
