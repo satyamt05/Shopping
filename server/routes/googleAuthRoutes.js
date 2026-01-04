@@ -14,7 +14,7 @@ router.get(
         const token = generateToken(req.user._id);
         
         // Redirect to frontend with token
-        res.redirect(`http://localhost:5173/login?token=${token}&user=${encodeURIComponent(JSON.stringify({
+        res.redirect(`https://theshopping-app.netlify.app/login?token=${token}&user=${encodeURIComponent(JSON.stringify({
             _id: req.user._id,
             name: req.user.name,
             email: req.user.email,
