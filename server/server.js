@@ -83,7 +83,6 @@ const upload = multer({
 
 // Database Connection
 const connectDB = require('./config/db');
-const { protect, admin } = require('./middleware/authMiddleware');
 
 // Database Connection
 connectDB();
