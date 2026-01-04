@@ -56,7 +56,7 @@ const Profile = () => {
             if (!userInfo) return;
             
             try {
-                const { data } = await axios.get('/api/auth/profile');
+                const { data } = await axios.get('/auth/profile');
                 setFormData({
                     name: data.name || '',
                     email: data.email || '',
@@ -89,7 +89,7 @@ const Profile = () => {
         setLoading(true);
 
         try {
-            const { data } = await axios.put('/api/auth/profile', {
+            const { data } = await axios.put('/auth/profile', {
                 ...formData,
                 addresses
             });
@@ -123,7 +123,7 @@ const Profile = () => {
 
         try {
             // Save to database immediately
-            await axios.put('/api/auth/profile', {
+            await axios.put('/auth/profile', {
                 ...formData,
                 addresses: updatedAddresses
             });
@@ -151,7 +151,7 @@ const Profile = () => {
 
         try {
             // Save to database immediately
-            await axios.put('/api/auth/profile', {
+            await axios.put('/auth/profile', {
                 ...formData,
                 addresses: updatedAddresses
             });
@@ -172,7 +172,7 @@ const Profile = () => {
 
         try {
             // Save to database immediately
-            await axios.put('/api/auth/profile', {
+            await axios.put('/auth/profile', {
                 ...formData,
                 addresses: updatedAddresses
             });

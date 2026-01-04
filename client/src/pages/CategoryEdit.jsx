@@ -23,7 +23,7 @@ const CategoryEdit = ({ categoryId, onSave, onCancel }) => {
 
     const fetchCategory = async () => {
         try {
-            const { data } = await axios.get(`/api/categories/${categoryId}`);
+            const { data } = await axios.get(`/categories/${categoryId}`);
             setFormData(data);
         } catch (error) {
             console.error('Error fetching category:', error);
@@ -48,7 +48,7 @@ const CategoryEdit = ({ categoryId, onSave, onCancel }) => {
             const formData = new FormData();
             formData.append('image', file);
 
-            const { data } = await axios.post('/api/upload', formData, {
+            const { data } = await axios.post('/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -73,9 +73,9 @@ const CategoryEdit = ({ categoryId, onSave, onCancel }) => {
 
         try {
             if (categoryId) {
-                await axios.put(`/api/categories/${categoryId}`, formData);
+                await axios.put(`/categories/${categoryId}`, formData);
             } else {
-                await axios.post('/api/categories', formData);
+                await axios.post('/categories', formData);
             }
             onSave();
         } catch (error) {

@@ -30,7 +30,7 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
 
     const fetchCategories = async () => {
         try {
-            const { data } = await axios.get('/api/categories');
+            const { data } = await axios.get('/categories');
             setCategories(data);
             // Set default category to first available category if none selected
             if (data.length > 0 && !formData.category) {
@@ -43,7 +43,7 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
 
     const fetchProduct = async () => {
         try {
-            const { data } = await axios.get(`/api/products/${productId}`);
+            const { data } = await axios.get(`/products/${productId}`);
             setFormData({
                 name: data.name,
                 price: data.price,
@@ -84,7 +84,7 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
         setUploading(true);
         try {
             console.log('Starting upload...');
-            const { data } = await axios.post('/api/upload', formData);
+            const { data } = await axios.post('/upload', formData);
             console.log('Upload response:', data);
             setFormData(prev => ({ ...prev, image: data.imagePath }));
             setPreviewImage(data.imagePath);
@@ -109,9 +109,9 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
 
         try {
             if (productId) {
-                await axios.put(`/api/products/${productId}`, formData);
+                await axios.put(`/products/${productId}`, formData);
             } else {
-                await axios.post('/api/products', formData);
+                await axios.post('/products', formData);
             }
 
             onSave();

@@ -47,7 +47,7 @@ const Checkout = () => {
     useEffect(() => {
         const loadAddresses = async () => {
             try {
-                const { data } = await axios.get('/api/auth/profile');
+                const { data } = await axios.get('/auth/profile');
                 setUserAddresses(data.addresses || []);
                 // Set default address if available
                 const defaultAddr = data.addresses?.find(addr => addr.isDefault);
@@ -101,7 +101,7 @@ const Checkout = () => {
                 totalPrice: totalPrice.toFixed(2),
             };
 
-            const { data } = await axios.post('/api/orders', orderData);
+            const { data } = await axios.post('/orders', orderData);
 
             clearCart();
             
