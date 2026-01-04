@@ -28,6 +28,15 @@ app.use(session({
     cookie: { secure: false } // For development
 }));
 
+app.get('/api/debug-env', (req, res) => {
+    res.json({
+        googleClientId: process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Not set',
+        googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Not set',
+        googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL,
+        nodeEnv: process.env.NODE_ENV
+    });
+});
+
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
