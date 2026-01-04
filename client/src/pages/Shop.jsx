@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 
 const Shop = () => {
@@ -18,8 +18,8 @@ const Shop = () => {
             try {
                 // Fetch both products and categories
                 const [productsResponse, categoriesResponse] = await Promise.all([
-                    axios.get('/api/products'),
-                    axios.get('/api/categories')
+                    api.get('/products'),
+                    api.get('/categories')
                 ]);
 
                 const allProducts = productsResponse.data;

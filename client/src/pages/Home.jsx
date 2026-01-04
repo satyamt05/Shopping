@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, ArrowRight, Sparkles, TrendingUp, Heart, Star, Shield, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
-import axios from '../utils/api';
+import api from '../utils/api';
 
 const Home = () => {
     const [categories, setCategories] = useState([]);
@@ -70,7 +70,7 @@ const Home = () => {
 
     const fetchCategories = async () => {
         try {
-            const { data } = await axios.get('/api/categories');
+            const { data } = await api.get('/categories');
             setCategories(data);
         } catch (error) {
             console.error('Error fetching categories:', error);
