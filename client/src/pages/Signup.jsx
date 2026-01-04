@@ -208,7 +208,7 @@ const Signup = () => {
 
                     <div className="mt-6">
                         <button 
-                            onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
+                            onClick={() => window.location.href = 'https://shopping-ivig.onrender.com/api/auth/google'}
                             className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                         >
                             <svg className="w-5 h-5 mr-2" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
