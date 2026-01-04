@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://shopping-dw4amon3c-satyam-trivedis-projects.vercel.app'],
+    origin: ['http://localhost:5173', 'https://theshopping-app.netlify.app'],
     credentials: true
 }));
 
