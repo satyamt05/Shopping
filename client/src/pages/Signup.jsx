@@ -81,7 +81,7 @@ const Signup = () => {
         }
 
         try {
-            const { data } = await axios.post('/api/auth/register', { name, email, password });
+            const { data } = await axios.post('/auth/register', { name, email, password });
             login(data, data.token);
             success('Account created successfully!');
             navigate('/');

@@ -67,7 +67,7 @@ const Login = () => {
     const submitHandler = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post('/api/auth/login', { email, password });
+            const { data } = await axios.post('/auth/login', { email, password });
             login(data, data.token);
             success('Login successful!');
             navigate(redirect);
