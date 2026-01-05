@@ -33,7 +33,6 @@ const Navbar = () => {
 
     const handleLogout = () => {
         logout();
-        clearCart();
         setIsUserMenuOpen(false);
         success('Logged out successfully!');
         navigate('/');
