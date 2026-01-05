@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tag, Check, X, Loader, Gift } from 'lucide-react';
 import axios from '../utils/api';
 import { formatCurrency } from '../utils/currency';
-// import AvailableCoupons from './AvailableCoupons'; // Temporarily disabled
+import AvailableCoupons from './AvailableCoupons';
 
 const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved }) => {
     const [couponCode, setCouponCode] = useState('');
@@ -159,7 +159,7 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
             </div>
 
             {/* Available Coupons */}
-            {/* <AvailableCoupons
+            <AvailableCoupons
                 orderAmount={orderAmount}
                 cartItems={cartItems}
                 onCouponSelect={(code) => {
@@ -173,7 +173,7 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
                         onCouponRemoved();
                     }
                 }}
-            /> */}
+            />
         </div>
     );
 };

@@ -410,12 +410,12 @@ const Checkout = () => {
                     </div>
 
                     {/* Coupon Apply Section */}
-                    {/* <CouponApply
+                    <CouponApply
                         orderAmount={itemsPrice + shippingPrice + taxPrice}
                         cartItems={cartItems}
                         onCouponApplied={handleCouponApplied}
                         onCouponRemoved={handleCouponRemoved}
-                    /> */}
+                    />
 
                     <button 
                         type="submit" 

@@ -45,32 +45,50 @@ const Profile = () => {
         return null;
     }
 
-    useEffect(() => {
-        // Redirect if not authenticated
-        if (!isAuthenticated) {
-            navigate('/login');
-            return;
-        }
+    // useEffect(() => {
+    //     // Redirect if not authenticated
+    //     if (!isAuthenticated) {
+    //         navigate('/login');
+    //         return;
+    //     }
 
-        // Load user profile data
-        const loadProfile = async () => {
-            if (!userInfo) return;
+    //     // Load user profile data
+    //     const loadProfile = async () => {
+    //         if (!userInfo) return;
             
-            try {
-                const { data } = await axios.get('/auth/profile');
-                setFormData({
-                    name: data.name || '',
-                    email: data.email || '',
-                    phone: data.phone || ''
-                });
-                setAddresses(data.addresses || []);
-            } catch (error) {
-                console.error('Error loading profile:', error);
-            }
-        };
+    //         try {
+    //             const { data } = await axios.get('/auth/profile');
+    //             setFormData({
+    //                 name: data.name || '',
+    //                 email: data.email || '',
+    //                 phone: data.phone || ''
+    //             });
+    //             setAddresses(data.addresses || []);
+    //         } catch (error) {
+    //             console.error('Error loading profile:', error);
+    //         }
+    //     };
 
-        loadProfile();
-    }, [userInfo, isAuthenticated]); // Remove navigate from dependencies
+    //     loadProfile();
+    // }, [userInfo, isAuthenticated]); // Remove navigate from dependencies
+
+    // Load profile data directly without useEffect
+    React.useEffect(() => {
+        if (isAuthenticated && userInfo) {
+            axios.get('/auth/profile')
+                .then(({ data }) => {
+                    setFormData({
+                        name: data.name || '',
+                        email: data.email || '',
+                        phone: data.phone || ''
+                    });
+                    setAddresses(data.addresses || []);
+                })
+                .catch(error => {
+                    console.error('Error loading profile:', error);
+                });
+        }
+    }, []); // Empty dependency array - run only once
 
     const handleChange = (e) => {
         const { name, value } = e.target;
