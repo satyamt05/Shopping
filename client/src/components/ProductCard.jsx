@@ -9,11 +9,27 @@ import { useToast } from '../context/ToastContext';
 
 const ProductCard = ({ product }) => {
     const { addToCart, cartItems } = useCart();
-    const { success } = useToast();
+    const { success, error } = useToast();
 
     const handleAddToCart = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        
+        // Check if product is in stock
+        if (product.countInStock <= 0) {
+            error(`${product.name} is out of stock`);
+            return;
+        }
+
+        // Check if adding this would exceed stock
+        const existingItem = cartItems.find(item => item._id === product._id);
+        const currentQty = existingItem ? existingItem.qty : 0;
+        
+        if (currentQty >= product.countInStock) {
+            error(`Only ${product.countInStock} ${product.name} available in stock`);
+            return;
+        }
+
         addToCart(product, 1);
         success(`${product.name} added to cart!`);
     };
@@ -47,11 +63,24 @@ const ProductCard = ({ product }) => {
                     <span className="text-gray-500 text-sm ml-2">({product.numReviews} reviews)</span>
                 </div>
                 <div className="flex justify-between items-center mt-3">
-                    <span className="text-xl font-bold text-gray-900">{formatCurrency(product.price)}</span>
+                    <div>
+                        <span className="text-xl font-bold text-gray-900">{formatCurrency(product.price)}</span>
+                        <div className="text-xs text-gray-500 mt-1">
+                            {product.countInStock > 0 ? 
+                                `${product.countInStock} in stock` : 
+                                'Out of stock'
+                            }
+                        </div>
+                    </div>
                     {!isInCart && (
                         <button 
                             onClick={handleAddToCart}
-                            className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition"
+                            disabled={product.countInStock <= 0}
+                            className={`p-2 rounded-lg transition-colors ${
+                                product.countInStock > 0 
+                                    ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            }`}
                         >
                             <ShoppingCart className="h-5 w-5" />
                         </button>

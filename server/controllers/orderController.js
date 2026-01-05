@@ -1,6 +1,7 @@
 
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -23,6 +24,30 @@ const addOrderItems = asyncHandler(async (req, res) => {
         throw new Error('No order items');
         return;
     } else {
+        // Check stock availability for each item
+        for (const item of orderItems) {
+            const product = await Product.findById(item._id);
+            if (!product) {
+                res.status(404);
+                throw new Error(`Product ${item.name} not found`);
+                return;
+            }
+            if (product.countInStock < item.qty) {
+                res.status(400);
+                throw new Error(`Insufficient stock for ${item.name}. Only ${product.countInStock} items available.`);
+                return;
+            }
+        }
+
+        // Update stock for each item
+        for (const item of orderItems) {
+            await Product.findByIdAndUpdate(
+                item._id,
+                { $inc: { countInStock: -item.qty } },
+                { new: true }
+            );
+        }
+
         const order = new Order({
             orderItems,
             user: req.user._id,
