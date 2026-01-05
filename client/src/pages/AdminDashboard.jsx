@@ -285,7 +285,6 @@ const AdminDashboard = () => {
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     >
-                        <Tag className="h-4 w-4 mr-1" />
                         Coupons
                     </button>
                 </nav>
@@ -914,19 +913,49 @@ const AdminDashboard = () => {
                             </div>
                         </div>
 
-                        <div className="border-t mt-4 pt-4">
-                            <div className="flex justify-between items-center">
-                                <div className="text-sm text-gray-600">
-                                    <p>Items: {selectedOrder.orderItems?.length || 0}</p>
-                                    <p>Total: {formatCurrency(selectedOrder.totalPrice)}</p>
+                        <div className="border-t pt-4">
+                            <h4 className="font-medium text-gray-900 mb-3">Order Summary:</h4>
+                            <div className="space-y-2 bg-gray-50 p-4 rounded-lg">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">Items ({selectedOrder.orderItems?.length || 0}):</span>
+                                    <span className="font-medium">{formatCurrency(selectedOrder.itemsPrice || 0)}</span>
                                 </div>
-                                <button
-                                    onClick={handleCloseOrderItems}
-                                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-medium"
-                                >
-                                    Close
-                                </button>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">Shipping:</span>
+                                    <span className="font-medium">
+                                        {selectedOrder.shippingPrice === 0 ? 'FREE' : formatCurrency(selectedOrder.shippingPrice || 0)}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">GST (18%):</span>
+                                    <span className="font-medium">{formatCurrency(selectedOrder.taxPrice || 0)}</span>
+                                </div>
+                                {selectedOrder.coupon && selectedOrder.couponDiscount > 0 && (
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-green-600">
+                                            Discount ({selectedOrder.coupon.code}):
+                                            {selectedOrder.coupon.discountType === 'PERCENTAGE' 
+                                                ? ` ${selectedOrder.coupon.discountValue}% off`
+                                                : ` ${formatCurrency(selectedOrder.coupon.discountValue)} off`
+                                            }
+                                        </span>
+                                        <span className="font-medium text-green-600">-{formatCurrency(selectedOrder.couponDiscount)}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-300">
+                                    <span>Total:</span>
+                                    <span>{formatCurrency(selectedOrder.totalPrice)}</span>
+                                </div>
                             </div>
+                        </div>
+
+                        <div className="flex justify-end mt-4 pt-4 border-t">
+                            <button
+                                onClick={handleCloseOrderItems}
+                                className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-medium"
+                            >
+                                Close
+                            </button>
                         </div>
                     </div>
                 </div>
