@@ -92,7 +92,10 @@ const Checkout = () => {
     const itemsPrice = cartItems.reduce((acc, item) => acc + (item.qty || 0) * (item.price || 0), 0);
     const shippingPrice = itemsPrice > SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COSTS.STANDARD;
     const taxPrice = itemsPrice * TAX_RATE;
-    const totalPrice = itemsPrice + shippingPrice + taxPrice - (couponDiscount || 0);
+    const discountAmount = couponDiscount || 0;
+    const calculatedTotal = itemsPrice + shippingPrice + taxPrice - discountAmount;
+    // Ensure minimum total price of 1 for free orders to avoid server issues
+    const totalPrice = Math.max(calculatedTotal, 1);
 
     const handleCouponApplied = (discountAmount, coupon) => {
         setCouponDiscount(discountAmount || 0);
@@ -211,7 +214,7 @@ const Checkout = () => {
                 // Method 2: Fetch API fallback for mobile
                 try {
                     addDebugMessage('Trying fetch API fallback...', 'info');
-                    const fetchResponse = await fetch('/api/orders', {
+                    const fetchResponse = await fetch('https://shopping-ivig.onrender.com/api/orders', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
