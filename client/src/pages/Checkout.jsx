@@ -182,12 +182,15 @@ const Checkout = () => {
                 shippingPrice: shippingPrice.toFixed(2),
                 taxPrice: taxPrice.toFixed(2),
                 totalPrice: totalPrice.toFixed(2),
-                couponDiscount: couponDiscount.toFixed(2),
-                coupon: appliedCoupon ? {
-                    code: appliedCoupon.code,
-                    discountType: appliedCoupon.discountType,
-                    discountValue: appliedCoupon.discountValue
-                } : null
+                // Only include coupon fields if they exist
+                ...(couponDiscount > 0 && {
+                    couponDiscount: couponDiscount.toFixed(2),
+                    coupon: appliedCoupon ? {
+                        code: appliedCoupon.code,
+                        discountType: appliedCoupon.discountType,
+                        discountValue: appliedCoupon.discountValue
+                    } : null
+                })
             };
 
             addDebugMessage('Sending order data...', 'info');
@@ -209,6 +212,10 @@ const Checkout = () => {
                 addDebugMessage(`Response: ${JSON.stringify(response.data, null, 2)}`, 'success');
             } catch (axiosError) {
                 addDebugMessage(`Standard axios failed: ${axiosError.message}`, 'warning');
+                addDebugMessage(`Status code: ${axiosError.response?.status}`, 'warning');
+                if (axiosError.response?.data) {
+                    addDebugMessage(`Server error: ${JSON.stringify(axiosError.response.data, null, 2)}`, 'error');
+                }
                 addDebugMessage(`Axios error details: ${JSON.stringify(axiosError, null, 2)}`, 'warning');
                 
                 // Method 2: Fetch API fallback for mobile
@@ -226,6 +233,8 @@ const Checkout = () => {
                     addDebugMessage(`Fetch response status: ${fetchResponse.status}`, 'info');
                     
                     if (!fetchResponse.ok) {
+                        const errorText = await fetchResponse.text();
+                        addDebugMessage(`Fetch error response: ${errorText}`, 'error');
                         throw new Error(`HTTP error! status: ${fetchResponse.status}`);
                     }
                     
