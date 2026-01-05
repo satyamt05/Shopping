@@ -26,19 +26,19 @@ export const ToastProvider = ({ children }) => {
 
     const success = useCallback((message, duration) => {
         addToast(message, 'success', duration);
-    }, [addToast]);
+    }, []); // Remove addToast dependency
 
     const error = useCallback((message, duration) => {
         addToast(message, 'error', duration);
-    }, [addToast]);
+    }, []); // Remove addToast dependency
 
     const info = useCallback((message, duration) => {
         addToast(message, 'info', duration);
-    }, [addToast]);
+    }, []); // Remove addToast dependency
 
     const warning = useCallback((message, duration) => {
         addToast(message, 'warning', duration);
-    }, [addToast]);
+    }, []); // Remove addToast dependency
 
     const value = {
         toasts,
