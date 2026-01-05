@@ -1,11 +1,12 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from '../utils/api';
-import { Trash2, Plus, Edit, Search, Filter, FolderOpen, Package, Truck, CheckCircle, Clock, XCircle, User, DollarSign, Eye, X } from 'lucide-react';
+import { Trash2, Plus, Edit, Search, Filter, FolderOpen, Package, Truck, CheckCircle, Clock, XCircle, User, DollarSign, Eye, X, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProductEdit from './ProductEdit';
 import CategoryEdit from './CategoryEdit';
+import DiscountCouponManager from '../components/DiscountCouponManager';
 import { formatCurrency } from '../utils/currency';
 
 const AdminDashboard = () => {
@@ -275,6 +276,17 @@ const AdminDashboard = () => {
                         }`}
                     >
                         Orders
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('coupons')}
+                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === 'coupons'
+                                ? 'border-indigo-500 text-indigo-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                    >
+                        <Tag className="h-4 w-4 mr-1" />
+                        Coupons
                     </button>
                 </nav>
             </div>
@@ -918,6 +930,11 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Coupons Tab */}
+            {activeTab === 'coupons' && (
+                <DiscountCouponManager />
             )}
         </div>
     );

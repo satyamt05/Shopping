@@ -117,6 +117,7 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
 app.use('/api/auth', require('./routes/googleAuthRoutes'));
+app.use('/api/discount-coupons', require('./routes/discountCouponRoutes'));
 
 // Make upload middleware available to routes
 app.locals.upload = upload;

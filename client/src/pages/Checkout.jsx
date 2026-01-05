@@ -7,6 +7,7 @@ import axios from '../utils/api';
 import { formatCurrency, SHIPPING_COSTS, TAX_RATE } from '../utils/currency';
 import { CreditCard, Truck, Package, DollarSign, Banknote, Download } from 'lucide-react';
 import { downloadInvoicePDF } from '../utils/invoice';
+import CouponApply from '../components/CouponApply';
 
 const Checkout = () => {
     const { cartItems, clearCart } = useCart();
@@ -25,6 +26,8 @@ const Checkout = () => {
     const [loading, setLoading] = useState(false);
     const [userAddresses, setUserAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
+    const [couponDiscount, setCouponDiscount] = useState(0);
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
 
     // Redirect if not authenticated
     if (isLoading) {
@@ -71,7 +74,17 @@ const Checkout = () => {
     const itemsPrice = cartItems.reduce((acc, item) => acc + item.qty * item.price, 0);
     const shippingPrice = itemsPrice > SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COSTS.STANDARD;
     const taxPrice = itemsPrice * TAX_RATE;
-    const totalPrice = itemsPrice + shippingPrice + taxPrice;
+    const totalPrice = itemsPrice + shippingPrice + taxPrice - couponDiscount;
+
+    const handleCouponApplied = (discountAmount, coupon) => {
+        setCouponDiscount(discountAmount);
+        setAppliedCoupon(coupon);
+    };
+
+    const handleCouponRemoved = () => {
+        setCouponDiscount(0);
+        setAppliedCoupon(null);
+    };
 
     const placeOrderHandler = async (e) => {
         e.preventDefault();
@@ -87,11 +100,11 @@ const Checkout = () => {
         try {
             const orderData = {
                 orderItems: cartItems.map(item => ({
-                    product: item._id,
                     name: item.name,
+                    qty: item.qty,
                     image: item.image,
                     price: item.price,
-                    qty: item.qty
+                    product: item._id
                 })),
                 shippingAddress: address,
                 paymentMethod: paymentMethod,
@@ -99,6 +112,12 @@ const Checkout = () => {
                 shippingPrice: shippingPrice.toFixed(2),
                 taxPrice: taxPrice.toFixed(2),
                 totalPrice: totalPrice.toFixed(2),
+                couponDiscount: couponDiscount.toFixed(2),
+                coupon: appliedCoupon ? {
+                    code: appliedCoupon.code,
+                    discountType: appliedCoupon.discountType,
+                    discountValue: appliedCoupon.discountValue
+                } : null
             };
 
             const { data } = await axios.post('/orders', orderData);
@@ -321,11 +340,25 @@ const Checkout = () => {
                             <span className="text-gray-600">GST (18%)</span>
                             <span className="font-medium">{formatCurrency(taxPrice)}</span>
                         </div>
+                        {couponDiscount > 0 && (
+                            <div className="flex justify-between text-sm">
+                                <span className="text-green-600">Discount ({appliedCoupon.code})</span>
+                                <span className="font-medium text-green-600">-{formatCurrency(couponDiscount)}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
                             <span>Total</span>
                             <span>{formatCurrency(totalPrice)}</span>
                         </div>
                     </div>
+
+                    {/* Coupon Apply Section */}
+                    <CouponApply
+                        orderAmount={itemsPrice + shippingPrice + taxPrice}
+                        cartItems={cartItems}
+                        onCouponApplied={handleCouponApplied}
+                        onCouponRemoved={handleCouponRemoved}
+                    />
 
                     <button 
                         type="submit" 
