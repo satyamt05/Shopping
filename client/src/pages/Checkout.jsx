@@ -249,7 +249,7 @@ const Checkout = () => {
                                 <div className="col-span-6 sm:col-span-3 lg:col-span-2">
                                     <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-2">
                                         <Package className="h-4 w-4 inline mr-2 text-gray-400" />
-                                        ZIP / Postal code
+                                        Postal code
                                     </label>
                                     <input 
                                         required 
