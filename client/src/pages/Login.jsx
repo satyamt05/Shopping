@@ -44,14 +44,14 @@ const Login = () => {
                 setError('Failed to login with Google');
             }
         }
-    }, [location.search, login, success, navigate, redirect]);
+    }, [location.search, login, success, redirect]); // Remove navigate from dependencies
 
     // Redirect if already authenticated
     useEffect(() => {
         if (!isLoading && isAuthenticated) {
             navigate(redirect);
         }
-    }, [isLoading, isAuthenticated, navigate, redirect]);
+    }, [isLoading, isAuthenticated, redirect]); // Remove navigate from dependencies
 
     if (isLoading) {
         return (

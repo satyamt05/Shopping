@@ -42,14 +42,14 @@ const Signup = () => {
                 setError('Failed to create account with Google');
             }
         }
-    }, [login, success, navigate, googleProcessed]);
+    }, [login, success, googleProcessed]); // Remove navigate from dependencies
 
     // Redirect if already authenticated
     useEffect(() => {
         if (!isLoading && isAuthenticated) {
             navigate('/');
         }
-    }, [isLoading, isAuthenticated, navigate]);
+    }, [isLoading, isAuthenticated]); // Remove navigate from dependencies
 
     if (isLoading) {
         return (

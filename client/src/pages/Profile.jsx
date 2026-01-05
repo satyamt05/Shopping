@@ -46,7 +46,8 @@ const Profile = () => {
     }
 
     useEffect(() => {
-        if (!userInfo && !isLoading) {
+        // Redirect if not authenticated
+        if (!isAuthenticated) {
             navigate('/login');
             return;
         }
@@ -69,7 +70,7 @@ const Profile = () => {
         };
 
         loadProfile();
-    }, [userInfo, isLoading, navigate]);
+    }, [userInfo, isAuthenticated]); // Remove navigate from dependencies
 
     const handleChange = (e) => {
         const { name, value } = e.target;

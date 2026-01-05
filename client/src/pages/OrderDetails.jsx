@@ -47,7 +47,7 @@ const OrderDetails = () => {
         };
 
         fetchOrder();
-    }, [id, navigate]);
+    }, [id]); // Remove navigate from dependencies
 
     const handleDownloadInvoice = () => {
         try {
