@@ -125,6 +125,9 @@ const Checkout = () => {
         addDebugMessage('Place order clicked', 'info');
         addDebugMessage(`User agent: ${navigator.userAgent}`, 'info');
         addDebugMessage(`Is mobile: ${/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}`, 'info');
+        addDebugMessage(`Screen width: ${window.screen.width}`, 'info');
+        addDebugMessage(`API Base URL: ${axios.defaults.baseURL}`, 'info');
+        addDebugMessage(`Current URL: ${window.location.href}`, 'info');
         
         if (loading) {
             addDebugMessage('Already loading, ignoring click', 'warning');
@@ -583,26 +586,75 @@ const Checkout = () => {
                     {process.env.NODE_ENV === 'development' && (
                         <div className="mt-4 p-3 bg-yellow-50 rounded-md border border-yellow-200">
                             <p className="text-sm text-yellow-800 mb-2">
-                                <strong>Mobile Debug:</strong> Test API connectivity
+                                <strong>Mobile Debug:</strong> Server is down! Use local server
                             </p>
-                            <button
-                                onClick={async () => {
-                                    addDebugMessage('Testing API connectivity...', 'info');
-                                    try {
-                                        const response = await fetch('/api/health');
-                                        addDebugMessage(`Health check status: ${response.status}`, response.ok ? 'success' : 'warning');
-                                        const data = await response.json();
-                                        addDebugMessage(`Health check data: ${JSON.stringify(data)}`, 'info');
-                                        alert(`API Test: ${response.ok ? 'SUCCESS' : 'FAILED'} - Check debug panel for details`);
-                                    } catch (error) {
-                                        addDebugMessage(`API Test failed: ${error.message}`, 'error');
-                                        alert(`API Test: FAILED - Check debug panel for details`);
-                                    }
-                                }}
-                                className="px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700"
-                            >
-                                Test API Connection
-                            </button>
+                            <div className="flex gap-2 flex-wrap">
+                                <button
+                                    onClick={async () => {
+                                        addDebugMessage('Testing basic API endpoints...', 'info');
+                                        try {
+                                            // Test health endpoint
+                                            const healthResponse = await fetch('https://shopping-ivig.onrender.com/api/health');
+                                            addDebugMessage(`Health check: ${healthResponse.status}`, healthResponse.ok ? 'success' : 'warning');
+                                            
+                                            // Test orders endpoint (GET)
+                                            const ordersResponse = await fetch('https://shopping-ivig.onrender.com/api/orders', {
+                                                headers: {
+                                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                }
+                                            });
+                                            addDebugMessage(`Orders GET: ${ordersResponse.status}`, ordersResponse.ok ? 'success' : 'warning');
+                                            
+                                            // Test products endpoint
+                                            const productsResponse = await fetch('https://shopping-ivig.onrender.com/api/products');
+                                            addDebugMessage(`Products GET: ${productsResponse.status}`, productsResponse.ok ? 'success' : 'warning');
+                                            
+                                        } catch (error) {
+                                            addDebugMessage(`API Test failed: ${error.message}`, 'error');
+                                        }
+                                    }}
+                                    className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
+                                >
+                                    Test All Endpoints
+                                </button>
+                                <button
+                                    onClick={async () => {
+                                        addDebugMessage('Testing API connectivity...', 'info');
+                                        try {
+                                            const response = await fetch('/api/health');
+                                            addDebugMessage(`Health check status: ${response.status}`, response.ok ? 'success' : 'warning');
+                                            const data = await response.json();
+                                            addDebugMessage(`Health check data: ${JSON.stringify(data)}`, 'info');
+                                        } catch (error) {
+                                            addDebugMessage(`API Test failed: ${error.message}`, 'error');
+                                        }
+                                    }}
+                                    className="px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700"
+                                >
+                                    Test API Connection
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        // Temporarily override API base URL for testing
+                                        localStorage.setItem('API_BASE_URL', 'http://localhost:5000/api');
+                                        window.location.reload();
+                                    }}
+                                    className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
+                                >
+                                    Use Local Server
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        addDebugMessage('Test message 1 - INFO', 'info');
+                                        addDebugMessage('Test message 2 - WARNING', 'warning');
+                                        addDebugMessage('Test message 3 - ERROR', 'error');
+                                        addDebugMessage('Test message 4 - SUCCESS', 'success');
+                                    }}
+                                    className="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700"
+                                >
+                                    Test Debug Messages
+                                </button>
+                            </div>
                         </div>
                     )}
 

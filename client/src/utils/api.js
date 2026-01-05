@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 // API configuration - calls backend directly to avoid Netlify routing conflicts
-const API_BASE_URL = 'https://shopping-ivig.onrender.com/api';
+const API_BASE_URL = process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:5000/api'  // Use local server in development
+    : 'https://shopping-ivig.onrender.com/api'; // Use deployed server in production
 
 const api = axios.create({
     baseURL: API_BASE_URL,
