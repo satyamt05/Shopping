@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -47,29 +47,30 @@ const Checkout = () => {
     }
 
     // Load user addresses
-    useEffect(() => {
-        const loadAddresses = async () => {
-            try {
-                const { data } = await axios.get('/auth/profile');
-                setUserAddresses(data.addresses || []);
-                // Set default address if available
-                const defaultAddr = data.addresses?.find(addr => addr.isDefault);
-                if (defaultAddr) {
-                    setSelectedAddress(defaultAddr);
-                    setAddress({
-                        street: defaultAddr.street,
-                        city: defaultAddr.city,
-                        state: defaultAddr.state,
-                        postalCode: defaultAddr.postalCode,
-                        country: defaultAddr.country
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading addresses:', error);
+    const loadAddresses = useCallback(async () => {
+        try {
+            const { data } = await axios.get('/auth/profile');
+            setUserAddresses(data.addresses || []);
+            // Set default address if available
+            const defaultAddr = data.addresses?.find(addr => addr.isDefault);
+            if (defaultAddr) {
+                setSelectedAddress(defaultAddr);
+                setAddress({
+                    street: defaultAddr.street,
+                    city: defaultAddr.city,
+                    state: defaultAddr.state,
+                    postalCode: defaultAddr.postalCode,
+                    country: defaultAddr.country
+                });
             }
-        };
-        loadAddresses();
+        } catch (error) {
+            console.error('Error loading addresses:', error);
+        }
     }, []);
+
+    useEffect(() => {
+        loadAddresses();
+    }, [loadAddresses]);
 
     const itemsPrice = cartItems.reduce((acc, item) => acc + (item.qty || 0) * (item.price || 0), 0);
     const shippingPrice = itemsPrice > SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COSTS.STANDARD;
