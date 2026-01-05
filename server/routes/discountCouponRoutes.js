@@ -165,6 +165,25 @@ router.delete('/:id', protect, admin, async (req, res) => {
     }
 });
 
+// @desc    Get all active discount coupons for public
+// @route   GET /api/discount-coupons/public
+// @access  Public
+router.get('/public', async (req, res) => {
+    try {
+        const coupons = await DiscountCoupon.find({ 
+            isActive: true,
+            validUntil: { $gt: new Date() }
+        })
+        .select('code description discountType discountValue minimumOrderAmount maximumDiscountAmount usageLimit usedCount validUntil applicableTo createdAt')
+        .sort({ createdAt: -1 });
+        
+        res.json(coupons);
+    } catch (error) {
+        console.error('Error fetching public coupons:', error);
+        res.status(500).json({ message: 'Error fetching coupons' });
+    }
+});
+
 // @desc    Validate and apply coupon
 // @route   POST /api/discount-coupons/validate
 // @access  Private

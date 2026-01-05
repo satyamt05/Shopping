@@ -32,7 +32,7 @@ export const generateInvoicePDF = (order) => {
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🧾 SHOPZOP INVOICE</h1>
+                    <h1>🛍️ QUICKSTYLE INVOICE</h1>
                     <p>Tax Invoice | Order #${order._id.substring(order._id.length - 8).toUpperCase()}</p>
                 </div>
 
@@ -43,12 +43,12 @@ export const generateInvoicePDF = (order) => {
                         <strong>Status:</strong> <span class="status ${order.isPaid ? 'status-paid' : 'status-pending'}">${order.isPaid ? 'Paid' : 'Payment Pending'}</span>
                     </div>
                     <div style="text-align: right;">
-                        <strong>ShopZop</strong><br>
+                        <strong>QuickStyle</strong><br>
                         123 Fashion Street<br>
                         Mumbai, Maharashtra 400001<br>
                         India<br>
                         📞 +91 98765 43210<br>
-                        ✉️ support@shopzop.com
+                        ✉️ support@quickstyle.com
                     </div>
                 </div>
 
@@ -111,7 +111,7 @@ export const generateInvoicePDF = (order) => {
                 </div>
 
                 <div class="footer">
-                    <p>Thank you for shopping with ShopZop! 🛍️</p>
+                    <p>Thank you for shopping with QuickStyle! 🛍️</p>
                     <p>This is a computer-generated invoice and does not require a signature.</p>
                     <p>GSTIN: 27AAAPL1234C1ZV | PAN: AAAPL1234C</p>
                 </div>
