@@ -208,7 +208,7 @@ const Checkout = () => {
                                         value={address.street} 
                                         onChange={(e) => setAddress({ ...address, street: e.target.value })} 
                                         placeholder="123 Main Street, Apartment 4B"
-                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
 
@@ -225,7 +225,7 @@ const Checkout = () => {
                                         value={address.city} 
                                         onChange={(e) => setAddress({ ...address, city: e.target.value })} 
                                         placeholder="New York"
-                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
 
@@ -242,7 +242,7 @@ const Checkout = () => {
                                         value={address.state} 
                                         onChange={(e) => setAddress({ ...address, state: e.target.value })} 
                                         placeholder="NY"
-                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
 
@@ -259,7 +259,7 @@ const Checkout = () => {
                                         value={address.postalCode} 
                                         onChange={(e) => setAddress({ ...address, postalCode: e.target.value })} 
                                         placeholder="10001"
-                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
 
@@ -276,7 +276,7 @@ const Checkout = () => {
                                         value={address.country} 
                                         onChange={(e) => setAddress({ ...address, country: e.target.value })} 
                                         placeholder="United States"
-                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
                             </div>
