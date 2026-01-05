@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -11,6 +11,7 @@ const Navbar = () => {
     const { userInfo, isAuthenticated, logout } = useAuth();
     const { cartItems, clearCart } = useCart();
     const { success } = useToast();
+    const navigate = useNavigate();
     const userMenuRef = useRef(null);
 
     // Calculate total items in cart
@@ -35,6 +36,7 @@ const Navbar = () => {
         clearCart();
         setIsUserMenuOpen(false);
         success('Logged out successfully!');
+        navigate('/');
     };
 
     return (
