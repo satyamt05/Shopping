@@ -12,7 +12,7 @@ router.get('/public', async (req, res) => {
             isActive: true,
             validUntil: { $gt: new Date() }
         })
-        .select('code description discountType discountValue minimumOrderAmount maximumDiscountAmount usageLimit usedCount validUntil applicableTo createdAt')
+        .select('code description discountType discountValue minimumOrderAmount maximumDiscountAmount usageLimit usedCount validUntil applicableTo createdAt isActive')
         .sort({ createdAt: -1 });
         
         res.json(coupons);

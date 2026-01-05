@@ -19,7 +19,7 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
             // Filter active and valid coupons
             const validCoupons = data.filter(coupon => {
                 const now = new Date();
-                const isValid = coupon.isActive && 
+                const isValid = (coupon.isActive !== false) &&  // Treat undefined as active
                                new Date(coupon.validUntil) > now &&
                                (!coupon.minimumOrderAmount || orderAmount >= coupon.minimumOrderAmount);
                 console.log(`Coupon ${coupon.code}:`, {
@@ -33,10 +33,9 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
                 return isValid;
             });
             
-            // TEMPORARY: Show all coupons for debugging
-            console.log('DEBUG: Showing all coupons temporarily');
-            setCoupons(data);
-            // setCoupons(validCoupons);
+            // Restore normal filtering
+            console.log('Valid coupons after filtering:', validCoupons);
+            setCoupons(validCoupons);
         } catch (error) {
             console.error('Error fetching coupons:', error);
             // Don't set coupons to empty array, keep whatever we have
