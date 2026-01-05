@@ -17,6 +17,15 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
             return;
         }
 
+        if (loading) {
+            return; // Prevent duplicate calls
+        }
+
+        if (appliedCoupon && appliedCoupon.code === couponCode.trim().toUpperCase()) {
+            setError('Coupon is already applied');
+            return;
+        }
+
         setLoading(true);
         setError('');
         setSuccess('');
@@ -153,6 +162,8 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
                 cartItems={cartItems}
                 onCouponSelect={(code) => {
                     setCouponCode(code);
+                    setError('');  // Clear any previous error
+                    setSuccess(''); // Clear any previous success
                     // Small delay to ensure state is updated
                     setTimeout(() => {
                         handleApplyCoupon();
