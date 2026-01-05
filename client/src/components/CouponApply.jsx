@@ -85,7 +85,7 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
 
                 {!appliedCoupon ? (
                     <div className="space-y-3">
-                        <div className="flex space-x-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                             <input
                                 type="text"
                                 value={couponCode}
@@ -98,7 +98,7 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
                             <button
                                 onClick={handleApplyCoupon}
                                 disabled={loading || !couponCode.trim()}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center"
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
                             >
                                 {loading ? (
                                     <Loader className="h-4 w-4 animate-spin mr-2" />

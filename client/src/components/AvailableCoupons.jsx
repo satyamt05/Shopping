@@ -46,7 +46,7 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
 
     useEffect(() => {
         fetchAvailableCoupons();
-    }, [orderAmount]);
+    }, [fetchAvailableCoupons]);
 
     const handleCouponSelect = (coupon) => {
         setSelectedCoupon(coupon);
@@ -88,9 +88,9 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
 
     return (
         <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
                 <div className="flex items-center">
-                    <Tag className="h-5 w-5 text-indigo-600 mr-2" />
+                    <Tag className="h-5 w-5 text-indigo-600 mr-2 flex-shrink-0" />
                     <h3 className="text-lg font-semibold text-gray-900">Available Coupons</h3>
                 </div>
                 <span className="text-sm text-gray-500">{coupons.length} offers</span>
@@ -107,22 +107,22 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
                         }`}
                         onClick={() => handleCouponSelect(coupon)}
                     >
-                        <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                                <div className="flex items-center mb-2">
+                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-2">
                                     <span className="font-bold text-indigo-600 text-lg">
                                         {coupon.code}
                                     </span>
                                     {coupon.minimumOrderAmount > 0 && (
-                                        <span className="ml-2 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded whitespace-nowrap">
                                             Min. {formatCurrency(coupon.minimumOrderAmount)}
                                         </span>
                                     )}
                                 </div>
                                 
-                                <p className="text-sm text-gray-700 mb-2">{coupon.description}</p>
+                                <p className="text-sm text-gray-700 mb-2 break-words">{coupon.description}</p>
                                 
-                                <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500">
                                     <div className="flex items-center">
                                         {coupon.discountType === 'PERCENTAGE' ? (
                                             <span className="font-medium text-green-600">
@@ -142,20 +142,20 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
                                     )}
                                     
                                     <div className="flex items-center">
-                                        <Calendar className="h-3 w-3 mr-1" />
+                                        <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
                                         <span>Valid until {formatDate(coupon.validUntil)}</span>
                                     </div>
                                     
                                     {coupon.usageLimit && (
                                         <div className="flex items-center">
-                                            <Users className="h-3 w-3 mr-1" />
+                                            <Users className="h-3 w-3 mr-1 flex-shrink-0" />
                                             <span>{coupon.usageLimit - coupon.usedCount} left</span>
                                         </div>
                                     )}
                                 </div>
                             </div>
                             
-                            <div className="ml-3">
+                            <div className="flex-shrink-0">
                                 {selectedCoupon?._id === coupon._id ? (
                                     <div className="bg-indigo-600 text-white rounded-full p-1">
                                         <Check className="h-4 w-4" />
@@ -177,14 +177,14 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
                                 }}
                                 className="flex items-center text-xs text-indigo-600 hover:text-indigo-800"
                             >
-                                <Info className="h-3 w-3 mr-1" />
+                                <Info className="h-3 w-3 mr-1 flex-shrink-0" />
                                 {showDetails === coupon._id ? 'Hide' : 'Show'} Details
                             </button>
                             
                             {showDetails === coupon._id && (
                                 <div className="mt-2 text-xs text-gray-600 space-y-1">
                                     {coupon.applicableTo !== 'ALL' && (
-                                        <p>
+                                        <p className="break-words">
                                             <strong>Applies to:</strong> {
                                                 coupon.applicableTo === 'SPECIFIC_CATEGORIES' 
                                                     ? 'Selected categories only'
