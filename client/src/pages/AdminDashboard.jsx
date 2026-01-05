@@ -347,9 +347,9 @@ const AdminDashboard = () => {
                     {/* Stats Cards */}
                     {loading ? (
                         <div className="animate-pulse">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                                 {Array.from({ length: 4 }).map((_, index) => (
-                                    <div key={index} className="bg-white p-6 rounded-lg shadow">
+                                    <div key={index} className="bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow">
                                         <div className="flex items-center">
                                             <div className="h-12 w-12 bg-gray-200 rounded-full"></div>
                                             <div className="ml-4 flex-1">
