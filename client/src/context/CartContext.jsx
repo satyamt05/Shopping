@@ -56,23 +56,33 @@ export const CartProvider = ({ children }) => {
 
     // Custom state setter that also updates localStorage
     const setCartItemsWithStorage = (items) => {
+        console.log('CartContext: Setting cart items:', items);
         setCartItems(items);
         try {
-            localStorage.setItem('cartItems', JSON.stringify(items));
+            const jsonString = JSON.stringify(items);
+            console.log('CartContext: Saving to localStorage:', jsonString);
+            localStorage.setItem('cartItems', jsonString);
+            console.log('CartContext: Successfully saved to localStorage');
         } catch (error) {
             console.error('Error saving cart items:', error);
         }
     };
 
     const addToCart = (product, qty) => {
+        console.log('CartContext: Adding to cart:', product, qty);
         setCartItemsWithStorage((prevItems) => {
+            console.log('CartContext: Previous items:', prevItems);
             const existItem = prevItems.find((x) => x._id === product._id);
             if (existItem) {
-                return prevItems.map((x) =>
+                const updated = prevItems.map((x) =>
                     x._id === existItem._id ? { ...product, qty } : x
                 );
+                console.log('CartContext: Updated existing item:', updated);
+                return updated;
             } else {
-                return [...prevItems, { ...product, qty }];
+                const added = [...prevItems, { ...product, qty }];
+                console.log('CartContext: Added new item:', added);
+                return added;
             }
         });
     };
