@@ -42,7 +42,7 @@ const OrderHistory = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const { data } = await axios.get('/orders/myorders');
+                const { data } = await axios.get('/api/orders/myorders');
                 setOrders(data);
             } catch (err) {
                 console.error('Error fetching orders:', err);

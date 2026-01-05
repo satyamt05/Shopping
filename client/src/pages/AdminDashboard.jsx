@@ -87,7 +87,7 @@ const AdminDashboard = () => {
 
     const fetchOrders = async () => {
         try {
-            const { data } = await axios.get('/orders');
+            const { data } = await axios.get('/api/orders');
             setOrders(data);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
             const [productsRes, categoriesRes, ordersRes, usersRes] = await Promise.all([
                 axios.get('/products'),
                 axios.get('/categories'),
-                axios.get('/orders'),
+                axios.get('/api/orders'),
                 axios.get('/auth/users')
             ]);
 
@@ -205,7 +205,7 @@ const AdminDashboard = () => {
 
     const updateOrderStatus = async (orderId, newStatus) => {
         try {
-            await axios.put(`/orders/${orderId}/status`, { status: newStatus });
+            await axios.put(`/api/orders/${orderId}/status`, { status: newStatus });
             fetchOrders();
         } catch (error) {
             console.error('Error updating order status:', error);
