@@ -26,7 +26,9 @@ const addOrderItems = asyncHandler(async (req, res) => {
     } else {
         // Check stock availability for each item
         for (const item of orderItems) {
-            const product = await Product.findById(item._id);
+            // Cart items send _id, but Order model expects product
+            const productId = item._id || item.product;
+            const product = await Product.findById(productId);
             if (!product) {
                 res.status(404);
                 throw new Error(`Product ${item.name} not found`);
@@ -41,15 +43,25 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
         // Update stock for each item
         for (const item of orderItems) {
+            const productId = item._id || item.product;
             await Product.findByIdAndUpdate(
-                item._id,
+                productId,
                 { $inc: { countInStock: -item.qty } },
                 { new: true }
             );
         }
 
+        // Transform cart items to match Order model structure
+        const transformedOrderItems = orderItems.map(item => ({
+            name: item.name,
+            qty: item.qty,
+            image: item.image,
+            price: item.price,
+            product: item._id || item.product // Map _id to product field
+        }));
+
         const order = new Order({
-            orderItems,
+            orderItems: transformedOrderItems,
             user: req.user._id,
             shippingAddress,
             paymentMethod,
