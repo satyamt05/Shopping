@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Tag, Calendar, Users, Check, Info, X } from 'lucide-react';
 import axios from '../utils/api';
 import { formatCurrency } from '../utils/currency';
@@ -9,13 +9,10 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [showDetails, setShowDetails] = useState(null);
 
-    useEffect(() => {
-        fetchAvailableCoupons();
-    }, [orderAmount]);
-
-    const fetchAvailableCoupons = async () => {
+    const fetchAvailableCoupons = useCallback(async () => {
         try {
             console.log('Fetching available coupons...');
+            console.log('Current orderAmount:', orderAmount);
             const { data } = await axios.get('/discount-coupons/public');
             console.log('Coupons fetched:', data);
             
@@ -25,7 +22,14 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
                 const isValid = coupon.isActive && 
                                new Date(coupon.validUntil) > now &&
                                (!coupon.minimumOrderAmount || orderAmount >= coupon.minimumOrderAmount);
-                console.log(`Coupon ${coupon.code} valid:`, isValid);
+                console.log(`Coupon ${coupon.code}:`, {
+                    isActive: coupon.isActive,
+                    validUntil: new Date(coupon.validUntil) > now,
+                    minimumOrderAmount: coupon.minimumOrderAmount,
+                    orderAmount: orderAmount,
+                    meetsMinimum: !coupon.minimumOrderAmount || orderAmount >= coupon.minimumOrderAmount,
+                    isValid: isValid
+                });
                 return isValid;
             });
             console.log('Valid coupons after filtering:', validCoupons);
@@ -36,7 +40,11 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [orderAmount]);
+
+    useEffect(() => {
+        fetchAvailableCoupons();
+    }, [orderAmount, fetchAvailableCoupons]);
 
     const handleCouponSelect = (coupon) => {
         setSelectedCoupon(coupon);

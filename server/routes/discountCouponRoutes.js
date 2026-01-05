@@ -176,7 +176,7 @@ router.delete('/:id', protect, admin, async (req, res) => {
             return res.status(404).json({ message: 'Coupon not found' });
         }
 
-        await coupon.remove();
+        await DiscountCoupon.deleteOne({ _id: req.params.id });
         res.json({ message: 'Coupon deleted successfully' });
     } catch (error) {
         console.error('Error deleting coupon:', error);
