@@ -192,22 +192,22 @@ const OrderDetails = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
                     onClick={() => navigate('/')}
-                    className="flex-1 bg-indigo-600 text-white px-6 py-3 rounded-md font-medium hover:bg-indigo-700 transition"
+                    className="flex-1 sm:flex-none bg-indigo-600 text-white px-6 py-3 rounded-md font-medium hover:bg-indigo-700 transition"
                 >
                     Continue Shopping
                 </button>
                 <button
                     onClick={() => navigate('/profile')}
-                    className="flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-md font-medium hover:bg-gray-300 transition"
+                    className="flex-1 sm:flex-none bg-gray-200 text-gray-800 px-6 py-3 rounded-md font-medium hover:bg-gray-300 transition"
                 >
                     View Profile
                 </button>
                 <button
                     onClick={handleDownloadInvoice}
-                    className="flex-1 bg-green-600 text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 transition flex items-center justify-center"
+                    className="flex-1 sm:flex-none bg-green-600 text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 transition flex items-center justify-center"
                 >
                     <Download className="h-4 w-4 mr-2" />
                     Download Invoice
