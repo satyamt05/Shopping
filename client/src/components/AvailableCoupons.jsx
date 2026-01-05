@@ -42,7 +42,7 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
         } finally {
             setLoading(false);
         }
-    }, [orderAmount]);
+    }, []); // Remove orderAmount from dependencies
 
     useEffect(() => {
         fetchAvailableCoupons();
