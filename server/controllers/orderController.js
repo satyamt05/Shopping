@@ -6,15 +6,6 @@ const Order = require('../models/Order');
 // @route   POST /api/orders
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
-    // Check if user is authenticated
-    if (!req.user) {
-        console.log('Order controller - No user in request');
-        res.status(401);
-        throw new Error('User not authenticated');
-    }
-
-    console.log('Order controller - User authenticated:', req.user._id);
-    
     const {
         orderItems,
         shippingAddress,

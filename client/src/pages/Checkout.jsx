@@ -28,15 +28,6 @@ const Checkout = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [couponDiscount, setCouponDiscount] = useState(0);
     const [appliedCoupon, setAppliedCoupon] = useState(null);
-    const [mobileDebug, setMobileDebug] = useState([]);
-    const [showDebug, setShowDebug] = useState(false);
-
-    // Add debug message function for mobile
-    const addDebugMessage = (message, type = 'info') => {
-        const timestamp = new Date().toLocaleTimeString();
-        setMobileDebug(prev => [...prev, { message, type, timestamp }]);
-        console.log(message); // Still log to console for desktop
-    };
 
     // Load user addresses - moved before early returns
     const loadAddresses = useCallback(async () => {
@@ -107,50 +98,18 @@ const Checkout = () => {
         setAppliedCoupon(null);
     };
 
-    // Network connectivity check
-    const checkNetworkConnectivity = async () => {
-        try {
-            const response = await fetch('/api/health', {
-                method: 'GET',
-                cache: 'no-cache'
-            });
-            return response.ok;
-        } catch (error) {
-            return false;
-        }
-    };
 
     const placeOrderHandler = async (e) => {
         e.preventDefault();
-        addDebugMessage('Place order clicked', 'info');
-        addDebugMessage(`User agent: ${navigator.userAgent}`, 'info');
-        addDebugMessage(`Is mobile: ${/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}`, 'info');
-        addDebugMessage(`Screen width: ${window.screen.width}`, 'info');
-        addDebugMessage(`API Base URL: ${axios.defaults.baseURL}`, 'info');
-        addDebugMessage(`Current URL: ${window.location.href}`, 'info');
         
         if (loading) {
-            addDebugMessage('Already loading, ignoring click', 'warning');
             return;
         }
         
         setLoading(true);
 
-        // Check network connectivity first
-        addDebugMessage('Checking network connectivity...', 'info');
-        const isOnline = await checkNetworkConnectivity();
-        if (!isOnline) {
-            addDebugMessage('Network connectivity check failed', 'error');
-            error('No internet connection. Please check your network and try again.');
-            setLoading(false);
-            return;
-        }
-        addDebugMessage('Network connectivity OK', 'success');
-
         // Validate address
         if (!address.street || !address.city || !address.postalCode || !address.country) {
-            addDebugMessage('Address validation failed', 'error');
-            addDebugMessage(`Address: ${JSON.stringify(address)}`, 'error');
             error('Please fill in all address fields');
             setLoading(false);
             return;
@@ -158,21 +117,13 @@ const Checkout = () => {
 
         // Validate cart
         if (!cartItems || cartItems.length === 0) {
-            addDebugMessage('Cart validation failed - empty cart', 'error');
             error('Your cart is empty');
             setLoading(false);
             return;
         }
 
-        addDebugMessage(`Placing order with ${cartItems.length} items`, 'info');
-        addDebugMessage(`Payment method: ${paymentMethod}`, 'info');
-        addDebugMessage(`Total price: ${totalPrice}`, 'info');
-        addDebugMessage(`Coupon discount: ${couponDiscount}`, 'info');
-        addDebugMessage(`Applied coupon: ${JSON.stringify(appliedCoupon)}`, 'info');
-
         try {
-            // Try with new schema first (includes coupon fields)
-            const orderDataWithCoupons = {
+            const orderData = {
                 orderItems: cartItems.map(item => ({
                     name: item.name,
                     qty: item.qty,
@@ -196,73 +147,13 @@ const Checkout = () => {
                     } : null
                 })
             };
-
-            addDebugMessage('Trying new server schema with coupon fields...', 'info');
-            addDebugMessage(`Order data: ${JSON.stringify(orderDataWithCoupons, null, 2)}`, 'info');
             
-            // Try multiple approaches for mobile compatibility
-            let response;
-            
-            // Method 1: Standard axios with new schema
-            try {
-                addDebugMessage('Trying standard axios call with new schema...', 'info');
-                response = await axios.post('/orders', orderDataWithCoupons, {
-                    timeout: 15000,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                addDebugMessage('Standard axios with new schema worked!', 'success');
-                addDebugMessage(`Response: ${JSON.stringify(response.data, null, 2)}`, 'success');
-            } catch (axiosError) {
-                addDebugMessage(`Standard axios with new schema failed: ${axiosError.message}`, 'warning');
-                addDebugMessage(`Status code: ${axiosError.response?.status}`, 'warning');
-                if (axiosError.response?.data) {
-                    addDebugMessage(`Server error: ${JSON.stringify(axiosError.response.data, null, 2)}`, 'error');
+            const { data } = await axios.post('/orders', orderData, {
+                timeout: 15000,
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-                
-                // Fallback to old schema (without coupon fields)
-                addDebugMessage('Trying fallback to old server schema...', 'info');
-                const orderDataOldSchema = {
-                    orderItems: cartItems.map(item => ({
-                        name: item.name,
-                        qty: item.qty,
-                        image: item.image,
-                        price: item.price,
-                        product: item._id
-                    })),
-                    shippingAddress: address,
-                    paymentMethod: paymentMethod,
-                    taxPrice: taxPrice.toFixed(2),
-                    shippingPrice: shippingPrice.toFixed(2),
-                    totalPrice: totalPrice.toFixed(2)
-                };
-                
-                addDebugMessage('Fallback order data (old schema):', 'info');
-                addDebugMessage(`${JSON.stringify(orderDataOldSchema, null, 2)}`, 'info');
-                
-                try {
-                    addDebugMessage('Trying standard axios with old schema...', 'info');
-                    response = await axios.post('/orders', orderDataOldSchema, {
-                        timeout: 15000,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    addDebugMessage('Standard axios with old schema worked!', 'success');
-                    addDebugMessage(`Response: ${JSON.stringify(response.data, null, 2)}`, 'success');
-                } catch (oldSchemaError) {
-                    addDebugMessage(`Old schema also failed: ${oldSchemaError.message}`, 'error');
-                    addDebugMessage(`Status code: ${oldSchemaError.response?.status}`, 'error');
-                    if (oldSchemaError.response?.data) {
-                        addDebugMessage(`Server error: ${JSON.stringify(oldSchemaError.response.data, null, 2)}`, 'error');
-                    }
-                    throw oldSchemaError;
-                }
-            }
-            
-            const { data } = response;
-            addDebugMessage(`Order placed successfully! ID: ${data._id}`, 'success');
+            });
 
             clearCart();
             
@@ -272,38 +163,24 @@ const Checkout = () => {
             // Navigate to order details page
             navigate(`/order/${data._id}`);
         } catch (error) {
-            addDebugMessage(`Error: ${error.message}`, 'error');
-            addDebugMessage(`Error type: ${error.name}`, 'error');
-            
-            let errorMessage = 'Error placing order. Please try again.';
-            
-            if (error.message.includes('timeout')) {
-                errorMessage = 'Request timed out. Please check your internet connection and try again.';
-            } else if (error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            } else if (error.message.includes('Network Error') || error.message.includes('Failed to fetch')) {
-                errorMessage = 'Network error. Please check your connection and try again.';
-            } else if (error.message.includes('HTTP error')) {
-                errorMessage = `Server error: ${error.message}`;
-            }
-            
-            error(errorMessage);
+            console.error('Error placing order:', error);
+            error(error.response?.data?.message || 'Error placing order. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
-            <form onSubmit={placeOrderHandler} className="space-y-6">
-                <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:p-6">
-                    <div className="md:grid md:grid-cols-3 md:gap-6">
-                        <div className="md:col-span-1">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">Checkout</h1>
+            <form onSubmit={placeOrderHandler} className="space-y-4 sm:space-y-6">
+                <div className="bg-white px-3 sm:px-4 py-4 sm:py-5 shadow sm:rounded-lg sm:p-6">
+                    <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-3 lg:gap-6">
+                        <div className="sm:col-span-1">
                             <h3 className="text-lg font-medium leading-6 text-gray-900">Shipping Address</h3>
                             <p className="mt-1 text-sm text-gray-500">Where should we send your order?</p>
                         </div>
-                        <div className="mt-5 md:mt-0 md:col-span-2">
+                        <div className="sm:mt-4 lg:mt-0 lg:col-span-2">
                             {/* Address Selection */}
                             {userAddresses.length > 0 && (
                                 <div className="mb-4">
@@ -431,13 +308,13 @@ const Checkout = () => {
                     </div>
                 </div>
 
-                <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:p-6">
-                    <div className="md:grid md:grid-cols-3 md:gap-6">
-                        <div className="md:col-span-1">
+                <div className="bg-white px-3 sm:px-4 py-4 sm:py-5 shadow sm:rounded-lg sm:p-6">
+                    <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-3 lg:gap-6">
+                        <div className="sm:col-span-1">
                             <h3 className="text-lg font-medium leading-6 text-gray-900">Payment Method</h3>
                             <p className="mt-1 text-sm text-gray-500">Choose how you want to pay</p>
                         </div>
-                        <div className="mt-5 md:mt-0 md:col-span-2">
+                        <div className="sm:mt-4 lg:mt-0 lg:col-span-2">
                             <div className="space-y-3">
                                 <div className="flex items-center">
                                     <input 
@@ -474,14 +351,14 @@ const Checkout = () => {
                     </div>
                 </div>
 
-                <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:p-6">
+                <div className="bg-white px-3 sm:px-4 py-4 sm:py-5 shadow sm:rounded-lg sm:p-6">
                     <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Order Summary</h3>
                     
                     {/* Order Items */}
                     <div className="space-y-3 mb-6">
                         {cartItems.map((item) => (
-                            <div key={item._id} className="flex justify-between items-center">
-                                <div className="flex items-center">
+                            <div key={item._id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex items-center mb-2 sm:mb-0">
                                     <img 
                                         src={item.image} 
                                         alt={item.name} 
@@ -492,7 +369,11 @@ const Checkout = () => {
                                         <p className="text-sm text-gray-500">Qty: {item.qty} × {formatCurrency(item.price)}</p>
                                     </div>
                                 </div>
-                                <p className="text-sm font-medium text-gray-900">{formatCurrency(item.qty * item.price)}</p>
+                                <div className="text-right">
+                                    <p className="text-sm font-medium text-gray-900">
+                                        {formatCurrency(item.qty * item.price)}
+                                    </p>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -536,138 +417,10 @@ const Checkout = () => {
                         onCouponRemoved={handleCouponRemoved}
                     />
 
-                    {/* Mobile Debug Panel - Always visible on mobile */}
-            <div className="fixed bottom-4 right-4 z-50">
-                <button
-                    onClick={() => setShowDebug(!showDebug)}
-                    className="bg-purple-600 text-white p-2 rounded-full shadow-lg hover:bg-purple-700 mb-2"
-                    title="Toggle Debug Panel"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                </button>
-                
-                {showDebug && (
-                    <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-80 max-h-96 overflow-hidden">
-                        <div className="bg-purple-600 text-white p-3 flex justify-between items-center">
-                            <h3 className="font-semibold text-sm">Mobile Debug Console</h3>
-                            <button
-                                onClick={() => setMobileDebug([])}
-                                className="text-xs bg-purple-700 px-2 py-1 rounded hover:bg-purple-800"
-                            >
-                                Clear
-                            </button>
-                        </div>
-                        <div className="p-3 overflow-y-auto max-h-80 bg-gray-50">
-                            {mobileDebug.length === 0 ? (
-                                <p className="text-gray-500 text-xs">No debug messages yet. Try placing an order.</p>
-                            ) : (
-                                mobileDebug.map((msg, index) => (
-                                    <div key={index} className="mb-2 text-xs">
-                                        <span className="text-gray-500">{msg.timestamp}</span>
-                                        <div className={`mt-1 p-2 rounded ${
-                                            msg.type === 'error' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                            msg.type === 'warning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
-                                            msg.type === 'success' ? 'bg-green-100 text-green-700 border border-green-200' :
-                                            'bg-blue-100 text-blue-700 border border-blue-200'
-                                        }`}>
-                                            {msg.message}
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Debug button for mobile testing - remove in production */}
-                    {process.env.NODE_ENV === 'development' && (
-                        <div className="mt-4 p-3 bg-yellow-50 rounded-md border border-yellow-200">
-                            <p className="text-sm text-yellow-800 mb-2">
-                                <strong>Mobile Debug:</strong> Server is down! Use local server
-                            </p>
-                            <div className="flex gap-2 flex-wrap">
-                                <button
-                                    onClick={async () => {
-                                        addDebugMessage('Testing basic API endpoints...', 'info');
-                                        try {
-                                            // Test health endpoint
-                                            const healthResponse = await fetch('https://shopping-ivig.onrender.com/api/health');
-                                            addDebugMessage(`Health check: ${healthResponse.status}`, healthResponse.ok ? 'success' : 'warning');
-                                            
-                                            // Test orders endpoint (GET)
-                                            const ordersResponse = await fetch('https://shopping-ivig.onrender.com/api/orders', {
-                                                headers: {
-                                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                                }
-                                            });
-                                            addDebugMessage(`Orders GET: ${ordersResponse.status}`, ordersResponse.ok ? 'success' : 'warning');
-                                            
-                                            // Test products endpoint
-                                            const productsResponse = await fetch('https://shopping-ivig.onrender.com/api/products');
-                                            addDebugMessage(`Products GET: ${productsResponse.status}`, productsResponse.ok ? 'success' : 'warning');
-                                            
-                                        } catch (error) {
-                                            addDebugMessage(`API Test failed: ${error.message}`, 'error');
-                                        }
-                                    }}
-                                    className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
-                                >
-                                    Test All Endpoints
-                                </button>
-                                <button
-                                    onClick={async () => {
-                                        addDebugMessage('Testing API connectivity...', 'info');
-                                        try {
-                                            const response = await fetch('/api/health');
-                                            addDebugMessage(`Health check status: ${response.status}`, response.ok ? 'success' : 'warning');
-                                            const data = await response.json();
-                                            addDebugMessage(`Health check data: ${JSON.stringify(data)}`, 'info');
-                                        } catch (error) {
-                                            addDebugMessage(`API Test failed: ${error.message}`, 'error');
-                                        }
-                                    }}
-                                    className="px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700"
-                                >
-                                    Test API Connection
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        // Temporarily override API base URL for testing
-                                        localStorage.setItem('API_BASE_URL', 'http://localhost:5000/api');
-                                        window.location.reload();
-                                    }}
-                                    className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
-                                >
-                                    Use Local Server
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        addDebugMessage('Test message 1 - INFO', 'info');
-                                        addDebugMessage('Test message 2 - WARNING', 'warning');
-                                        addDebugMessage('Test message 3 - ERROR', 'error');
-                                        addDebugMessage('Test message 4 - SUCCESS', 'success');
-                                    }}
-                                    className="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700"
-                                >
-                                    Test Debug Messages
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
                     <button 
                         type="submit" 
                         disabled={loading}
-                        onClick={(e) => {
-                            console.log('Button clicked directly');
-                            if (!loading) {
-                                placeOrderHandler(e);
-                            }
-                        }}
-                        className="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg shadow-lg text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed mt-6 touch-manipulation transition-all duration-150 min-h-[56px]"
+                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                     >
                         {loading ? (
                             <>
