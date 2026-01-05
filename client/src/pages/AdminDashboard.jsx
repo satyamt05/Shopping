@@ -16,6 +16,10 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [stats, setStats] = useState({});
     const [loading, setLoading] = useState(true);
+    const [productsLoading, setProductsLoading] = useState(true);
+    const [categoriesLoading, setCategoriesLoading] = useState(true);
+    const [ordersLoading, setOrdersLoading] = useState(true);
+    const [usersLoading, setUsersLoading] = useState(true);
     const [editingProduct, setEditingProduct] = useState(null);
     const [editingCategory, setEditingCategory] = useState(null);
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -25,6 +29,41 @@ const AdminDashboard = () => {
     const [showOrderItems, setShowOrderItems] = useState(false);
     const { token, userInfo, isLoading, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+
+    // Shimmer loader components
+    const TableShimmer = ({ rows = 5 }) => (
+        <div className="animate-pulse">
+            <div className="space-y-3">
+                {Array.from({ length: rows }).map((_, index) => (
+                    <div key={index} className="grid grid-cols-5 gap-4">
+                        <div className="h-10 bg-gray-200 rounded"></div>
+                        <div className="h-10 bg-gray-200 rounded"></div>
+                        <div className="h-10 bg-gray-200 rounded"></div>
+                        <div className="h-10 bg-gray-200 rounded"></div>
+                        <div className="h-10 bg-gray-200 rounded"></div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const CardShimmer = () => (
+        <div className="animate-pulse">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {Array.from({ length: 4 }).map((_, index) => (
+                    <div key={index} className="bg-white p-6 rounded-lg shadow">
+                        <div className="flex items-center">
+                            <div className="h-12 w-12 bg-gray-200 rounded-full"></div>
+                            <div className="ml-4 flex-1">
+                                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div className="h-8 bg-gray-200 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 
     const fetchProducts = async () => {
         try {
