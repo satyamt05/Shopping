@@ -11,21 +11,28 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
 
     useEffect(() => {
         fetchAvailableCoupons();
-    }, []);
+    }, [orderAmount]);
 
     const fetchAvailableCoupons = async () => {
         try {
+            console.log('Fetching available coupons...');
             const { data } = await axios.get('/discount-coupons/public');
+            console.log('Coupons fetched:', data);
+            
             // Filter active and valid coupons
             const validCoupons = data.filter(coupon => {
                 const now = new Date();
-                return coupon.isActive && 
-                       new Date(coupon.validUntil) > now &&
-                       (!coupon.minimumOrderAmount || orderAmount >= coupon.minimumOrderAmount);
+                const isValid = coupon.isActive && 
+                               new Date(coupon.validUntil) > now &&
+                               (!coupon.minimumOrderAmount || orderAmount >= coupon.minimumOrderAmount);
+                console.log(`Coupon ${coupon.code} valid:`, isValid);
+                return isValid;
             });
+            console.log('Valid coupons after filtering:', validCoupons);
             setCoupons(validCoupons);
         } catch (error) {
             console.error('Error fetching coupons:', error);
+            // Don't set coupons to empty array, keep whatever we have
         } finally {
             setLoading(false);
         }
