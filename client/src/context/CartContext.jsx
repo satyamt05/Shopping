@@ -56,15 +56,33 @@ export const CartProvider = ({ children }) => {
 
     // Custom state setter that also updates localStorage
     const setCartItemsWithStorage = (items) => {
-        console.log('CartContext: Setting cart items:', items);
-        setCartItems(items);
-        try {
-            const jsonString = JSON.stringify(items);
-            console.log('CartContext: Saving to localStorage:', jsonString);
-            localStorage.setItem('cartItems', jsonString);
-            console.log('CartContext: Successfully saved to localStorage');
-        } catch (error) {
-            console.error('Error saving cart items:', error);
+        if (typeof items === 'function') {
+            // If items is a function, call it with current cartItems
+            setCartItems((currentItems) => {
+                const newItems = items(currentItems);
+                console.log('CartContext: Setting cart items:', newItems);
+                try {
+                    const jsonString = JSON.stringify(newItems);
+                    console.log('CartContext: Saving to localStorage:', jsonString);
+                    localStorage.setItem('cartItems', jsonString);
+                    console.log('CartContext: Successfully saved to localStorage');
+                } catch (error) {
+                    console.error('Error saving cart items:', error);
+                }
+                return newItems;
+            });
+        } else {
+            // If items is already an array, set it directly
+            console.log('CartContext: Setting cart items directly:', items);
+            setCartItems(items);
+            try {
+                const jsonString = JSON.stringify(items);
+                console.log('CartContext: Saving to localStorage:', jsonString);
+                localStorage.setItem('cartItems', jsonString);
+                console.log('CartContext: Successfully saved to localStorage');
+            } catch (error) {
+                console.error('Error saving cart items:', error);
+            }
         }
     };
 
