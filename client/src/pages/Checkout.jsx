@@ -148,7 +148,7 @@ const Checkout = () => {
                 })
             };
             
-            const { data } = await axios.post('/api/orders', orderData, {
+            const { data } = await axios.post('/orders', orderData, {
                 timeout: 15000,
                 headers: {
                     'Content-Type': 'application/json'
