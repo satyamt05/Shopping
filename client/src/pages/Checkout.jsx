@@ -71,13 +71,13 @@ const Checkout = () => {
         loadAddresses();
     }, []);
 
-    const itemsPrice = cartItems.reduce((acc, item) => acc + item.qty * item.price, 0);
+    const itemsPrice = cartItems.reduce((acc, item) => acc + (item.qty || 0) * (item.price || 0), 0);
     const shippingPrice = itemsPrice > SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COSTS.STANDARD;
     const taxPrice = itemsPrice * TAX_RATE;
-    const totalPrice = itemsPrice + shippingPrice + taxPrice - couponDiscount;
+    const totalPrice = itemsPrice + shippingPrice + taxPrice - (couponDiscount || 0);
 
     const handleCouponApplied = (discountAmount, coupon) => {
-        setCouponDiscount(discountAmount);
+        setCouponDiscount(discountAmount || 0);
         setAppliedCoupon(coupon);
     };
 

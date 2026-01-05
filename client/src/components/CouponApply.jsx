@@ -23,7 +23,7 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
         try {
             const response = await axios.post('/discount-coupons/validate', {
                 code: couponCode.trim(),
-                orderAmount,
+                orderAmount: orderAmount || 0,
                 cartItems
             });
 
@@ -31,10 +31,10 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
             
             setAppliedCoupon({
                 ...coupon,
-                discountAmount
+                discountAmount: discountAmount || 0
             });
             setSuccess('Coupon applied successfully!');
-            onCouponApplied(discountAmount, coupon);
+            onCouponApplied(discountAmount || 0, coupon);
         } catch (error) {
             setError(error.response?.data?.message || 'Invalid coupon code');
         } finally {

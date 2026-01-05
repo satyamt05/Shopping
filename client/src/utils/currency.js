@@ -1,5 +1,8 @@
 // Currency utility for Indian Rupees
 export const formatCurrency = (amount) => {
+    if (amount === null || amount === undefined || isNaN(amount)) {
+        return '₹0';
+    }
     return new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: 'INR',
@@ -9,6 +12,9 @@ export const formatCurrency = (amount) => {
 };
 
 export const formatCurrencyWithDecimals = (amount) => {
+    if (amount === null || amount === undefined || isNaN(amount)) {
+        return '₹0.00';
+    }
     return new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: 'INR',
