@@ -162,6 +162,7 @@ const Checkout = () => {
         addDebugMessage(`Payment method: ${paymentMethod}`, 'info');
         addDebugMessage(`Total price: ${totalPrice}`, 'info');
         addDebugMessage(`Coupon discount: ${couponDiscount}`, 'info');
+        addDebugMessage(`Applied coupon: ${JSON.stringify(appliedCoupon)}`, 'info');
 
         try {
             const orderData = {
@@ -187,6 +188,7 @@ const Checkout = () => {
             };
 
             addDebugMessage('Sending order data...', 'info');
+            addDebugMessage(`Order data: ${JSON.stringify(orderData, null, 2)}`, 'info');
             
             // Try multiple approaches for mobile compatibility
             let response;
@@ -201,8 +203,10 @@ const Checkout = () => {
                     }
                 });
                 addDebugMessage('Standard axios worked!', 'success');
+                addDebugMessage(`Response: ${JSON.stringify(response.data, null, 2)}`, 'success');
             } catch (axiosError) {
                 addDebugMessage(`Standard axios failed: ${axiosError.message}`, 'warning');
+                addDebugMessage(`Axios error details: ${JSON.stringify(axiosError, null, 2)}`, 'warning');
                 
                 // Method 2: Fetch API fallback for mobile
                 try {
@@ -216,15 +220,19 @@ const Checkout = () => {
                         body: JSON.stringify(orderData)
                     });
                     
+                    addDebugMessage(`Fetch response status: ${fetchResponse.status}`, 'info');
+                    
                     if (!fetchResponse.ok) {
                         throw new Error(`HTTP error! status: ${fetchResponse.status}`);
                     }
                     
                     const data = await fetchResponse.json();
                     addDebugMessage('Fetch API worked!', 'success');
+                    addDebugMessage(`Fetch response: ${JSON.stringify(data, null, 2)}`, 'success');
                     response = { data };
                 } catch (fetchError) {
                     addDebugMessage(`Fetch API failed: ${fetchError.message}`, 'error');
+                    addDebugMessage(`Fetch error details: ${JSON.stringify(fetchError, null, 2)}`, 'error');
                     throw fetchError;
                 }
             }
