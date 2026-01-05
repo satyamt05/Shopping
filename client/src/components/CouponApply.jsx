@@ -10,12 +10,11 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
     const [appliedCoupon, setAppliedCoupon] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [isAutoSelecting, setIsAutoSelecting] = useState(false);
 
     const handleApplyCoupon = async () => {
         const trimmedCode = couponCode.trim();
         
-        if (!trimmedCode && !isAutoSelecting) {
+        if (!trimmedCode) {
             setError('Please enter a coupon code');
             return;
         }
@@ -32,7 +31,6 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
         setLoading(true);
         setError('');
         setSuccess('');
-        setIsAutoSelecting(false); // Reset flag
 
         try {
             console.log('Applying coupon:', couponCode.trim());
@@ -165,14 +163,10 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
                 orderAmount={orderAmount}
                 cartItems={cartItems}
                 onCouponSelect={(code) => {
-                    setIsAutoSelecting(true);
                     setCouponCode(code);
                     setError('');  // Clear any previous error
                     setSuccess(''); // Clear any previous success
-                    // Small delay to ensure state is updated
-                    setTimeout(() => {
-                        handleApplyCoupon();
-                    }, 100);
+                    // Don't auto-apply, just fill the input
                 }}
             />
         </div>
