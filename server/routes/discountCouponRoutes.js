@@ -232,9 +232,9 @@ router.post('/validate', protect, async (req, res) => {
                 code: coupon.code,
                 description: coupon.description,
                 discountType: coupon.discountType,
-                discountValue: coupon.discountValue,
-                discountAmount
+                discountValue: coupon.discountValue
             },
+            discountAmount,
             message: 'Coupon applied successfully'
         });
     } catch (error) {
