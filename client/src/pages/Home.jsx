@@ -190,8 +190,7 @@ const Home = () => {
             <motion.section 
                 className="py-12 bg-gradient-to-b from-gray-50 to-white"
                 initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
+                animate={!loading ? "visible" : "hidden"}
                 variants={containerVariants}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -219,6 +218,8 @@ const Home = () => {
                                     key={category._id}
                                     variants={categoryVariants}
                                     custom={index}
+                                    initial="hidden"
+                                    animate="visible"
                                 >
                                     <Link to={`/shop?category=${category.name}`} className="group block">
                                         <div className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
