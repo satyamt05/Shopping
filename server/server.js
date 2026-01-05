@@ -116,6 +116,15 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
+// Health check endpoint for mobile debugging
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
+    });
+});
+
 app.use('/api/auth', require('./routes/googleAuthRoutes'));
 app.use('/api/discount-coupons', require('./routes/discountCouponRoutes'));
 

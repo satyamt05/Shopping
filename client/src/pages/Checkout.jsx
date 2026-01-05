@@ -95,9 +95,24 @@ const Checkout = () => {
         setAppliedCoupon(null);
     };
 
+    // Network connectivity check
+    const checkNetworkConnectivity = async () => {
+        try {
+            const response = await fetch('/api/health', {
+                method: 'GET',
+                cache: 'no-cache'
+            });
+            return response.ok;
+        } catch (error) {
+            return false;
+        }
+    };
+
     const placeOrderHandler = async (e) => {
         e.preventDefault();
         console.log('Place order clicked, loading state:', loading);
+        console.log('User agent:', navigator.userAgent);
+        console.log('Is mobile:', /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
         
         if (loading) {
             console.log('Already loading, ignoring click');
@@ -105,6 +120,17 @@ const Checkout = () => {
         }
         
         setLoading(true);
+
+        // Check network connectivity first
+        console.log('Checking network connectivity...');
+        const isOnline = await checkNetworkConnectivity();
+        if (!isOnline) {
+            console.log('Network connectivity check failed');
+            error('No internet connection. Please check your network and try again.');
+            setLoading(false);
+            return;
+        }
+        console.log('Network connectivity OK');
 
         // Validate address
         if (!address.street || !address.city || !address.postalCode || !address.country) {
@@ -131,11 +157,6 @@ const Checkout = () => {
         });
 
         try {
-            // Add timeout for mobile
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Request timeout - please check your connection')), 15000)
-            );
-
             const orderData = {
                 orderItems: cartItems.map(item => ({
                     name: item.name,
@@ -160,12 +181,48 @@ const Checkout = () => {
 
             console.log('Sending order data:', orderData);
             
-            // Race between actual request and timeout
-            const { data } = await Promise.race([
-                axios.post('/orders', orderData),
-                timeoutPromise
-            ]);
+            // Try multiple approaches for mobile compatibility
+            let response;
             
+            // Method 1: Standard axios (works on desktop and responsive mode)
+            try {
+                console.log('Trying standard axios call...');
+                response = await axios.post('/orders', orderData, {
+                    timeout: 15000,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log('Standard axios worked:', response.data);
+            } catch (axiosError) {
+                console.log('Standard axios failed, trying fallback:', axiosError);
+                
+                // Method 2: Fetch API fallback for mobile
+                try {
+                    console.log('Trying fetch API fallback...');
+                    const fetchResponse = await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+                    
+                    if (!fetchResponse.ok) {
+                        throw new Error(`HTTP error! status: ${fetchResponse.status}`);
+                    }
+                    
+                    const data = await fetchResponse.json();
+                    console.log('Fetch API worked:', data);
+                    response = { data };
+                } catch (fetchError) {
+                    console.log('Fetch API also failed:', fetchError);
+                    throw fetchError;
+                }
+            }
+            
+            const { data } = response;
             console.log('Order placed successfully:', data);
 
             clearCart();
@@ -177,16 +234,20 @@ const Checkout = () => {
             navigate(`/order/${data._id}`);
         } catch (error) {
             console.error('Error placing order:', error);
+            console.error('Error type:', error.name);
+            console.error('Error message:', error.message);
             console.error('Error response:', error.response?.data);
             
             let errorMessage = 'Error placing order. Please try again.';
             
-            if (error.message === 'Request timeout - please check your connection') {
+            if (error.message.includes('timeout')) {
                 errorMessage = 'Request timed out. Please check your internet connection and try again.';
             } else if (error.response?.data?.message) {
                 errorMessage = error.response.data.message;
-            } else if (error.code === 'NETWORK_ERROR') {
+            } else if (error.message.includes('Network Error') || error.message.includes('Failed to fetch')) {
                 errorMessage = 'Network error. Please check your connection and try again.';
+            } else if (error.message.includes('HTTP error')) {
+                errorMessage = `Server error: ${error.message}`;
             }
             
             error(errorMessage);
@@ -437,6 +498,33 @@ const Checkout = () => {
                         onCouponApplied={handleCouponApplied}
                         onCouponRemoved={handleCouponRemoved}
                     />
+
+                    {/* Debug button for mobile testing - remove in production */}
+                    {process.env.NODE_ENV === 'development' && (
+                        <div className="mt-4 p-3 bg-yellow-50 rounded-md border border-yellow-200">
+                            <p className="text-sm text-yellow-800 mb-2">
+                                <strong>Mobile Debug:</strong> Test API connectivity
+                            </p>
+                            <button
+                                onClick={async () => {
+                                    console.log('Testing API connectivity...');
+                                    try {
+                                        const response = await fetch('/api/health');
+                                        console.log('Health check response:', response);
+                                        const data = await response.json();
+                                        console.log('Health check data:', data);
+                                        alert(`API Test: ${response.ok ? 'SUCCESS' : 'FAILED'} - ${JSON.stringify(data)}`);
+                                    } catch (error) {
+                                        console.error('API Test failed:', error);
+                                        alert(`API Test: FAILED - ${error.message}`);
+                                    }
+                                }}
+                                className="px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700"
+                            >
+                                Test API Connection
+                            </button>
+                        </div>
+                    )}
 
                     <button 
                         type="submit" 
