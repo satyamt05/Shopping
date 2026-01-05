@@ -24,12 +24,21 @@ const addOrderItems = asyncHandler(async (req, res) => {
         throw new Error('No order items');
         return;
     } else {
+        // Debug: Log orderItems to see structure
+        console.log('OrderItems received:', JSON.stringify(orderItems, null, 2));
+        
         // Check stock availability for each item
         for (const item of orderItems) {
+            // Debug: Log each item
+            console.log('Processing item:', JSON.stringify(item, null, 2));
+            
             // Cart items send _id, but Order model expects product
             const productId = item._id || item.product;
+            console.log('Looking for product with ID:', productId);
+            
             const product = await Product.findById(productId);
             if (!product) {
+                console.log('Product not found for ID:', productId);
                 res.status(404);
                 throw new Error(`Product ${item.name} not found`);
                 return;
