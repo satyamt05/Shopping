@@ -32,8 +32,8 @@ const addOrderItems = asyncHandler(async (req, res) => {
             // Debug: Log each item
             console.log('Processing item:', JSON.stringify(item, null, 2));
             
-            // Cart items send _id, but Order model expects product
-            const productId = item._id || item.product;
+            // Frontend sends product field with the product ID
+            const productId = item.product;
             console.log('Looking for product with ID:', productId);
             
             const product = await Product.findById(productId);
@@ -52,7 +52,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
         // Update stock for each item
         for (const item of orderItems) {
-            const productId = item._id || item.product;
+            const productId = item.product;
             await Product.findByIdAndUpdate(
                 productId,
                 { $inc: { countInStock: -item.qty } },
@@ -66,7 +66,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
             qty: item.qty,
             image: item.image,
             price: item.price,
-            product: item._id || item.product // Map _id to product field
+            product: item.product // Already in correct format from frontend
         }));
 
         const order = new Order({
