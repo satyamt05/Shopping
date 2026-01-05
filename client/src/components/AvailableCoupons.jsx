@@ -49,8 +49,16 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
     }, [fetchAvailableCoupons]);
 
     const handleCouponSelect = (coupon) => {
-        setSelectedCoupon(coupon);
-        onCouponSelect(coupon.code);
+        // Check if this coupon is already selected
+        if (selectedCoupon?._id === coupon._id) {
+            // Deselect the coupon
+            setSelectedCoupon(null);
+            onCouponSelect(''); // Clear the coupon code
+        } else {
+            // Select the new coupon
+            setSelectedCoupon(coupon);
+            onCouponSelect(coupon.code);
+        }
     };
 
     const formatDate = (dateString) => {

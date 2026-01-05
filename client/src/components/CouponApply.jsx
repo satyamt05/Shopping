@@ -166,7 +166,12 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
                     setCouponCode(code);
                     setError('');  // Clear any previous error
                     setSuccess(''); // Clear any previous success
-                    // Don't auto-apply, just fill the input
+                    
+                    // If empty string (deselection), clear applied coupon
+                    if (!code || code.trim() === '') {
+                        setAppliedCoupon(null);
+                        onCouponRemoved();
+                    }
                 }}
             />
         </div>

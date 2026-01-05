@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from '../utils/api';
 import { formatCurrency, SHIPPING_COSTS, TAX_RATE } from '../utils/currency';
-import { CreditCard, Truck, Package, DollarSign, Banknote, Download } from 'lucide-react';
+import { CreditCard, Truck, Package, DollarSign, Banknote, Download, MapPin, Home, Building2, Globe } from 'lucide-react';
 import { downloadInvoicePDF } from '../utils/invoice';
 import CouponApply from '../components/CouponApply';
 
