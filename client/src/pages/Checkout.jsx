@@ -28,6 +28,15 @@ const Checkout = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [couponDiscount, setCouponDiscount] = useState(0);
     const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [mobileDebug, setMobileDebug] = useState([]);
+    const [showDebug, setShowDebug] = useState(false);
+
+    // Add debug message function for mobile
+    const addDebugMessage = (message, type = 'info') => {
+        const timestamp = new Date().toLocaleTimeString();
+        setMobileDebug(prev => [...prev, { message, type, timestamp }]);
+        console.log(message); // Still log to console for desktop
+    };
 
     // Load user addresses - moved before early returns
     const loadAddresses = useCallback(async () => {
@@ -110,31 +119,32 @@ const Checkout = () => {
 
     const placeOrderHandler = async (e) => {
         e.preventDefault();
-        console.log('Place order clicked, loading state:', loading);
-        console.log('User agent:', navigator.userAgent);
-        console.log('Is mobile:', /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+        addDebugMessage('Place order clicked', 'info');
+        addDebugMessage(`User agent: ${navigator.userAgent}`, 'info');
+        addDebugMessage(`Is mobile: ${/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}`, 'info');
         
         if (loading) {
-            console.log('Already loading, ignoring click');
+            addDebugMessage('Already loading, ignoring click', 'warning');
             return;
         }
         
         setLoading(true);
 
         // Check network connectivity first
-        console.log('Checking network connectivity...');
+        addDebugMessage('Checking network connectivity...', 'info');
         const isOnline = await checkNetworkConnectivity();
         if (!isOnline) {
-            console.log('Network connectivity check failed');
+            addDebugMessage('Network connectivity check failed', 'error');
             error('No internet connection. Please check your network and try again.');
             setLoading(false);
             return;
         }
-        console.log('Network connectivity OK');
+        addDebugMessage('Network connectivity OK', 'success');
 
         // Validate address
         if (!address.street || !address.city || !address.postalCode || !address.country) {
-            console.log('Address validation failed:', address);
+            addDebugMessage('Address validation failed', 'error');
+            addDebugMessage(`Address: ${JSON.stringify(address)}`, 'error');
             error('Please fill in all address fields');
             setLoading(false);
             return;
@@ -142,19 +152,16 @@ const Checkout = () => {
 
         // Validate cart
         if (!cartItems || cartItems.length === 0) {
-            console.log('Cart validation failed - empty cart');
+            addDebugMessage('Cart validation failed - empty cart', 'error');
             error('Your cart is empty');
             setLoading(false);
             return;
         }
 
-        console.log('Placing order with data:', {
-            itemsCount: cartItems.length,
-            paymentMethod,
-            totalPrice,
-            couponDiscount,
-            address: address
-        });
+        addDebugMessage(`Placing order with ${cartItems.length} items`, 'info');
+        addDebugMessage(`Payment method: ${paymentMethod}`, 'info');
+        addDebugMessage(`Total price: ${totalPrice}`, 'info');
+        addDebugMessage(`Coupon discount: ${couponDiscount}`, 'info');
 
         try {
             const orderData = {
@@ -179,27 +186,27 @@ const Checkout = () => {
                 } : null
             };
 
-            console.log('Sending order data:', orderData);
+            addDebugMessage('Sending order data...', 'info');
             
             // Try multiple approaches for mobile compatibility
             let response;
             
             // Method 1: Standard axios (works on desktop and responsive mode)
             try {
-                console.log('Trying standard axios call...');
+                addDebugMessage('Trying standard axios call...', 'info');
                 response = await axios.post('/orders', orderData, {
                     timeout: 15000,
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 });
-                console.log('Standard axios worked:', response.data);
+                addDebugMessage('Standard axios worked!', 'success');
             } catch (axiosError) {
-                console.log('Standard axios failed, trying fallback:', axiosError);
+                addDebugMessage(`Standard axios failed: ${axiosError.message}`, 'warning');
                 
                 // Method 2: Fetch API fallback for mobile
                 try {
-                    console.log('Trying fetch API fallback...');
+                    addDebugMessage('Trying fetch API fallback...', 'info');
                     const fetchResponse = await fetch('/api/orders', {
                         method: 'POST',
                         headers: {
@@ -214,16 +221,16 @@ const Checkout = () => {
                     }
                     
                     const data = await fetchResponse.json();
-                    console.log('Fetch API worked:', data);
+                    addDebugMessage('Fetch API worked!', 'success');
                     response = { data };
                 } catch (fetchError) {
-                    console.log('Fetch API also failed:', fetchError);
+                    addDebugMessage(`Fetch API failed: ${fetchError.message}`, 'error');
                     throw fetchError;
                 }
             }
             
             const { data } = response;
-            console.log('Order placed successfully:', data);
+            addDebugMessage(`Order placed successfully! ID: ${data._id}`, 'success');
 
             clearCart();
             
@@ -233,10 +240,8 @@ const Checkout = () => {
             // Navigate to order details page
             navigate(`/order/${data._id}`);
         } catch (error) {
-            console.error('Error placing order:', error);
-            console.error('Error type:', error.name);
-            console.error('Error message:', error.message);
-            console.error('Error response:', error.response?.data);
+            addDebugMessage(`Error: ${error.message}`, 'error');
+            addDebugMessage(`Error type: ${error.name}`, 'error');
             
             let errorMessage = 'Error placing order. Please try again.';
             
@@ -499,7 +504,53 @@ const Checkout = () => {
                         onCouponRemoved={handleCouponRemoved}
                     />
 
-                    {/* Debug button for mobile testing - remove in production */}
+                    {/* Mobile Debug Panel - Always visible on mobile */}
+            <div className="fixed bottom-4 right-4 z-50">
+                <button
+                    onClick={() => setShowDebug(!showDebug)}
+                    className="bg-purple-600 text-white p-2 rounded-full shadow-lg hover:bg-purple-700 mb-2"
+                    title="Toggle Debug Panel"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                </button>
+                
+                {showDebug && (
+                    <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-80 max-h-96 overflow-hidden">
+                        <div className="bg-purple-600 text-white p-3 flex justify-between items-center">
+                            <h3 className="font-semibold text-sm">Mobile Debug Console</h3>
+                            <button
+                                onClick={() => setMobileDebug([])}
+                                className="text-xs bg-purple-700 px-2 py-1 rounded hover:bg-purple-800"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                        <div className="p-3 overflow-y-auto max-h-80 bg-gray-50">
+                            {mobileDebug.length === 0 ? (
+                                <p className="text-gray-500 text-xs">No debug messages yet. Try placing an order.</p>
+                            ) : (
+                                mobileDebug.map((msg, index) => (
+                                    <div key={index} className="mb-2 text-xs">
+                                        <span className="text-gray-500">{msg.timestamp}</span>
+                                        <div className={`mt-1 p-2 rounded ${
+                                            msg.type === 'error' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                            msg.type === 'warning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
+                                            msg.type === 'success' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                            'bg-blue-100 text-blue-700 border border-blue-200'
+                                        }`}>
+                                            {msg.message}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Debug button for mobile testing - remove in production */}
                     {process.env.NODE_ENV === 'development' && (
                         <div className="mt-4 p-3 bg-yellow-50 rounded-md border border-yellow-200">
                             <p className="text-sm text-yellow-800 mb-2">
@@ -507,16 +558,16 @@ const Checkout = () => {
                             </p>
                             <button
                                 onClick={async () => {
-                                    console.log('Testing API connectivity...');
+                                    addDebugMessage('Testing API connectivity...', 'info');
                                     try {
                                         const response = await fetch('/api/health');
-                                        console.log('Health check response:', response);
+                                        addDebugMessage(`Health check status: ${response.status}`, response.ok ? 'success' : 'warning');
                                         const data = await response.json();
-                                        console.log('Health check data:', data);
-                                        alert(`API Test: ${response.ok ? 'SUCCESS' : 'FAILED'} - ${JSON.stringify(data)}`);
+                                        addDebugMessage(`Health check data: ${JSON.stringify(data)}`, 'info');
+                                        alert(`API Test: ${response.ok ? 'SUCCESS' : 'FAILED'} - Check debug panel for details`);
                                     } catch (error) {
-                                        console.error('API Test failed:', error);
-                                        alert(`API Test: FAILED - ${error.message}`);
+                                        addDebugMessage(`API Test failed: ${error.message}`, 'error');
+                                        alert(`API Test: FAILED - Check debug panel for details`);
                                     }
                                 }}
                                 className="px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700"
