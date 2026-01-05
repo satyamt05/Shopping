@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Edit, Trash2, Calendar, Tag, Percent, DollarSign, Check, X, Eye } from 'lucide-react';
 import axios from '../utils/api';
 import { formatCurrency } from '../utils/currency';
@@ -23,11 +23,7 @@ const DiscountCouponManager = () => {
         isActive: true
     });
 
-    useEffect(() => {
-        fetchCoupons();
-    }, []);
-
-    const fetchCoupons = async () => {
+    const fetchCoupons = useCallback(async () => {
         try {
             const { data } = await axios.get('/discount-coupons');
             setCoupons(data);
@@ -36,7 +32,11 @@ const DiscountCouponManager = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchCoupons();
+    }, [fetchCoupons]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
