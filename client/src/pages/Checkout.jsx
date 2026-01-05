@@ -114,14 +114,28 @@ const Checkout = () => {
             return;
         }
 
+        // Validate cart
+        if (!cartItems || cartItems.length === 0) {
+            console.log('Cart validation failed - empty cart');
+            error('Your cart is empty');
+            setLoading(false);
+            return;
+        }
+
         console.log('Placing order with data:', {
             itemsCount: cartItems.length,
             paymentMethod,
             totalPrice,
-            couponDiscount
+            couponDiscount,
+            address: address
         });
 
         try {
+            // Add timeout for mobile
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Request timeout - please check your connection')), 15000)
+            );
+
             const orderData = {
                 orderItems: cartItems.map(item => ({
                     name: item.name,
@@ -145,7 +159,13 @@ const Checkout = () => {
             };
 
             console.log('Sending order data:', orderData);
-            const { data } = await axios.post('/orders', orderData);
+            
+            // Race between actual request and timeout
+            const { data } = await Promise.race([
+                axios.post('/orders', orderData),
+                timeoutPromise
+            ]);
+            
             console.log('Order placed successfully:', data);
 
             clearCart();
@@ -158,7 +178,18 @@ const Checkout = () => {
         } catch (error) {
             console.error('Error placing order:', error);
             console.error('Error response:', error.response?.data);
-            error(error.response?.data?.message || 'Error placing order. Please try again.');
+            
+            let errorMessage = 'Error placing order. Please try again.';
+            
+            if (error.message === 'Request timeout - please check your connection') {
+                errorMessage = 'Request timed out. Please check your internet connection and try again.';
+            } else if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.code === 'NETWORK_ERROR') {
+                errorMessage = 'Network error. Please check your connection and try again.';
+            }
+            
+            error(errorMessage);
         } finally {
             setLoading(false);
         }
