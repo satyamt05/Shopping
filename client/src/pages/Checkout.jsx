@@ -168,7 +168,8 @@ const Checkout = () => {
         addDebugMessage(`Applied coupon: ${JSON.stringify(appliedCoupon)}`, 'info');
 
         try {
-            const orderData = {
+            // Try with new schema first (includes coupon fields)
+            const orderDataWithCoupons = {
                 orderItems: cartItems.map(item => ({
                     name: item.name,
                     qty: item.qty,
@@ -193,59 +194,67 @@ const Checkout = () => {
                 })
             };
 
-            addDebugMessage('Sending order data...', 'info');
-            addDebugMessage(`Order data: ${JSON.stringify(orderData, null, 2)}`, 'info');
+            addDebugMessage('Trying new server schema with coupon fields...', 'info');
+            addDebugMessage(`Order data: ${JSON.stringify(orderDataWithCoupons, null, 2)}`, 'info');
             
             // Try multiple approaches for mobile compatibility
             let response;
             
-            // Method 1: Standard axios (works on desktop and responsive mode)
+            // Method 1: Standard axios with new schema
             try {
-                addDebugMessage('Trying standard axios call...', 'info');
-                response = await axios.post('/orders', orderData, {
+                addDebugMessage('Trying standard axios call with new schema...', 'info');
+                response = await axios.post('/orders', orderDataWithCoupons, {
                     timeout: 15000,
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 });
-                addDebugMessage('Standard axios worked!', 'success');
+                addDebugMessage('Standard axios with new schema worked!', 'success');
                 addDebugMessage(`Response: ${JSON.stringify(response.data, null, 2)}`, 'success');
             } catch (axiosError) {
-                addDebugMessage(`Standard axios failed: ${axiosError.message}`, 'warning');
+                addDebugMessage(`Standard axios with new schema failed: ${axiosError.message}`, 'warning');
                 addDebugMessage(`Status code: ${axiosError.response?.status}`, 'warning');
                 if (axiosError.response?.data) {
                     addDebugMessage(`Server error: ${JSON.stringify(axiosError.response.data, null, 2)}`, 'error');
                 }
-                addDebugMessage(`Axios error details: ${JSON.stringify(axiosError, null, 2)}`, 'warning');
                 
-                // Method 2: Fetch API fallback for mobile
+                // Fallback to old schema (without coupon fields)
+                addDebugMessage('Trying fallback to old server schema...', 'info');
+                const orderDataOldSchema = {
+                    orderItems: cartItems.map(item => ({
+                        name: item.name,
+                        qty: item.qty,
+                        image: item.image,
+                        price: item.price,
+                        product: item._id
+                    })),
+                    shippingAddress: address,
+                    paymentMethod: paymentMethod,
+                    taxPrice: taxPrice.toFixed(2),
+                    shippingPrice: shippingPrice.toFixed(2),
+                    totalPrice: totalPrice.toFixed(2)
+                };
+                
+                addDebugMessage('Fallback order data (old schema):', 'info');
+                addDebugMessage(`${JSON.stringify(orderDataOldSchema, null, 2)}`, 'info');
+                
                 try {
-                    addDebugMessage('Trying fetch API fallback...', 'info');
-                    const fetchResponse = await fetch('https://shopping-ivig.onrender.com/api/orders', {
-                        method: 'POST',
+                    addDebugMessage('Trying standard axios with old schema...', 'info');
+                    response = await axios.post('/orders', orderDataOldSchema, {
+                        timeout: 15000,
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        },
-                        body: JSON.stringify(orderData)
+                            'Content-Type': 'application/json'
+                        }
                     });
-                    
-                    addDebugMessage(`Fetch response status: ${fetchResponse.status}`, 'info');
-                    
-                    if (!fetchResponse.ok) {
-                        const errorText = await fetchResponse.text();
-                        addDebugMessage(`Fetch error response: ${errorText}`, 'error');
-                        throw new Error(`HTTP error! status: ${fetchResponse.status}`);
+                    addDebugMessage('Standard axios with old schema worked!', 'success');
+                    addDebugMessage(`Response: ${JSON.stringify(response.data, null, 2)}`, 'success');
+                } catch (oldSchemaError) {
+                    addDebugMessage(`Old schema also failed: ${oldSchemaError.message}`, 'error');
+                    addDebugMessage(`Status code: ${oldSchemaError.response?.status}`, 'error');
+                    if (oldSchemaError.response?.data) {
+                        addDebugMessage(`Server error: ${JSON.stringify(oldSchemaError.response.data, null, 2)}`, 'error');
                     }
-                    
-                    const data = await fetchResponse.json();
-                    addDebugMessage('Fetch API worked!', 'success');
-                    addDebugMessage(`Fetch response: ${JSON.stringify(data, null, 2)}`, 'success');
-                    response = { data };
-                } catch (fetchError) {
-                    addDebugMessage(`Fetch API failed: ${fetchError.message}`, 'error');
-                    addDebugMessage(`Fetch error details: ${JSON.stringify(fetchError, null, 2)}`, 'error');
-                    throw fetchError;
+                    throw oldSchemaError;
                 }
             }
             
