@@ -196,7 +196,10 @@ const Checkout = () => {
                             {/* Manual Address Entry */}
                             <div className="grid grid-cols-6 gap-6">
                                 <div className="col-span-6">
-                                    <label htmlFor="street" className="block text-sm font-medium text-gray-700">Street address</label>
+                                    <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-2">
+                                        <Home className="h-4 w-4 inline mr-2 text-gray-400" />
+                                        Street address
+                                    </label>
                                     <input 
                                         required 
                                         type="text" 
@@ -204,12 +207,16 @@ const Checkout = () => {
                                         id="street" 
                                         value={address.street} 
                                         onChange={(e) => setAddress({ ...address, street: e.target.value })} 
-                                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" 
+                                        placeholder="123 Main Street, Apartment 4B"
+                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
                                     />
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-6 lg:col-span-2">
-                                    <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
+                                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                                        <Building2 className="h-4 w-4 inline mr-2 text-gray-400" />
+                                        City
+                                    </label>
                                     <input 
                                         required 
                                         type="text" 
@@ -217,12 +224,16 @@ const Checkout = () => {
                                         id="city" 
                                         value={address.city} 
                                         onChange={(e) => setAddress({ ...address, city: e.target.value })} 
-                                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" 
+                                        placeholder="New York"
+                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
                                     />
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                                    <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
+                                    <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+                                        <MapPin className="h-4 w-4 inline mr-2 text-gray-400" />
+                                        State
+                                    </label>
                                     <input 
                                         required 
                                         type="text" 
@@ -230,12 +241,16 @@ const Checkout = () => {
                                         id="state" 
                                         value={address.state} 
                                         onChange={(e) => setAddress({ ...address, state: e.target.value })} 
-                                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" 
+                                        placeholder="NY"
+                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
                                     />
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                                    <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">ZIP / Postal code</label>
+                                    <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-2">
+                                        <Package className="h-4 w-4 inline mr-2 text-gray-400" />
+                                        ZIP / Postal code
+                                    </label>
                                     <input 
                                         required 
                                         type="text" 
@@ -243,12 +258,16 @@ const Checkout = () => {
                                         id="postalCode" 
                                         value={address.postalCode} 
                                         onChange={(e) => setAddress({ ...address, postalCode: e.target.value })} 
-                                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" 
+                                        placeholder="10001"
+                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
                                     />
                                 </div>
 
                                 <div className="col-span-6">
-                                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country</label>
+                                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                                        <Globe className="h-4 w-4 inline mr-2 text-gray-400" />
+                                        Country
+                                    </label>
                                     <input 
                                         required 
                                         type="text" 
@@ -256,7 +275,8 @@ const Checkout = () => {
                                         id="country" 
                                         value={address.country} 
                                         onChange={(e) => setAddress({ ...address, country: e.target.value })} 
-                                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" 
+                                        placeholder="United States"
+                                        className="mt-1 block w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 shadow-sm" 
                                     />
                                 </div>
                             </div>
