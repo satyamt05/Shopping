@@ -29,31 +29,17 @@ const Checkout = () => {
     const [couponDiscount, setCouponDiscount] = useState(0);
     const [appliedCoupon, setAppliedCoupon] = useState(null);
 
-    // Redirect if not authenticated
-    if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                    <p className="mt-2 text-gray-600">Loading...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!isAuthenticated) {
-        navigate('/login?redirect=checkout');
-        return null;
-    }
-
-    // Load user addresses
+    // Load user addresses - moved before early returns
     const loadAddresses = useCallback(async () => {
+        console.log('loadAddresses called');
         try {
             const { data } = await axios.get('/auth/profile');
+            console.log('Profile data received:', data);
             setUserAddresses(data.addresses || []);
             // Set default address if available
             const defaultAddr = data.addresses?.find(addr => addr.isDefault);
             if (defaultAddr) {
+                console.log('Setting default address:', defaultAddr);
                 setSelectedAddress(defaultAddr);
                 setAddress({
                     street: defaultAddr.street,
@@ -69,8 +55,30 @@ const Checkout = () => {
     }, []);
 
     useEffect(() => {
-        loadAddresses();
-    }, [loadAddresses]);
+        console.log('useEffect triggered, isAuthenticated:', isAuthenticated, 'isLoading:', isLoading);
+        if (isAuthenticated && !isLoading) {
+            loadAddresses();
+        }
+    }, [loadAddresses, isAuthenticated, isLoading]);
+
+    // Early returns after all hooks
+    if (isLoading) {
+        console.log('Showing loading state');
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    <p className="mt-2 text-gray-600">Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        console.log('Redirecting to login');
+        navigate('/login?redirect=checkout');
+        return null;
+    }
 
     const itemsPrice = cartItems.reduce((acc, item) => acc + (item.qty || 0) * (item.price || 0), 0);
     const shippingPrice = itemsPrice > SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COSTS.STANDARD;
