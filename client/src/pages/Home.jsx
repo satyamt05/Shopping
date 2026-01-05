@@ -69,6 +69,7 @@ const Home = () => {
     }, []);
 
     const fetchCategories = async () => {
+        setLoading(true);
         try {
             const { data } = await api.get('/categories');
             setCategories(data);
