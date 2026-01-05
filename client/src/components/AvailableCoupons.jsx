@@ -32,8 +32,11 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
                 });
                 return isValid;
             });
-            console.log('Valid coupons after filtering:', validCoupons);
-            setCoupons(validCoupons);
+            
+            // TEMPORARY: Show all coupons for debugging
+            console.log('DEBUG: Showing all coupons temporarily');
+            setCoupons(data);
+            // setCoupons(validCoupons);
         } catch (error) {
             console.error('Error fetching coupons:', error);
             // Don't set coupons to empty array, keep whatever we have
@@ -44,7 +47,7 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
 
     useEffect(() => {
         fetchAvailableCoupons();
-    }, [orderAmount, fetchAvailableCoupons]);
+    }, [orderAmount]);
 
     const handleCouponSelect = (coupon) => {
         setSelectedCoupon(coupon);
