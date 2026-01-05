@@ -13,8 +13,15 @@ const OrderHistory = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const { isAuthenticated, isLoading } = useAuth();
-    const { success, error } = useToast();
+    const { success, error: toastError } = useToast();
     const navigate = useNavigate();
+
+    // Effects must be declared before any returns to keep hook order consistent
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            navigate('/login');
+        }
+    }, [isLoading, isAuthenticated, navigate]);
 
     // Redirect if not authenticated
     if (isLoading) {
@@ -29,7 +36,6 @@ const OrderHistory = () => {
     }
 
     if (!isAuthenticated) {
-        navigate('/login');
         return null;
     }
 
@@ -38,9 +44,9 @@ const OrderHistory = () => {
             try {
                 const { data } = await axios.get('/orders/myorders');
                 setOrders(data);
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-                error('Failed to load order history');
+            } catch (err) {
+                console.error('Error fetching orders:', err);
+                toastError('Failed to load order history');
             } finally {
                 setLoading(false);
             }

@@ -12,8 +12,15 @@ const OrderDetails = () => {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const { isAuthenticated, isLoading } = useAuth();
-    const { success, error } = useToast();
+    const { success, error: toastError } = useToast();
     const navigate = useNavigate();
+
+    // Ensure effects are declared before any conditional returns to maintain hook order
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            navigate('/login');
+        }
+    }, [isLoading, isAuthenticated, navigate]);
 
     // Redirect if not authenticated
     if (isLoading) {
@@ -28,7 +35,6 @@ const OrderDetails = () => {
     }
 
     if (!isAuthenticated) {
-        navigate('/login');
         return null;
     }
 
@@ -37,9 +43,9 @@ const OrderDetails = () => {
             try {
                 const { data } = await axios.get(`/orders/${id}`);
                 setOrder(data);
-            } catch (error) {
-                console.error('Error fetching order:', error);
-                error('Order not found');
+            } catch (err) {
+                console.error('Error fetching order:', err);
+                toastError('Order not found');
                 navigate('/');
             } finally {
                 setLoading(false);

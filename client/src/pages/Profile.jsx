@@ -27,6 +27,34 @@ const Profile = () => {
         isDefault: false
     });
 
+    // Setup effects before any early returns to keep hook order consistent
+    const [profileLoaded, setProfileLoaded] = React.useState(false);
+
+    React.useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            navigate('/login');
+        }
+    }, [isLoading, isAuthenticated, navigate]);
+
+    React.useEffect(() => {
+        if (!profileLoaded && isAuthenticated) {
+            axios.get('/auth/profile')
+                .then(({ data }) => {
+                    setFormData({
+                        name: data.name || '',
+                        email: data.email || '',
+                        phone: data.phone || ''
+                    });
+                    setAddresses(data.addresses || []);
+                    setProfileLoaded(true);
+                })
+                .catch(error => {
+                    console.error('Error loading profile:', error);
+                    setProfileLoaded(true); // Prevent infinite retries
+                });
+        }
+    }, [isAuthenticated, profileLoaded]);
+
     // Show loading while checking auth
     if (isLoading) {
         return (
@@ -39,9 +67,8 @@ const Profile = () => {
         );
     }
 
-    // Redirect if not authenticated
+    // Redirect handled by effect; return null to avoid rendering protected content during redirect
     if (!isAuthenticated) {
-        navigate('/login');
         return null;
     }
 
@@ -72,27 +99,7 @@ const Profile = () => {
     //     loadProfile();
     // }, [userInfo, isAuthenticated]); // Remove navigate from dependencies
 
-    // Load profile data directly without useEffect
-    const [profileLoaded, setProfileLoaded] = React.useState(false);
-    
-    React.useEffect(() => {
-        if (!profileLoaded && isAuthenticated) {
-            axios.get('/auth/profile')
-                .then(({ data }) => {
-                    setFormData({
-                        name: data.name || '',
-                        email: data.email || '',
-                        phone: data.phone || ''
-                    });
-                    setAddresses(data.addresses || []);
-                    setProfileLoaded(true);
-                })
-                .catch(error => {
-                    console.error('Error loading profile:', error);
-                    setProfileLoaded(true); // Prevent infinite retries
-                });
-        }
-    }, [isAuthenticated, profileLoaded]);
+    // moved above to ensure hook order
 
     const handleChange = (e) => {
         const { name, value } = e.target;
