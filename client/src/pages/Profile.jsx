@@ -192,30 +192,30 @@ const Profile = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="bg-white shadow-lg rounded-lg">
                 {/* Profile Header */}
-                <div className="bg-indigo-600 text-white p-6 rounded-t-lg">
-                    <div className="flex items-center justify-between">
+                <div className="bg-indigo-600 text-white p-4 sm:p-6 rounded-t-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-center">
-                            <div className="bg-white text-indigo-600 rounded-full p-3 mr-4">
-                                <User className="h-8 w-8" />
+                            <div className="bg-white text-indigo-600 rounded-full p-2 sm:p-3 mr-3 sm:mr-4">
+                                <User className="h-6 w-6 sm:h-8 sm:w-8" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold">{formData.name}</h1>
-                                <p className="text-indigo-100">{formData.email}</p>
+                                <h1 className="text-lg sm:text-2xl font-bold truncate pr-2">{formData.name}</h1>
+                                <p className="text-indigo-100 text-sm truncate pr-2">{formData.email}</p>
                             </div>
                         </div>
                         {!isEditing ? (
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="bg-white text-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-50 flex items-center whitespace-nowrap"
+                                className="bg-white text-indigo-600 px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-indigo-50 flex items-center whitespace-nowrap text-sm sm:text-base"
                             >
                                 <Edit2 className="h-4 w-4 mr-2 flex-shrink-0" />
                                 <span className="whitespace-nowrap">Edit Profile</span>
                             </button>
                         ) : (
-                            <div className="flex space-x-2">
+                            <div className="flex flex-col sm:flex-row gap-2 sm:space-x-2">
                                 <button
                                     onClick={() => setIsEditing(false)}
-                                    className="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-400 flex items-center whitespace-nowrap"
+                                    className="bg-indigo-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-indigo-400 flex items-center whitespace-nowrap text-sm sm:text-base"
                                 >
                                     <X className="h-4 w-4 mr-2 flex-shrink-0" />
                                     <span className="whitespace-nowrap">Cancel</span>
@@ -223,7 +223,7 @@ const Profile = () => {
                                 <button
                                     onClick={handleSubmit}
                                     disabled={loading}
-                                    className="bg-white text-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-50 disabled:opacity-50 flex items-center whitespace-nowrap"
+                                    className="bg-white text-indigo-600 px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-indigo-50 disabled:opacity-50 flex items-center whitespace-nowrap text-sm sm:text-base"
                                 >
                                     <Save className="h-4 w-4 mr-2 flex-shrink-0" />
                                     <span className="whitespace-nowrap">{loading ? 'Saving...' : 'Save'}</span>
@@ -325,11 +325,11 @@ const Profile = () => {
 
                     {/* Addresses Section */}
                     <div className="mt-8">
-                        <div className="flex justify-between items-center mb-4">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                             <h2 className="text-lg font-semibold text-gray-900">Shipping Addresses</h2>
                             <button
                                 onClick={() => setShowAddressForm(true)}
-                                className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center whitespace-nowrap"
+                                className="bg-indigo-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-indigo-700 flex items-center whitespace-nowrap text-sm sm:text-base"
                             >
                                 <Plus className="h-4 w-4 mr-2 flex-shrink-0" />
                                 <span className="whitespace-nowrap">Add Address</span>
