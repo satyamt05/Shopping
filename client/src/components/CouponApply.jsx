@@ -10,9 +10,12 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
     const [appliedCoupon, setAppliedCoupon] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isAutoSelecting, setIsAutoSelecting] = useState(false);
 
     const handleApplyCoupon = async () => {
-        if (!couponCode.trim()) {
+        const trimmedCode = couponCode.trim();
+        
+        if (!trimmedCode && !isAutoSelecting) {
             setError('Please enter a coupon code');
             return;
         }
@@ -21,7 +24,7 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
             return; // Prevent duplicate calls
         }
 
-        if (appliedCoupon && appliedCoupon.code === couponCode.trim().toUpperCase()) {
+        if (appliedCoupon && appliedCoupon.code === trimmedCode.toUpperCase()) {
             setError('Coupon is already applied');
             return;
         }
@@ -29,6 +32,7 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
         setLoading(true);
         setError('');
         setSuccess('');
+        setIsAutoSelecting(false); // Reset flag
 
         try {
             console.log('Applying coupon:', couponCode.trim());
@@ -161,6 +165,7 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
                 orderAmount={orderAmount}
                 cartItems={cartItems}
                 onCouponSelect={(code) => {
+                    setIsAutoSelecting(true);
                     setCouponCode(code);
                     setError('');  // Clear any previous error
                     setSuccess(''); // Clear any previous success
