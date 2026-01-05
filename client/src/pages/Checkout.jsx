@@ -97,14 +97,29 @@ const Checkout = () => {
 
     const placeOrderHandler = async (e) => {
         e.preventDefault();
+        console.log('Place order clicked, loading state:', loading);
+        
+        if (loading) {
+            console.log('Already loading, ignoring click');
+            return;
+        }
+        
         setLoading(true);
 
         // Validate address
         if (!address.street || !address.city || !address.postalCode || !address.country) {
+            console.log('Address validation failed:', address);
             error('Please fill in all address fields');
             setLoading(false);
             return;
         }
+
+        console.log('Placing order with data:', {
+            itemsCount: cartItems.length,
+            paymentMethod,
+            totalPrice,
+            couponDiscount
+        });
 
         try {
             const orderData = {
@@ -129,7 +144,9 @@ const Checkout = () => {
                 } : null
             };
 
+            console.log('Sending order data:', orderData);
             const { data } = await axios.post('/orders', orderData);
+            console.log('Order placed successfully:', data);
 
             clearCart();
             
@@ -140,6 +157,7 @@ const Checkout = () => {
             navigate(`/order/${data._id}`);
         } catch (error) {
             console.error('Error placing order:', error);
+            console.error('Error response:', error.response?.data);
             error(error.response?.data?.message || 'Error placing order. Please try again.');
         } finally {
             setLoading(false);
@@ -392,7 +410,13 @@ const Checkout = () => {
                     <button 
                         type="submit" 
                         disabled={loading}
-                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                        onClick={(e) => {
+                            console.log('Button clicked directly');
+                            if (!loading) {
+                                placeOrderHandler(e);
+                            }
+                        }}
+                        className="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg shadow-lg text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed mt-6 touch-manipulation transition-all duration-150 min-h-[56px]"
                     >
                         {loading ? (
                             <>
