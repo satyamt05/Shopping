@@ -209,22 +209,22 @@ const Home = () => {
                             Array.from({ length: 3 }).map((_, index) => (
                                 <div key={index} className="relative overflow-hidden rounded-2xl shadow-lg bg-gray-200">
                                     <div className="aspect-w-16 aspect-h-12">
-                                        <div className="w-full h-64 bg-gray-300 relative overflow-hidden">
+                                        <div className="w-full h-64 bg-gray-200 relative overflow-hidden">
                                             {/* Shimmer effect */}
-                                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
+                                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/80 to-transparent"></div>
                                         </div>
                                     </div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-gray-800/30 via-gray-600/20 to-transparent"></div>
                                     <div className="absolute bottom-0 left-0 right-0 p-6">
                                         <div className="transform transition-transform duration-300">
-                                            <div className="h-8 bg-gray-400 rounded mb-2 relative overflow-hidden">
-                                                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+                                            <div className="h-8 bg-gray-300 rounded mb-2 relative overflow-hidden">
+                                                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
                                             </div>
-                                            <div className="h-4 bg-gray-400 rounded mb-4 relative overflow-hidden">
-                                                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+                                            <div className="h-4 bg-gray-300 rounded mb-4 relative overflow-hidden">
+                                                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
                                             </div>
-                                            <div className="h-6 bg-gray-400 rounded w-20 relative overflow-hidden">
-                                                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+                                            <div className="h-6 bg-gray-300 rounded w-20 relative overflow-hidden">
+                                                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
                                             </div>
                                         </div>
                                     </div>
