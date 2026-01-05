@@ -15,13 +15,6 @@ const OrderDetails = () => {
     const { success, error: toastError } = useToast();
     const navigate = useNavigate();
 
-    // Ensure effects are declared before any conditional returns to maintain hook order
-    useEffect(() => {
-        if (!isLoading && !isAuthenticated) {
-            navigate('/login');
-        }
-    }, [isLoading, isAuthenticated, navigate]);
-
     // Redirect if not authenticated
     if (isLoading) {
         return (
@@ -35,6 +28,7 @@ const OrderDetails = () => {
     }
 
     if (!isAuthenticated) {
+        navigate('/login');
         return null;
     }
 
@@ -60,7 +54,7 @@ const OrderDetails = () => {
             downloadInvoicePDF(order);
             success('Invoice downloaded successfully!');
         } catch (error) {
-            error('Failed to download invoice');
+            toastError('Failed to download invoice');
         }
     };
 
