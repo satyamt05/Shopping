@@ -9,19 +9,15 @@ export const useCart = () => useContext(CartContext);
 export const CartProvider = ({ children }) => {
     const { userInfo } = useAuth();
     const [cartItems, setCartItems] = useState(() => {
-        console.log('CartContext: Initializing cart from localStorage');
         try {
             const stored = localStorage.getItem('cartItems');
-            console.log('CartContext: Raw stored data:', stored);
             
             // Handle null/undefined properly
             if (!stored || stored === 'undefined') {
-                console.log('CartContext: No valid cart data found, initializing empty cart');
                 return [];
             }
             
             const parsed = JSON.parse(stored);
-            console.log('CartContext: Parsed cart items:', parsed);
             return parsed;
         } catch (error) {
             console.error('Error parsing cart items:', error);
@@ -31,22 +27,15 @@ export const CartProvider = ({ children }) => {
 
     // Sync cart when user logs in/out
     useEffect(() => {
-        console.log('CartContext: userInfo changed:', userInfo);
-        console.log('CartContext: current cartItems:', cartItems);
-        
         if (userInfo) {
             // User is logged in, ensure cart is preserved
             try {
                 const stored = localStorage.getItem('cartItems');
-                console.log('CartContext: stored cart from localStorage:', stored);
                 
                 // Handle null/undefined properly
                 if (stored && stored !== 'undefined') {
                     const cart = JSON.parse(stored);
-                    console.log('CartContext: parsed cart:', cart);
                     setCartItems(cart);
-                } else {
-                    console.log('CartContext: No valid cart data found during sync');
                 }
             } catch (error) {
                 console.error('Error syncing cart after login:', error);
@@ -60,12 +49,9 @@ export const CartProvider = ({ children }) => {
             // If items is a function, call it with current cartItems
             setCartItems((currentItems) => {
                 const newItems = items(currentItems);
-                console.log('CartContext: Setting cart items:', newItems);
                 try {
                     const jsonString = JSON.stringify(newItems);
-                    console.log('CartContext: Saving to localStorage:', jsonString);
                     localStorage.setItem('cartItems', jsonString);
-                    console.log('CartContext: Successfully saved to localStorage');
                 } catch (error) {
                     console.error('Error saving cart items:', error);
                 }
@@ -73,13 +59,10 @@ export const CartProvider = ({ children }) => {
             });
         } else {
             // If items is already an array, set it directly
-            console.log('CartContext: Setting cart items directly:', items);
             setCartItems(items);
             try {
                 const jsonString = JSON.stringify(items);
-                console.log('CartContext: Saving to localStorage:', jsonString);
                 localStorage.setItem('cartItems', jsonString);
-                console.log('CartContext: Successfully saved to localStorage');
             } catch (error) {
                 console.error('Error saving cart items:', error);
             }
@@ -87,20 +70,14 @@ export const CartProvider = ({ children }) => {
     };
 
     const addToCart = (product, qty) => {
-        console.log('CartContext: Adding to cart:', product, qty);
         setCartItemsWithStorage((prevItems) => {
-            console.log('CartContext: Previous items:', prevItems);
             const existItem = prevItems.find((x) => x._id === product._id);
             if (existItem) {
-                const updated = prevItems.map((x) =>
+                return prevItems.map((x) =>
                     x._id === existItem._id ? { ...product, qty } : x
                 );
-                console.log('CartContext: Updated existing item:', updated);
-                return updated;
             } else {
-                const added = [...prevItems, { ...product, qty }];
-                console.log('CartContext: Added new item:', added);
-                return added;
+                return [...prevItems, { ...product, qty }];
             }
         });
     };
