@@ -22,6 +22,10 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
         setSuccess('');
 
         try {
+            console.log('Applying coupon:', couponCode.trim());
+            console.log('Order amount:', orderAmount);
+            console.log('Cart items:', cartItems);
+            
             const response = await axios.post('/discount-coupons/validate', {
                 code: couponCode.trim(),
                 orderAmount: orderAmount || 0,
@@ -29,6 +33,7 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
             });
 
             const { coupon, discountAmount } = response.data;
+            console.log('Coupon validation response:', response.data);
             
             setAppliedCoupon({
                 ...coupon,
@@ -37,6 +42,8 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
             setSuccess('Coupon applied successfully!');
             onCouponApplied(discountAmount || 0, coupon);
         } catch (error) {
+            console.error('Coupon validation error:', error);
+            console.error('Error response:', error.response?.data);
             setError(error.response?.data?.message || 'Invalid coupon code');
         } finally {
             setLoading(false);
@@ -146,7 +153,10 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
                 cartItems={cartItems}
                 onCouponSelect={(code) => {
                     setCouponCode(code);
-                    handleApplyCoupon();
+                    // Small delay to ensure state is updated
+                    setTimeout(() => {
+                        handleApplyCoupon();
+                    }, 100);
                 }}
             />
         </div>
