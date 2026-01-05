@@ -13,7 +13,14 @@ export const CartProvider = ({ children }) => {
         try {
             const stored = localStorage.getItem('cartItems');
             console.log('CartContext: Raw stored data:', stored);
-            const parsed = stored ? JSON.parse(stored) : [];
+            
+            // Handle null/undefined properly
+            if (!stored || stored === 'undefined') {
+                console.log('CartContext: No valid cart data found, initializing empty cart');
+                return [];
+            }
+            
+            const parsed = JSON.parse(stored);
             console.log('CartContext: Parsed cart items:', parsed);
             return parsed;
         } catch (error) {
@@ -33,10 +40,13 @@ export const CartProvider = ({ children }) => {
                 const stored = localStorage.getItem('cartItems');
                 console.log('CartContext: stored cart from localStorage:', stored);
                 
-                if (stored) {
+                // Handle null/undefined properly
+                if (stored && stored !== 'undefined') {
                     const cart = JSON.parse(stored);
                     console.log('CartContext: parsed cart:', cart);
                     setCartItems(cart);
+                } else {
+                    console.log('CartContext: No valid cart data found during sync');
                 }
             } catch (error) {
                 console.error('Error syncing cart after login:', error);
