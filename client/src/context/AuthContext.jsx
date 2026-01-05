@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }) => {
         setToken(null);
         localStorage.removeItem('userInfo');
         localStorage.removeItem('token');
+        localStorage.removeItem('cartItems');
     };
 
     const signup = (userData, userToken) => {
