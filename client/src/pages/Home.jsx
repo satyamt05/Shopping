@@ -191,7 +191,7 @@ const Home = () => {
             <motion.section 
                 className="py-12 bg-gradient-to-b from-gray-50 to-white"
                 initial="hidden"
-                animate={!loading ? "visible" : "hidden"}
+                animate="visible"
                 variants={containerVariants}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
