@@ -68,7 +68,7 @@ const Navbar = () => {
                                     <span className="ml-2 text-sm">{userInfo?.name}</span>
                                 </button>
                                 {isUserMenuOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
                                         {userInfo?.isAdmin && (
                                             <Link
                                                 to="/admin"

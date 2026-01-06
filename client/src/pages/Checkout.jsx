@@ -22,12 +22,56 @@ const Checkout = () => {
         postalCode: '',
         country: ''
     });
+    const [formErrors, setFormErrors] = useState({});
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const [loading, setLoading] = useState(false);
     const [userAddresses, setUserAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [couponDiscount, setCouponDiscount] = useState(0);
     const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+    // Validation function
+    const validateForm = () => {
+        const errors = {};
+        
+        // Street validation
+        if (!address.street.trim()) {
+            errors.street = 'Street address is required';
+        } else if (address.street.trim().length < 5) {
+            errors.street = 'Street address must be at least 5 characters';
+        }
+        
+        // City validation
+        if (!address.city.trim()) {
+            errors.city = 'City is required';
+        } else if (!/^[a-zA-Z\s]+$/.test(address.city.trim())) {
+            errors.city = 'City should contain only letters and spaces';
+        }
+        
+        // State validation
+        if (!address.state.trim()) {
+            errors.state = 'State is required';
+        } else if (!/^[a-zA-Z\s]+$/.test(address.state.trim())) {
+            errors.state = 'State should contain only letters and spaces';
+        }
+        
+        // Postal code validation (India PIN code format: 6 digits)
+        if (!address.postalCode.trim()) {
+            errors.postalCode = 'Postal code is required';
+        } else if (!/^\d{6}$/.test(address.postalCode.trim())) {
+            errors.postalCode = 'Postal code must be 6 digits';
+        }
+        
+        // Country validation
+        if (!address.country.trim()) {
+            errors.country = 'Country is required';
+        } else if (!/^[a-zA-Z\s]+$/.test(address.country.trim())) {
+            errors.country = 'Country should contain only letters and spaces';
+        }
+        
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
 
     // Load user addresses - moved before early returns
     const loadAddresses = useCallback(async () => {
@@ -105,7 +149,13 @@ const Checkout = () => {
         if (loading) {
             return;
         }
-        
+
+        // Validate form before proceeding
+        if (!validateForm()) {
+            error('Please fix the errors in the form');
+            return;
+        }
+
         setLoading(true);
 
         // Validate address
@@ -230,10 +280,21 @@ const Checkout = () => {
                                         name="street" 
                                         id="street" 
                                         value={address.street} 
-                                        onChange={(e) => setAddress({ ...address, street: e.target.value })} 
+                                        onChange={(e) => {
+                                            setAddress({ ...address, street: e.target.value });
+                                            // Clear error when user starts typing
+                                            if (formErrors.street) {
+                                                setFormErrors({ ...formErrors, street: '' });
+                                            }
+                                        }} 
                                         placeholder="123 Main Street, Apartment 4B, Sector 15"
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
+                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
+                                            formErrors.street ? 'border-red-500' : 'border-gray-300'
+                                        }`} 
                                     />
+                                    {formErrors.street && (
+                                        <p className="mt-1 text-sm text-red-600">{formErrors.street}</p>
+                                    )}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-6 lg:col-span-2">
@@ -247,10 +308,21 @@ const Checkout = () => {
                                         name="city" 
                                         id="city" 
                                         value={address.city} 
-                                        onChange={(e) => setAddress({ ...address, city: e.target.value })} 
+                                        onChange={(e) => {
+                                            setAddress({ ...address, city: e.target.value });
+                                            // Clear error when user starts typing
+                                            if (formErrors.city) {
+                                                setFormErrors({ ...formErrors, city: '' });
+                                            }
+                                        }} 
                                         placeholder="Mumbai"
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
+                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
+                                            formErrors.city ? 'border-red-500' : 'border-gray-300'
+                                        }`} 
                                     />
+                                    {formErrors.city && (
+                                        <p className="mt-1 text-sm text-red-600">{formErrors.city}</p>
+                                    )}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3 lg:col-span-2">
@@ -264,10 +336,21 @@ const Checkout = () => {
                                         name="state" 
                                         id="state" 
                                         value={address.state} 
-                                        onChange={(e) => setAddress({ ...address, state: e.target.value })} 
+                                        onChange={(e) => {
+                                            setAddress({ ...address, state: e.target.value });
+                                            // Clear error when user starts typing
+                                            if (formErrors.state) {
+                                                setFormErrors({ ...formErrors, state: '' });
+                                            }
+                                        }} 
                                         placeholder="Maharashtra"
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
+                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
+                                            formErrors.state ? 'border-red-500' : 'border-gray-300'
+                                        }`} 
                                     />
+                                    {formErrors.state && (
+                                        <p className="mt-1 text-sm text-red-600">{formErrors.state}</p>
+                                    )}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3 lg:col-span-2">
@@ -281,10 +364,21 @@ const Checkout = () => {
                                         name="postalCode" 
                                         id="postalCode" 
                                         value={address.postalCode} 
-                                        onChange={(e) => setAddress({ ...address, postalCode: e.target.value })} 
+                                        onChange={(e) => {
+                                            setAddress({ ...address, postalCode: e.target.value });
+                                            // Clear error when user starts typing
+                                            if (formErrors.postalCode) {
+                                                setFormErrors({ ...formErrors, postalCode: '' });
+                                            }
+                                        }} 
                                         placeholder="400001"
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
+                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
+                                            formErrors.postalCode ? 'border-red-500' : 'border-gray-300'
+                                        }`} 
                                     />
+                                    {formErrors.postalCode && (
+                                        <p className="mt-1 text-sm text-red-600">{formErrors.postalCode}</p>
+                                    )}
                                 </div>
 
                                 <div className="col-span-6">
@@ -298,10 +392,21 @@ const Checkout = () => {
                                         name="country" 
                                         id="country" 
                                         value={address.country} 
-                                        onChange={(e) => setAddress({ ...address, country: e.target.value })} 
+                                        onChange={(e) => {
+                                            setAddress({ ...address, country: e.target.value });
+                                            // Clear error when user starts typing
+                                            if (formErrors.country) {
+                                                setFormErrors({ ...formErrors, country: '' });
+                                            }
+                                        }} 
                                         placeholder="India"
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
+                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
+                                            formErrors.country ? 'border-red-500' : 'border-gray-300'
+                                        }`} 
                                     />
+                                    {formErrors.country && (
+                                        <p className="mt-1 text-sm text-red-600">{formErrors.country}</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
