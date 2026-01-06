@@ -1,5 +1,5 @@
-
 const products = [
+    // Men
     {
         name: 'Men Classic Oxford Shirt',
         image: 'https://images.unsplash.com/photo-1596755094514-f87e40cc7046?w=400&h=400&fit=crop&auto=format',
@@ -34,6 +34,19 @@ const products = [
         numReviews: 15,
     },
     {
+        name: 'Men Sports Track Jacket',
+        image: 'https://images.unsplash.com/photo-1585386959984-a41552231693?w=400&h=400&fit=crop&auto=format',
+        description: 'Lightweight athletic track jacket ideal for workouts and casual wear.',
+        brand: 'QuickStyle',
+        category: 'Sportswear',
+        price: 3699,
+        countInStock: 22,
+        rating: 4.4,
+        numReviews: 14,
+    },
+
+    // Women
+    {
         name: 'Women Floral Summer Dress',
         image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=400&fit=crop&auto=format',
         description: 'Lightweight floral dress perfect for summer. A-line silhouette with adjustable straps.',
@@ -67,6 +80,19 @@ const products = [
         numReviews: 10,
     },
     {
+        name: 'Women Ethnic Kurti Set',
+        image: 'https://images.unsplash.com/photo-1602810318383-4ecb3d90e1bc?w=400&h=400&fit=crop&auto=format',
+        description: 'Traditional printed kurti set with matching pants. Comfortable and elegant for daily wear.',
+        brand: 'QuickStyle',
+        category: 'Ethnic',
+        price: 4299,
+        countInStock: 18,
+        rating: 4.5,
+        numReviews: 16,
+    },
+
+    // Kids
+    {
         name: 'Kids Cartoon T-Shirt',
         image: 'https://images.unsplash.com/photo-1519878422156-3d074506c968?w=400&h=400&fit=crop&auto=format',
         description: 'Fun cartoon-print t-shirt for kids. Made from soft 100% cotton.',
@@ -98,7 +124,62 @@ const products = [
         countInStock: 30,
         rating: 4.6,
         numReviews: 20,
-    }
+    },
+    {
+        name: 'Kids Winter Hoodie',
+        image: 'https://images.unsplash.com/photo-1542060748-10c28b62716d?w=400&h=400&fit=crop&auto=format',
+        description: 'Soft fleece hoodie designed to keep kids warm during winter.',
+        brand: 'QuickStyle',
+        category: 'Kids',
+        price: 2199,
+        countInStock: 32,
+        rating: 4.4,
+        numReviews: 17,
+    },
+    {
+        name: 'Unisex Cotton Scarf',
+        image: 'https://images.unsplash.com/photo-1542060748-10c28b62716d?w=400&h=400&fit=crop&auto=format',
+        description: 'Lightweight cotton scarf suitable for all seasons.',
+        brand: 'QuickStyle',
+        category: 'Accessories',
+        price: 1299,
+        countInStock: 50,
+        rating: 4.3,
+        numReviews: 9,
+    },
+    {
+        name: 'Leather Belt',
+        image: 'https://images.unsplash.com/photo-1585386959984-a41552231693?w=400&h=400&fit=crop&auto=format',
+        description: 'Premium leather belt with metal buckle. Durable and stylish.',
+        brand: 'QuickStyle',
+        category: 'Accessories',
+        price: 1899,
+        countInStock: 28,
+        rating: 4.6,
+        numReviews: 14,
+    },
+    {
+        name: 'Unisex Running T-Shirt',
+        image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=400&fit=crop&auto=format',
+        description: 'Breathable quick-dry running t-shirt ideal for workouts.',
+        brand: 'QuickStyle',
+        category: 'Sportswear',
+        price: 1999,
+        countInStock: 40,
+        rating: 4.5,
+        numReviews: 21,
+    },
+    {
+        name: 'Men Sports Track Jacket',
+        image: 'https://images.unsplash.com/photo-1585386959984-a41552231693?w=400&h=400&fit=crop&auto=format',
+        description: 'Lightweight athletic track jacket ideal for workouts and casual wear.',
+        brand: 'QuickStyle',
+        category: 'Sportswear',
+        price: 3699,
+        countInStock: 22,
+        rating: 4.4,
+        numReviews: 14,
+    },
 ];
 
 module.exports = products;
