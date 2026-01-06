@@ -7,6 +7,8 @@ import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import { Trash2, ShoppingBag, RotateCcw } from 'lucide-react';
 import { formatCurrency, fetchShippingConfig } from '../utils/currency';
+import Button from '../components/ui/Button';
+import Dropdown from '../components/ui/Dropdown';
 
 const Cart = () => {
     const { cartItems, removeFromCart, addToCart, clearCart } = useCart();
@@ -91,7 +93,11 @@ const ShippingShimmer = () => (
                 <ShoppingBag className="h-16 w-16 mx-auto text-gray-400 mb-4" />
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
                 <p className="text-gray-500 mb-6">Looks like you haven't added anything to your cart yet.</p>
-                <Link to="/shop" className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-md font-medium hover:bg-indigo-700 transition">Start Shopping</Link>
+                <Link to="/shop">
+                    <Button variant="primary" size="md">
+                        Start Shopping
+                    </Button>
+                </Link>
             </div>
         );
     }
@@ -100,13 +106,15 @@ const ShippingShimmer = () => (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-                <button
+                <Button
                     onClick={clearCartHandler}
-                    className="flex items-center px-4 py-2 text-red-600 border border-red-300 rounded-md hover:bg-red-50 transition"
+                    variant="outline"
+                    size="sm"
+                    icon={RotateCcw}
+                    className="text-red-600 border-red-300 hover:bg-red-50"
                 >
-                    <RotateCcw className="h-4 w-4 mr-2" />
                     Clear All
-                </button>
+                </Button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -123,32 +131,38 @@ const ShippingShimmer = () => (
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-4">
-                                    <select
+                                    <Dropdown
+                                        options={[...Array(item.countInStock).keys()].map((x) => ({
+                                            value: x + 1,
+                                            label: (x + 1).toString()
+                                        }))}
                                         value={item.qty}
-                                        onChange={(e) => addToCart(item, Number(e.target.value))}
-                                        className="border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 max-h-32 overflow-y-auto"
-                                    >
-                                        {[...Array(item.countInStock).keys()].map((x) => (
-                                            <option key={x + 1} value={x + 1}>
-                                                {x + 1}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <button onClick={() => removeFromCart(item._id)} className="text-red-500 hover:text-red-700 p-2">
-                                        <Trash2 className="h-5 w-5" />
-                                    </button>
+                                        onChange={(value) => addToCart(item, Number(value))}
+                                        size="sm"
+                                        className="w-20"
+                                        maxHeight="max-h-32"
+                                    />
+                                    <Button 
+                                        onClick={() => removeFromCart(item._id)} 
+                                        variant="ghost" 
+                                        size="sm"
+                                        icon={Trash2}
+                                        className="text-red-500 hover:text-red-700 p-2"
+                                    />
                                 </div>
                             </div>
                             
                             {/* Move to Wishlist button below price */}
                             <div className="flex justify-start">
-                                <button 
+                                <Button 
                                     onClick={() => moveToWishlistHandler(item)} 
-                                    className="text-pink-500 hover:text-pink-700 text-sm font-medium py-2"
+                                    variant="link"
+                                    size="sm"
+                                    className="text-pink-500 hover:text-pink-700 py-2"
                                     title="Move to Wishlist"
                                 >
                                     Move to Wishlist
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     ))}
@@ -188,12 +202,14 @@ const ShippingShimmer = () => (
                                 <span className="text-lg font-bold text-gray-900">{formatCurrency(totalPrice)}</span>
                             </div>
                         </div>
-                        <button
+                        <Button
                             onClick={checkoutHandler}
-                            className="w-full bg-indigo-600 text-white py-3 rounded-md font-medium hover:bg-indigo-700 transition"
+                            variant="primary"
+                            size="md"
+                            className="w-full"
                         >
                             Proceed to Checkout
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>

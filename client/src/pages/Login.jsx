@@ -5,6 +5,8 @@ import axios from '../utils/api';
 import { User, Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -110,31 +112,45 @@ const Login = () => {
                 {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">{error}</div>}
                 <form className="mt-8 space-y-6" onSubmit={submitHandler}>
                     <input type="hidden" name="remember" value="true" />
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <label htmlFor="email-address" className="sr-only">Email address</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <User className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input id="email-address" name="email" type="email" autoComplete="email" required className="appearance-none rounded-none rounded-t-md relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} />
-                            </div>
-                        </div>
-                        <div>
-                            <label htmlFor="password" className="sr-only">Password</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input id="password" name="password" type="password" autoComplete="current-password" required className="appearance-none rounded-none rounded-b-md relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                            </div>
-                        </div>
+                    <div className="space-y-4">
+                        <Input
+                            id="email-address"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            placeholder="Email address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            icon={User}
+                            iconPosition="left"
+                            label="Email address"
+                        />
+                        <Input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete="current-password"
+                            required
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            icon={Lock}
+                            iconPosition="left"
+                            label="Password"
+                        />
                     </div>
 
                     <div>
-                        <button type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <Button 
+                            type="submit" 
+                            variant="primary" 
+                            size="md"
+                            className="w-full"
+                            loading={isLoading}
+                        >
                             Sign in
-                        </button>
+                        </Button>
                     </div>
                 </form>
 
@@ -149,9 +165,11 @@ const Login = () => {
                     </div>
 
                     <div className="mt-6">
-                        <button
+                        <Button
                             onClick={googleLoginHandler}
-                            className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-200 py-2 px-4 shadow-sm"
+                            variant="secondary"
+                            size="md"
+                            className="w-full rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-200"
                         >
                             {/* Correct Google G Logo */}
                             <svg
@@ -166,9 +184,9 @@ const Login = () => {
                             </svg>
 
                             <span className="text-sm font-medium text-gray-700">
-      Log in with Google
-    </span>
-                        </button>
+                                Log in with Google
+                            </span>
+                        </Button>
                     </div>
 
                 </div>

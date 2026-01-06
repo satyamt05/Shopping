@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ShoppingBag, ArrowRight, Sparkles, TrendingUp, Heart, Star, Shield, Truck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
+import Button from '../components/ui/Button';
 
 const Home = () => {
     const [categories, setCategories] = useState([]);
@@ -136,8 +137,16 @@ const Home = () => {
                                     whileTap={{ scale: 0.95 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                                 >
-                                    <Link to="/shop" className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg">
-                                        Shop Now <ShoppingBag className="ml-2 h-5 w-5" />
+                                    <Link to="/shop">
+                                        <Button 
+                                            variant="primary" 
+                                            size="lg"
+                                            icon={ShoppingBag}
+                                            iconPosition="right"
+                                            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg"
+                                        >
+                                            Shop Now
+                                        </Button>
                                     </Link>
                                 </motion.div>
                                 
