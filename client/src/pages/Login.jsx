@@ -38,7 +38,15 @@ const Login = () => {
                 const user = JSON.parse(decodeURIComponent(userParam));
                 login(user, token);
                 success('Logged in successfully with Google!');
-                navigate(redirect);
+                
+                // Get the redirect URL from sessionStorage (stored before Google OAuth)
+                const storedRedirect = sessionStorage.getItem('google_oauth_redirect');
+                const finalRedirect = storedRedirect || redirect;
+                
+                // Clean up sessionStorage
+                sessionStorage.removeItem('google_oauth_redirect');
+                
+                navigate(finalRedirect);
             } catch (error) {
                 console.error('Error parsing user data:', error);
                 setError('Failed to login with Google');
@@ -79,6 +87,8 @@ const Login = () => {
     };
 
     const googleLoginHandler = () => {
+        // Store the redirect URL in sessionStorage before navigating to Google OAuth
+        sessionStorage.setItem('google_oauth_redirect', redirect);
         window.location.href = 'https://shopping-ivig.onrender.com/api/auth/google';
     };
 
