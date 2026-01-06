@@ -72,20 +72,6 @@ export const WishlistProvider = ({ children }) => {
         }
     };
 
-    const checkInWishlist = async (productId) => {
-        if (!isAuthenticated) {
-            return false;
-        }
-
-        try {
-            const { data } = await axios.get(`/wishlist/check/${productId}`);
-            return data.inWishlist;
-        } catch (error) {
-            console.error('Error checking wishlist:', error);
-            return false;
-        }
-    };
-
     const moveToCart = async (productId) => {
         if (!isAuthenticated) {
             throw new Error('Please login to move items to cart');
@@ -116,7 +102,6 @@ export const WishlistProvider = ({ children }) => {
         fetchWishlist,
         addToWishlist,
         removeFromWishlist,
-        checkInWishlist,
         moveToCart,
         clearError
     };

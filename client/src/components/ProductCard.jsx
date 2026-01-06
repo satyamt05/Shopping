@@ -10,24 +10,12 @@ import { useToast } from '../context/ToastContext';
 
 const ProductCard = ({ product }) => {
     const { addToCart, cartItems } = useCart();
-    const { addToWishlist, removeFromWishlist, checkInWishlist } = useWishlist();
+    const { addToWishlist, removeFromWishlist, wishlistItems } = useWishlist();
     const { success, error } = useToast();
-    const [isInWishlist, setIsInWishlist] = useState(false);
     const [wishlistLoading, setWishlistLoading] = useState(false);
 
-    // Check if product is in wishlist
-    useEffect(() => {
-        const checkWishlistStatus = async () => {
-            try {
-                const inWishlist = await checkInWishlist(product._id);
-                setIsInWishlist(inWishlist);
-            } catch (error) {
-                // User not authenticated or other error
-                setIsInWishlist(false);
-            }
-        };
-        checkWishlistStatus();
-    }, [product._id, checkInWishlist]);
+    // Check if product is in wishlist by looking at the wishlistItems array
+    const isInWishlist = wishlistItems.some(item => item.product._id === product._id);
 
     const handleWishlistToggle = async (e) => {
         e.preventDefault();
@@ -38,11 +26,9 @@ const ProductCard = ({ product }) => {
             if (isInWishlist) {
                 await removeFromWishlist(product._id);
                 success('Removed from wishlist');
-                setIsInWishlist(false);
             } else {
                 await addToWishlist(product._id);
                 success('Added to wishlist');
-                setIsInWishlist(true);
             }
         } catch (error) {
             // Error is already handled by the context
