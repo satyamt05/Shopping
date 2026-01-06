@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, User, LogOut, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -14,6 +14,7 @@ const Navbar = () => {
     const { wishlistItems } = useWishlist();
     const { success } = useToast();
     const navigate = useNavigate();
+    const location = useLocation();
     const userMenuRef = useRef(null);
 
     // Calculate total unique items in cart (not total quantity)
@@ -50,9 +51,9 @@ const Navbar = () => {
                         </Link>
                     </div>
                     <div className="hidden md:flex items-center space-x-8">
-                        <Link to="/" className="text-gray-700 hover:text-indigo-600 transition">Home</Link>
-                        <Link to="/shop" className="text-gray-700 hover:text-indigo-600 transition">Shop</Link>
-                        <Link to="/cart" className="text-gray-700 hover:text-indigo-600 transition relative">
+                        <Link to="/" className={`transition ${location.pathname === '/' ? 'text-indigo-600 font-semibold' : 'text-gray-700 hover:text-indigo-600'}`}>Home</Link>
+                        <Link to="/shop" className={`transition ${location.pathname === '/shop' ? 'text-indigo-600 font-semibold' : 'text-gray-700 hover:text-indigo-600'}`}>Shop</Link>
+                        <Link to="/cart" className={`text-gray-700 hover:text-indigo-600 transition relative ${location.pathname === '/cart' ? 'text-indigo-600' : ''}`}>
                             <ShoppingCart className="h-6 w-6" />
                             {cartItemCount > 0 && (
                                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -61,7 +62,7 @@ const Navbar = () => {
                             )}
                         </Link>
                         {isAuthenticated && (
-                            <Link to="/wishlist" className="text-gray-700 hover:text-indigo-600 transition">
+                            <Link to="/wishlist" className={`transition ${location.pathname === '/wishlist' ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600'}`}>
                                 <Heart className="h-6 w-6" />
                             </Link>
                         )}
@@ -79,7 +80,7 @@ const Navbar = () => {
                                         {userInfo?.isAdmin && (
                                             <Link
                                                 to="/admin"
-                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                className={`block px-4 py-2 text-sm hover:bg-gray-100 ${location.pathname === '/admin' ? 'text-indigo-600 font-medium' : 'text-gray-700'}`}
                                                 onClick={() => setIsUserMenuOpen(false)}
                                             >
                                                 Admin Dashboard
@@ -87,7 +88,7 @@ const Navbar = () => {
                                         )}
                                         <Link
                                             to="/profile"
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            className={`block px-4 py-2 text-sm hover:bg-gray-100 ${location.pathname === '/profile' ? 'text-indigo-600 font-medium' : 'text-gray-700'}`}
                                             onClick={() => setIsUserMenuOpen(false)}
                                         >
                                             Profile
@@ -123,13 +124,13 @@ const Navbar = () => {
             {isOpen && (
                 <div className="md:hidden bg-white">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                        <Link to="/" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">Home</Link>
-                        <Link to="/shop" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">Shop</Link>
-                        <Link to="/cart" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">
+                        <Link to="/" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium transition ${location.pathname === '/' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}`}>Home</Link>
+                        <Link to="/shop" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium transition ${location.pathname === '/shop' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}`}>Shop</Link>
+                        <Link to="/cart" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium transition ${location.pathname === '/cart' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}`}>
                             Cart {cartItemCount > 0 && `(${cartItemCount})`}
                         </Link>
                         {isAuthenticated && (
-                            <Link to="/wishlist" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">
+                            <Link to="/wishlist" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium transition ${location.pathname === '/wishlist' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}`}>
                                 Wishlist
                             </Link>
                         )}
@@ -139,11 +140,11 @@ const Navbar = () => {
                                     Welcome, {userInfo?.name}
                                 </div>
                                 {userInfo?.isAdmin && (
-                                    <Link to="/admin" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">
+                                    <Link to="/admin" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium transition ${location.pathname === '/admin' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}`}>
                                         Admin Dashboard
                                     </Link>
                                 )}
-                                <Link to="/profile" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">
+                                <Link to="/profile" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium transition ${location.pathname === '/profile' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}`}>
                                     Profile
                                 </Link>
                                 <button
