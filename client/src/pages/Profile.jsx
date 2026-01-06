@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../utils/api';
 import { User, MapPin, Phone, Mail, Edit2, Save, X, Plus, Trash2, Package, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import AddressForm from '../components/AddressForm';
 
 const Profile = () => {
     const { userInfo, token, login, isLoading, isAuthenticated } = useAuth();
@@ -12,7 +13,6 @@ const Profile = () => {
     const [addresses, setAddresses] = useState([]);
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [formErrors, setFormErrors] = useState({});
-    const [addressErrors, setAddressErrors] = useState({});
 
     // Validation functions
     const validateProfileForm = () => {
@@ -46,62 +46,11 @@ const Profile = () => {
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
-
-    const validateAddressForm = () => {
-        const errors = {};
-        
-        // Street validation
-        if (!addressForm.street.trim()) {
-            errors.street = 'Street address is required';
-        } else if (addressForm.street.trim().length < 5) {
-            errors.street = 'Street address must be at least 5 characters';
-        }
-        
-        // City validation
-        if (!addressForm.city.trim()) {
-            errors.city = 'City is required';
-        } else if (!/^[a-zA-Z\s]+$/.test(addressForm.city.trim())) {
-            errors.city = 'City should contain only letters and spaces';
-        }
-        
-        // State validation
-        if (!addressForm.state.trim()) {
-            errors.state = 'State is required';
-        } else if (!/^[a-zA-Z\s]+$/.test(addressForm.state.trim())) {
-            errors.state = 'State should contain only letters and spaces';
-        }
-        
-        // Postal code validation (India PIN code format)
-        if (!addressForm.postalCode.trim()) {
-            errors.postalCode = 'Postal code is required';
-        } else if (!/^\d{6}$/.test(addressForm.postalCode.trim())) {
-            errors.postalCode = 'Postal code must be 6 digits';
-        }
-        
-        // Country validation
-        if (!addressForm.country.trim()) {
-            errors.country = 'Country is required';
-        } else if (!/^[a-zA-Z\s]+$/.test(addressForm.country.trim())) {
-            errors.country = 'Country should contain only letters and spaces';
-        }
-        
-        setAddressErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
     
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
-    });
-
-    const [addressForm, setAddressForm] = useState({
-        street: '',
-        city: '',
-        state: '',
-        postalCode: '',
-        country: '',
-        isDefault: false
     });
 
     useEffect(() => {
@@ -214,21 +163,14 @@ const Profile = () => {
         }
     };
 
-    const handleAddAddress = async (e) => {
-        e.preventDefault();
-        
-        // Validate address form before submission
-        if (!validateAddressForm()) {
-            return;
-        }
-        
+    const handleAddAddress = async (addressData) => {
         const newAddress = {
-            street: addressForm.street,
-            city: addressForm.city,
-            state: addressForm.state,
-            postalCode: addressForm.postalCode,
-            country: addressForm.country,
-            isDefault: addressForm.isDefault
+            street: addressData.street,
+            city: addressData.city,
+            state: addressData.state,
+            postalCode: addressData.postalCode,
+            country: addressData.country,
+            isDefault: addressData.isDefault
         };
 
         const updatedAddresses = [...addresses, newAddress];
@@ -247,14 +189,6 @@ const Profile = () => {
             setAddresses(addresses);
         }
 
-        setAddressForm({
-            street: '',
-            city: '',
-            state: '',
-            postalCode: '',
-            country: '',
-            isDefault: false
-        });
         setShowAddressForm(false);
     };
 
@@ -483,165 +417,13 @@ const Profile = () => {
                         </div>
 
                         {showAddressForm && (
-                            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                                <h3 className="font-medium text-gray-900 mb-3">Add New Address</h3>
-                                <form onSubmit={handleAddAddress} className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Street Address
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="street"
-                                            value={addressForm.street}
-                                            onChange={(e) => {
-                                                handleAddressChange(e);
-                                                // Clear error when user starts typing
-                                                if (addressErrors.street) {
-                                                    setAddressErrors({ ...addressErrors, street: '' });
-                                                }
-                                            }}
-                                            placeholder="Street Address"
-                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                                addressErrors.street ? 'border-red-500' : 'border-gray-300'
-                                            }`}
-                                            required
-                                        />
-                                        {addressErrors.street && (
-                                            <p className="text-xs text-red-600 mt-1">{addressErrors.street}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            City
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="city"
-                                            value={addressForm.city}
-                                            onChange={(e) => {
-                                                handleAddressChange(e);
-                                                // Clear error when user starts typing
-                                                if (addressErrors.city) {
-                                                    setAddressErrors({ ...addressErrors, city: '' });
-                                                }
-                                            }}
-                                            placeholder="City"
-                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                                addressErrors.city ? 'border-red-500' : 'border-gray-300'
-                                            }`}
-                                            required
-                                        />
-                                        {addressErrors.city && (
-                                            <p className="text-xs text-red-600 mt-1">{addressErrors.city}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            State
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="state"
-                                            value={addressForm.state}
-                                            onChange={(e) => {
-                                                handleAddressChange(e);
-                                                // Clear error when user starts typing
-                                                if (addressErrors.state) {
-                                                    setAddressErrors({ ...addressErrors, state: '' });
-                                                }
-                                            }}
-                                            placeholder="State"
-                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                                addressErrors.state ? 'border-red-500' : 'border-gray-300'
-                                            }`}
-                                            required
-                                        />
-                                        {addressErrors.state && (
-                                            <p className="text-xs text-red-600 mt-1">{addressErrors.state}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Postal Code
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="postalCode"
-                                            value={addressForm.postalCode}
-                                            onChange={(e) => {
-                                                handleAddressChange(e);
-                                                // Clear error when user starts typing
-                                                if (addressErrors.postalCode) {
-                                                    setAddressErrors({ ...addressErrors, postalCode: '' });
-                                                }
-                                            }}
-                                            placeholder="Postal Code"
-                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                                addressErrors.postalCode ? 'border-red-500' : 'border-gray-300'
-                                            }`}
-                                            required
-                                        />
-                                        {addressErrors.postalCode && (
-                                            <p className="text-xs text-red-600 mt-1">{addressErrors.postalCode}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Country
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="country"
-                                            value={addressForm.country}
-                                            onChange={(e) => {
-                                                handleAddressChange(e);
-                                                // Clear error when user starts typing
-                                                if (addressErrors.country) {
-                                                    setAddressErrors({ ...addressErrors, country: '' });
-                                                }
-                                            }}
-                                            placeholder="Country"
-                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                                addressErrors.country ? 'border-red-500' : 'border-gray-300'
-                                            }`}
-                                            required
-                                        />
-                                        {addressErrors.country && (
-                                            <p className="text-xs text-red-600 mt-1">{addressErrors.country}</p>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            name="isDefault"
-                                            id="isDefault"
-                                            checked={addressForm.isDefault}
-                                            onChange={handleAddressChange}
-                                            className="mr-2"
-                                        />
-                                        <label htmlFor="isDefault" className="text-sm text-gray-700">
-                                            Set as default address
-                                        </label>
-                                    </div>
-                                    <div className="md:col-span-2 flex space-x-2">
-                                        <button
-                                            type="submit"
-                                            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center"
-                                        >
-                                            <Plus className="h-4 w-4 mr-2" />
-                                            Save Address
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowAddressForm(false)}
-                                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+                            <AddressForm
+                                onSave={handleAddAddress}
+                                onCancel={() => setShowAddressForm(false)}
+                                loading={loading}
+                                submitButtonText="Save Address"
+                                showCancelButton={true}
+                            />
                         )}
 
                         {addresses.length === 0 ? (

@@ -8,6 +8,7 @@ import { formatCurrency, SHIPPING_COSTS, TAX_RATE } from '../utils/currency';
 import { CreditCard, Truck, Package, DollarSign, Banknote, Download, MapPin, Home, Building2, Globe } from 'lucide-react';
 import { downloadInvoicePDF } from '../utils/invoice';
 import CouponApply from '../components/CouponApply';
+import AddressForm from '../components/AddressForm';
 
 const Checkout = () => {
     const { cartItems, clearCart } = useCart();
@@ -20,8 +21,9 @@ const Checkout = () => {
         city: '',
         state: '',
         postalCode: '',
-        country: ''
+        country: 'India'
     });
+    const [showAddressForm, setShowAddressForm] = useState(false);
     const [formErrors, setFormErrors] = useState({});
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const [loading, setLoading] = useState(false);
@@ -71,6 +73,38 @@ const Checkout = () => {
         
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
+    };
+
+    const handleSaveAddress = async (addressData) => {
+        // Save to user profile
+        try {
+            const { data } = await axios.get('/auth/profile');
+            const updatedAddresses = [...(data.addresses || []), addressData];
+            
+            await axios.put('/auth/profile', {
+                ...data,
+                addresses: updatedAddresses
+            });
+            
+            // Update local state
+            setUserAddresses(updatedAddresses);
+            setShowAddressForm(false);
+            success('Address saved successfully!');
+            
+            // Auto-select the newly added address
+            const newAddress = updatedAddresses[updatedAddresses.length - 1];
+            setSelectedAddress(newAddress);
+            setAddress({
+                street: newAddress.street,
+                city: newAddress.city,
+                state: newAddress.state,
+                postalCode: newAddress.postalCode,
+                country: newAddress.country
+            });
+        } catch (error) {
+            console.error('Error saving address:', error);
+            error('Failed to save address');
+        }
     };
 
     // Load user addresses - moved before early returns
@@ -267,148 +301,32 @@ const Checkout = () => {
                                 </div>
                             )}
                             
-                            {/* Manual Address Entry */}
-                            <div className="grid grid-cols-6 gap-6">
-                                <div className="col-span-6">
-                                    <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-2">
-                                        <Home className="h-4 w-4 inline mr-2 text-gray-400" />
-                                        Street address
-                                    </label>
-                                    <input 
-                                        required 
-                                        type="text" 
-                                        name="street" 
-                                        id="street" 
-                                        value={address.street} 
-                                        onChange={(e) => {
-                                            setAddress({ ...address, street: e.target.value });
-                                            // Clear error when user starts typing
-                                            if (formErrors.street) {
-                                                setFormErrors({ ...formErrors, street: '' });
-                                            }
-                                        }} 
-                                        placeholder="123 Main Street, Apartment 4B, Sector 15"
-                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
-                                            formErrors.street ? 'border-red-500' : 'border-gray-300'
-                                        }`} 
-                                    />
-                                    {formErrors.street && (
-                                        <p className="mt-1 text-sm text-red-600">{formErrors.street}</p>
-                                    )}
-                                </div>
-
-                                <div className="col-span-6 sm:col-span-6 lg:col-span-2">
-                                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                                        <Building2 className="h-4 w-4 inline mr-2 text-gray-400" />
-                                        City
-                                    </label>
-                                    <input 
-                                        required 
-                                        type="text" 
-                                        name="city" 
-                                        id="city" 
-                                        value={address.city} 
-                                        onChange={(e) => {
-                                            setAddress({ ...address, city: e.target.value });
-                                            // Clear error when user starts typing
-                                            if (formErrors.city) {
-                                                setFormErrors({ ...formErrors, city: '' });
-                                            }
-                                        }} 
-                                        placeholder="Mumbai"
-                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
-                                            formErrors.city ? 'border-red-500' : 'border-gray-300'
-                                        }`} 
-                                    />
-                                    {formErrors.city && (
-                                        <p className="mt-1 text-sm text-red-600">{formErrors.city}</p>
-                                    )}
-                                </div>
-
-                                <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                                    <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
-                                        <MapPin className="h-4 w-4 inline mr-2 text-gray-400" />
-                                        State
-                                    </label>
-                                    <input 
-                                        required 
-                                        type="text" 
-                                        name="state" 
-                                        id="state" 
-                                        value={address.state} 
-                                        onChange={(e) => {
-                                            setAddress({ ...address, state: e.target.value });
-                                            // Clear error when user starts typing
-                                            if (formErrors.state) {
-                                                setFormErrors({ ...formErrors, state: '' });
-                                            }
-                                        }} 
-                                        placeholder="Maharashtra"
-                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
-                                            formErrors.state ? 'border-red-500' : 'border-gray-300'
-                                        }`} 
-                                    />
-                                    {formErrors.state && (
-                                        <p className="mt-1 text-sm text-red-600">{formErrors.state}</p>
-                                    )}
-                                </div>
-
-                                <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                                    <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-2">
-                                        <Package className="h-4 w-4 inline mr-2 text-gray-400" />
-                                        Postal code
-                                    </label>
-                                    <input 
-                                        required 
-                                        type="text" 
-                                        name="postalCode" 
-                                        id="postalCode" 
-                                        value={address.postalCode} 
-                                        onChange={(e) => {
-                                            setAddress({ ...address, postalCode: e.target.value });
-                                            // Clear error when user starts typing
-                                            if (formErrors.postalCode) {
-                                                setFormErrors({ ...formErrors, postalCode: '' });
-                                            }
-                                        }} 
-                                        placeholder="400001"
-                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
-                                            formErrors.postalCode ? 'border-red-500' : 'border-gray-300'
-                                        }`} 
-                                    />
-                                    {formErrors.postalCode && (
-                                        <p className="mt-1 text-sm text-red-600">{formErrors.postalCode}</p>
-                                    )}
-                                </div>
-
-                                <div className="col-span-6">
-                                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
-                                        <Globe className="h-4 w-4 inline mr-2 text-gray-400" />
-                                        Country
-                                    </label>
-                                    <input 
-                                        required 
-                                        type="text" 
-                                        name="country" 
-                                        id="country" 
-                                        value={address.country} 
-                                        onChange={(e) => {
-                                            setAddress({ ...address, country: e.target.value });
-                                            // Clear error when user starts typing
-                                            if (formErrors.country) {
-                                                setFormErrors({ ...formErrors, country: '' });
-                                            }
-                                        }} 
-                                        placeholder="India"
-                                        className={`mt-1 block w-full px-3 py-2 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 shadow-sm sm:text-sm ${
-                                            formErrors.country ? 'border-red-500' : 'border-gray-300'
-                                        }`} 
-                                    />
-                                    {formErrors.country && (
-                                        <p className="mt-1 text-sm text-red-600">{formErrors.country}</p>
-                                    )}
-                                </div>
+                            {/* Add New Address Button */}
+                            <div className="flex justify-center py-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAddressForm(true)}
+                                    className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    <MapPin className="h-4 w-4 mr-2" />
+                                    Add New Address
+                                </button>
                             </div>
+
+                            {/* Address Form Modal */}
+                            {showAddressForm && (
+                                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                                    <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                                        <AddressForm
+                                            onSave={handleSaveAddress}
+                                            onCancel={() => setShowAddressForm(false)}
+                                            loading={loading}
+                                            submitButtonText="Save & Use This Address"
+                                            showCancelButton={true}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
