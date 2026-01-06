@@ -12,13 +12,13 @@ const Cart = () => {
     const navigate = useNavigate();
 
     const [shippingConfig, setShippingConfig] = useState({
-        STANDARD: 40,
-        FREE_SHIPPING_THRESHOLD: 500,
-        EXPRESS: 80,
+        STANDARD: 0,
+        FREE_SHIPPING_THRESHOLD: 0,
+        EXPRESS: 0,
         freeShippingEnabled: true,
         expressShippingEnabled: false
     });
-    const [taxRate, setTaxRate] = useState(0.18);
+    const [taxRate, setTaxRate] = useState(0);
     const [configLoading, setConfigLoading] = useState(true);
 
     // Fetch shipping configuration
@@ -44,9 +44,20 @@ const Cart = () => {
     }, []);
 
     const itemsPrice = cartItems.reduce((acc, item) => acc + item.qty * item.price, 0);
-    const shippingPrice = (shippingConfig.freeShippingEnabled && itemsPrice > shippingConfig.FREE_SHIPPING_THRESHOLD) ? 0 : shippingConfig.STANDARD;
+    const shippingPrice = (!configLoading && shippingConfig.freeShippingEnabled && itemsPrice > shippingConfig.FREE_SHIPPING_THRESHOLD) ? 0 : (!configLoading ? shippingConfig.STANDARD : 0);
     const taxPrice = itemsPrice * taxRate;
     const totalPrice = itemsPrice + shippingPrice + taxPrice;
+
+    // Shimmer loader for shipping info
+const ShippingShimmer = () => (
+    <div className="animate-pulse">
+        <div className="flex justify-between mb-2">
+            <div className="h-4 bg-gray-200 rounded w-20"></div>
+            <div className="h-4 bg-gray-200 rounded w-16"></div>
+        </div>
+        <div className="h-3 bg-gray-200 rounded w-40 mb-2"></div>
+    </div>
+);
 
     const checkoutHandler = () => {
         if (!isAuthenticated) {
@@ -125,19 +136,27 @@ const Cart = () => {
                             <span className="text-gray-600">Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)} items)</span>
                             <span className="font-bold text-gray-900">{formatCurrency(itemsPrice)}</span>
                         </div>
-                        <div className="flex justify-between mb-2">
-                            <span className="text-gray-600">Shipping</span>
-                            <span className={shippingPrice === 0 ? "text-green-600" : "text-gray-900"}>
-                                {shippingPrice === 0 ? 'FREE' : formatCurrency(shippingPrice)}
-                            </span>
-                        </div>
-                        {shippingPrice === 0 && shippingConfig.freeShippingEnabled && (
-                            <p className="text-xs text-green-600 mb-2">Free shipping on orders over {formatCurrency(shippingConfig.FREE_SHIPPING_THRESHOLD)}!</p>
+                        
+                        {/* Show shimmer while loading shipping config */}
+                        {configLoading ? (
+                            <ShippingShimmer />
+                        ) : (
+                            <>
+                                <div className="flex justify-between mb-2">
+                                    <span className="text-gray-600">Shipping</span>
+                                    <span className={shippingPrice === 0 ? "text-green-600" : "text-gray-900"}>
+                                        {shippingPrice === 0 ? 'FREE' : formatCurrency(shippingPrice)}
+                                    </span>
+                                </div>
+                                {shippingPrice === 0 && shippingConfig.freeShippingEnabled && (
+                                    <p className="text-xs text-green-600 mb-2">Free shipping on orders over {formatCurrency(shippingConfig.FREE_SHIPPING_THRESHOLD)}!</p>
+                                )}
+                                <div className="flex justify-between mb-2">
+                                    <span className="text-gray-600">GST ({(taxRate * 100).toFixed(0)}%)</span>
+                                    <span className="text-gray-900">{formatCurrency(taxPrice)}</span>
+                                </div>
+                            </>
                         )}
-                        <div className="flex justify-between mb-2">
-                            <span className="text-gray-600">GST ({(taxRate * 100).toFixed(0)}%)</span>
-                            <span className="text-gray-900">{formatCurrency(taxPrice)}</span>
-                        </div>
                         <div className="border-t border-gray-200 pt-4 mb-6">
                             <div className="flex justify-between">
                                 <span className="text-lg font-bold text-gray-900">Total</span>

@@ -25,15 +25,15 @@ export const formatCurrencyWithDecimals = (amount) => {
     }).format(amount);
 };
 
-// Default shipping costs (fallback values)
+// Default shipping costs (fallback values only for API failures)
 export const DEFAULT_SHIPPING_COSTS = {
-    STANDARD: 40, // ₹40 for standard shipping
-    FREE_SHIPPING_THRESHOLD: 500, // Free shipping over ₹500
-    EXPRESS: 80, // ₹80 for express shipping
+    STANDARD: 0, // No fallback - API should always work
+    FREE_SHIPPING_THRESHOLD: 0, // No fallback - API should always work
+    EXPRESS: 0, // No fallback - API should always work
 };
 
-// Default tax rate (fallback value)
-export const DEFAULT_TAX_RATE = 0.18; // 18% GST in India
+// Default tax rate (fallback value only for API failures)
+export const DEFAULT_TAX_RATE = 0; // No fallback - API should always work
 
 // Fetch shipping configuration from API
 export const fetchShippingConfig = async () => {

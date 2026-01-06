@@ -35,13 +35,13 @@ const Checkout = () => {
     const [couponDiscount, setCouponDiscount] = useState(0);
     const [appliedCoupon, setAppliedCoupon] = useState(null);
     const [shippingConfig, setShippingConfig] = useState({
-        STANDARD: 40,
-        FREE_SHIPPING_THRESHOLD: 500,
-        EXPRESS: 80,
+        STANDARD: 0,
+        FREE_SHIPPING_THRESHOLD: 0,
+        EXPRESS: 0,
         freeShippingEnabled: true,
         expressShippingEnabled: false
     });
-    const [taxRate, setTaxRate] = useState(0.18);
+    const [taxRate, setTaxRate] = useState(0);
     const [configLoading, setConfigLoading] = useState(true);
 
     // Validation function
@@ -199,6 +199,18 @@ const Checkout = () => {
         }
     }, []);
 
+    // Shimmer loader for shipping info
+const ShippingShimmer = () => (
+    <div className="animate-pulse">
+        <div className="flex justify-between text-sm mb-2">
+            <div className="h-4 bg-gray-200 rounded w-20"></div>
+            <div className="h-4 bg-gray-200 rounded w-16"></div>
+        </div>
+        <div className="h-3 bg-gray-200 rounded w-40 mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded w-20"></div>
+    </div>
+);
+
     // Fetch shipping configuration
     const fetchConfig = useCallback(async () => {
         try {
@@ -244,7 +256,7 @@ const Checkout = () => {
     }
 
     const itemsPrice = cartItems.reduce((acc, item) => acc + (item.qty || 0) * (item.price || 0), 0);
-    const shippingPrice = (shippingConfig.freeShippingEnabled && itemsPrice > shippingConfig.FREE_SHIPPING_THRESHOLD) ? 0 : shippingConfig.STANDARD;
+    const shippingPrice = (!configLoading && shippingConfig.freeShippingEnabled && itemsPrice > shippingConfig.FREE_SHIPPING_THRESHOLD) ? 0 : (!configLoading ? shippingConfig.STANDARD : 0);
     const calculatedTaxPrice = itemsPrice * taxRate;
     const discountAmount = couponDiscount || 0;
     const calculatedTotal = itemsPrice + shippingPrice + calculatedTaxPrice - discountAmount;
@@ -412,19 +424,27 @@ const Checkout = () => {
                             <span className="text-gray-600">Items ({cartItems.reduce((acc, item) => acc + item.qty, 0)})</span>
                             <span className="font-medium">{formatCurrency(itemsPrice)}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Shipping</span>
-                            <span className="font-medium">
-                                {shippingPrice === 0 ? 'FREE' : formatCurrency(shippingPrice)}
-                            </span>
-                        </div>
-                        {shippingPrice === 0 && shippingConfig.freeShippingEnabled && (
-                            <p className="text-xs text-green-600">Free shipping on orders over {formatCurrency(shippingConfig.FREE_SHIPPING_THRESHOLD)}!</p>
+                        
+                        {/* Show shimmer while loading shipping config */}
+                        {configLoading ? (
+                            <ShippingShimmer />
+                        ) : (
+                            <>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">Shipping</span>
+                                    <span className="font-medium">
+                                        {shippingPrice === 0 ? 'FREE' : formatCurrency(shippingPrice)}
+                                    </span>
+                                </div>
+                                {shippingPrice === 0 && shippingConfig.freeShippingEnabled && (
+                                    <p className="text-xs text-green-600">Free shipping on orders over {formatCurrency(shippingConfig.FREE_SHIPPING_THRESHOLD)}!</p>
+                                )}
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">GST ({(taxRate * 100).toFixed(0)}%)</span>
+                                    <span className="font-medium">{formatCurrency(calculatedTaxPrice)}</span>
+                                </div>
+                            </>
                         )}
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">GST ({(taxRate * 100).toFixed(0)}%)</span>
-                            <span className="font-medium">{formatCurrency(calculatedTaxPrice)}</span>
-                        </div>
                         {couponDiscount > 0 && (
                             <div className="flex justify-between text-sm">
                                 <span className="text-green-600">Discount ({appliedCoupon.code})</span>
