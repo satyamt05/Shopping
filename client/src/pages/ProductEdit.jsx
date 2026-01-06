@@ -20,6 +20,7 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
         countInStock: 0,
     });
     const [previewImage, setPreviewImage] = useState('');
+    const [uploadError, setUploadError] = useState('');
     
     useEffect(() => {
         fetchCategories();
@@ -71,29 +72,26 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        console.log('File selected:', file.name, file.type, file.size);
+        // Clear any previous error when starting new upload
+        setUploadError('');
 
         // Show immediate local preview
         const localPreview = URL.createObjectURL(file);
         setPreviewImage(localPreview);
-        console.log('Local preview set:', localPreview);
 
         const formData = new FormData();
         formData.append('image', file);
 
         setUploading(true);
         try {
-            console.log('Starting upload...');
             const { data } = await axios.post('/upload', formData);
-            console.log('Upload response:', data);
             setFormData(prev => ({ ...prev, image: data.imagePath }));
             setPreviewImage(data.imagePath);
             // Clean up the local preview URL
             URL.revokeObjectURL(localPreview);
-            console.log('Final preview set:', data.imagePath);
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Error uploading image: ' + (error.response?.data?.message || error.message));
+            setUploadError('Error uploading image: ' + (error.response?.data?.message || error.message));
             // Revert to empty state on error
             setPreviewImage('');
             setFormData(prev => ({ ...prev, image: '' }));
@@ -244,6 +242,11 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
                             {uploading && (
                                 <div className="text-sm text-gray-500">
                                     Uploading image...
+                                </div>
+                            )}
+                            {uploadError && (
+                                <div className="text-sm text-red-600 mt-1">
+                                    {uploadError}
                                 </div>
                             )}
                             {(formData.image || previewImage) && (

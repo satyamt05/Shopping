@@ -43,6 +43,9 @@ const CategoryEdit = ({ categoryId, onSave, onCancel }) => {
         const file = e.target.files[0];
         if (!file) return;
 
+        // Clear any previous error when starting new upload
+        setError('');
+
         setUploading(true);
         try {
             const formData = new FormData();
