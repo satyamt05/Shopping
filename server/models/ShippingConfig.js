@@ -43,7 +43,8 @@ const shippingConfigSchema = mongoose.Schema(
 
 // There should be only one shipping configuration document
 shippingConfigSchema.statics.getConfig = async function() {
-    let config = await this.findOne();
+    // Find the most recently updated config document
+    let config = await this.findOne().sort({ updatedAt: -1 });
     if (!config) {
         config = await this.create({});
     }
@@ -51,14 +52,31 @@ shippingConfigSchema.statics.getConfig = async function() {
 };
 
 shippingConfigSchema.statics.updateConfig = async function(updateData) {
-    let config = await this.findOne();
+    // Find the most recently updated config document
+    let config = await this.findOne().sort({ updatedAt: -1 });
     if (!config) {
         config = await this.create(updateData);
     } else {
         Object.assign(config, updateData);
         await config.save();
     }
+    
+    // Clean up any duplicate documents (keep only the most recent one)
+    await this.cleanupDuplicates();
+    
     return config;
+};
+
+// Clean up duplicate shipping configuration documents
+shippingConfigSchema.statics.cleanupDuplicates = async function() {
+    const allConfigs = await this.find().sort({ updatedAt: -1 });
+    if (allConfigs.length > 1) {
+        // Keep the first (most recent) document, delete the rest
+        const toKeep = allConfigs[0]._id;
+        const toDelete = allConfigs.slice(1).map(config => config._id);
+        await this.deleteMany({ _id: { $in: toDelete } });
+        console.log(`Cleaned up ${toDelete.length} duplicate shipping config documents`);
+    }
 };
 
 const ShippingConfig = mongoose.model('ShippingConfig', shippingConfigSchema);
