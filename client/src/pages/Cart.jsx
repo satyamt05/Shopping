@@ -126,7 +126,7 @@ const ShippingShimmer = () => (
                                     <select
                                         value={item.qty}
                                         onChange={(e) => addToCart(item, Number(e.target.value))}
-                                        className="border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        className="border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 max-h-32 overflow-y-auto"
                                     >
                                         {[...Array(item.countInStock).keys()].map((x) => (
                                             <option key={x + 1} value={x + 1}>
