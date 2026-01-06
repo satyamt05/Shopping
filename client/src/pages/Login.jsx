@@ -17,6 +17,9 @@ const Login = () => {
     const { success, error: toastError } = useToast();
 
     const redirect = new URLSearchParams(location.search).get('redirect') || '/';
+    
+    // Ensure redirect path starts with '/' to avoid relative path issues
+    const safeRedirect = redirect.startsWith('/') ? redirect : `/${redirect}`;
 
     // Handle Google OAuth callback
     useEffect(() => {
@@ -41,7 +44,7 @@ const Login = () => {
                 
                 // Get the redirect URL from sessionStorage (stored before Google OAuth)
                 const storedRedirect = sessionStorage.getItem('google_oauth_redirect');
-                const finalRedirect = storedRedirect || redirect;
+                const finalRedirect = storedRedirect || safeRedirect;
                 
                 // Clean up sessionStorage
                 sessionStorage.removeItem('google_oauth_redirect');
@@ -52,14 +55,14 @@ const Login = () => {
                 setError('Failed to login with Google');
             }
         }
-    }, [location.search, login, success, redirect]); // Remove navigate from dependencies
+    }, [location.search, login, success, safeRedirect]); // Remove navigate from dependencies
 
     // Redirect if already authenticated
     useEffect(() => {
         if (!isLoading && isAuthenticated) {
-            navigate(redirect);
+            navigate(safeRedirect);
         }
-    }, [isLoading, isAuthenticated, redirect]); // Remove navigate from dependencies
+    }, [isLoading, isAuthenticated, safeRedirect]); // Remove navigate from dependencies
 
     if (isLoading) {
         return (
@@ -78,7 +81,7 @@ const Login = () => {
             const { data } = await axios.post('/auth/login', { email, password });
             login(data, data.token);
             success('Login successful!');
-            navigate(redirect);
+            navigate(safeRedirect);
         } catch (err) {
             const errorMessage = err.response?.data?.message || 'Invalid email or password';
             setError(errorMessage);
@@ -88,7 +91,7 @@ const Login = () => {
 
     const googleLoginHandler = () => {
         // Store the redirect URL in sessionStorage before navigating to Google OAuth
-        sessionStorage.setItem('google_oauth_redirect', redirect);
+        sessionStorage.setItem('google_oauth_redirect', safeRedirect);
         window.location.href = 'https://shopping-ivig.onrender.com/api/auth/google';
     };
 
