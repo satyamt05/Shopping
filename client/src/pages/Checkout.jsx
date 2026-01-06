@@ -435,9 +435,34 @@ const ShippingShimmer = () => (
                                         {shippingPrice === 0 ? 'FREE' : formatCurrency(shippingPrice)}
                                     </span>
                                 </div>
-                                {shippingPrice === 0 && shippingConfig.freeShippingEnabled && (
-                                    <p className="text-xs text-green-600">Free shipping on orders over {formatCurrency(shippingConfig.FREE_SHIPPING_THRESHOLD)}!</p>
+                                
+                                {/* Free Shipping Indicator */}
+                                {shippingConfig.freeShippingEnabled && (
+                                    <div className="mb-3">
+                                        {shippingPrice === 0 ? (
+                                            <div className="flex items-center text-xs text-green-600">
+                                                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                </svg>
+                                                Free shipping unlocked!
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <div className="flex items-center justify-between text-xs text-amber-600 mb-1">
+                                                    <span>Add {formatCurrency(shippingConfig.FREE_SHIPPING_THRESHOLD - itemsPrice)} more for free shipping</span>
+                                                    <span>{Math.round((itemsPrice / shippingConfig.FREE_SHIPPING_THRESHOLD) * 100)}%</span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                                    <div 
+                                                        className="bg-amber-500 h-2 rounded-full transition-all duration-300"
+                                                        style={{ width: `${Math.min((itemsPrice / shippingConfig.FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
+                                
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">GST ({(taxRate * 100).toFixed(0)}%)</span>
                                     <span className="font-medium">{formatCurrency(calculatedTaxPrice)}</span>
