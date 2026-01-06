@@ -157,7 +157,7 @@ const DiscountCouponManager = () => {
                                     type="text"
                                     value={formData.code}
                                     onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     required
                                 />
                             </div>
@@ -167,7 +167,7 @@ const DiscountCouponManager = () => {
                                     type="text"
                                     value={formData.description}
                                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     required
                                 />
                             </div>
@@ -176,7 +176,7 @@ const DiscountCouponManager = () => {
                                 <select
                                     value={formData.discountType}
                                     onChange={(e) => setFormData({...formData, discountType: e.target.value})}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 >
                                     <option value="PERCENTAGE">Percentage</option>
                                     <option value="FIXED_AMOUNT">Fixed Amount</option>
@@ -190,7 +190,7 @@ const DiscountCouponManager = () => {
                                     type="number"
                                     value={formData.discountValue}
                                     onChange={(e) => setFormData({...formData, discountValue: e.target.value})}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     min="0"
                                     required
                                 />
@@ -201,7 +201,7 @@ const DiscountCouponManager = () => {
                                     type="number"
                                     value={formData.minimumOrderAmount}
                                     onChange={(e) => setFormData({...formData, minimumOrderAmount: e.target.value})}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     min="0"
                                 />
                             </div>
@@ -212,7 +212,7 @@ const DiscountCouponManager = () => {
                                         type="number"
                                         value={formData.maximumDiscountAmount}
                                         onChange={(e) => setFormData({...formData, maximumDiscountAmount: e.target.value})}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         min="0"
                                     />
                                 </div>
@@ -223,7 +223,7 @@ const DiscountCouponManager = () => {
                                     type="number"
                                     value={formData.usageLimit}
                                     onChange={(e) => setFormData({...formData, usageLimit: e.target.value})}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     min="1"
                                 />
                             </div>
@@ -233,7 +233,7 @@ const DiscountCouponManager = () => {
                                     type="date"
                                     value={formData.validUntil}
                                     onChange={(e) => setFormData({...formData, validUntil: e.target.value})}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     required
                                 />
                             </div>
