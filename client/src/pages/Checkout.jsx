@@ -313,7 +313,10 @@ const Checkout = () => {
                             <div className="flex justify-center py-4">
                                 <button
                                     type="button"
-                                    onClick={() => setShowAddressForm(true)}
+                                    onClick={() => {
+                                        console.log('Add New Address button clicked');
+                                        setShowAddressForm(true);
+                                    }}
                                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
                                     <MapPin className="h-4 w-4 mr-2" />
@@ -323,17 +326,20 @@ const Checkout = () => {
 
                             {/* Address Form Modal */}
                             {showAddressForm && (
-                                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                                    <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-                                        <AddressForm
-                                            onSave={handleSaveAddress}
-                                            onCancel={() => setShowAddressForm(false)}
-                                            loading={loading}
-                                            submitButtonText="Save & Use This Address"
-                                            showCancelButton={true}
-                                        />
+                                <>
+                                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                                        <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                                            <AddressForm
+                                                onSave={handleSaveAddress}
+                                                onCancel={() => setShowAddressForm(false)}
+                                                loading={loading}
+                                                submitButtonText="Save & Use This Address"
+                                                showCancelButton={true}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
+                                    {console.log('AddressForm modal is being rendered')}
+                                </>
                             )}
                         </div>
                     </div>
