@@ -10,6 +10,8 @@ const Profile = () => {
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [profileLoading, setProfileLoading] = useState(true);
+    const [profileError, setProfileError] = useState(null);
     const [addresses, setAddresses] = useState([]);
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [formErrors, setFormErrors] = useState({});
@@ -61,6 +63,9 @@ const Profile = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
+            setProfileLoading(true);
+            setProfileError(null);
+            
             axios.get('/auth/profile')
                 .then(async ({ data }) => {
                     setFormData({
@@ -92,9 +97,55 @@ const Profile = () => {
                 })
                 .catch(error => {
                     console.error('Error loading profile:', error);
+                    setProfileError('Failed to load your profile information. Please try refreshing the page.');
+                })
+                .finally(() => {
+                    setProfileLoading(false);
                 });
         }
     }, [isAuthenticated]);
+
+    const retryProfileLoad = () => {
+        setProfileLoading(true);
+        setProfileError(null);
+        
+        axios.get('/auth/profile')
+            .then(async ({ data }) => {
+                setFormData({
+                    name: data.name || '',
+                    email: data.email || '',
+                    phone: data.phone || ''
+                });
+                
+                let addresses = data.addresses || [];
+                
+                // Auto-make single address default
+                if (addresses.length === 1 && !addresses[0].isDefault) {
+                    try {
+                        const updatedAddresses = [{ ...addresses[0], isDefault: true }];
+                        await axios.put('/auth/profile', {
+                            name: data.name,
+                            email: data.email,
+                            phone: data.phone,
+                            addresses: updatedAddresses
+                        });
+                        console.log('Single address set as default in profile');
+                        addresses = updatedAddresses;
+                    } catch (error) {
+                        console.error('Error setting single address as default in profile:', error);
+                    }
+                }
+                
+                setAddresses(addresses);
+            })
+            .catch(error => {
+                console.error('Error loading profile:', error);
+                setProfileError('Failed to load your profile information. Please try refreshing the page.');
+            })
+            .finally(() => {
+                setProfileLoading(false);
+            });
+    };
 
     // Show loading while checking auth
     if (isLoading) {
@@ -111,6 +162,108 @@ const Profile = () => {
     // Redirect handled by effect; return null to avoid rendering protected content during redirect
     if (!isAuthenticated) {
         return null;
+    }
+
+    // Show profile loading state
+    if (profileLoading) {
+        return (
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="bg-white shadow-lg rounded-lg">
+                    {/* Profile Header Skeleton */}
+                    <div className="bg-indigo-600 text-white p-4 sm:p-6 rounded-t-lg">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div className="flex items-center">
+                                <div className="bg-white/20 text-indigo-600 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 animate-pulse">
+                                    <div className="h-6 w-6 sm:h-8 sm:w-8 bg-white/30 rounded-full"></div>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="h-6 sm:h-8 bg-white/20 rounded w-32 animate-pulse"></div>
+                                    <div className="h-4 bg-white/20 rounded w-48 animate-pulse"></div>
+                                </div>
+                            </div>
+                            <div className="h-10 bg-white/20 rounded w-24 animate-pulse"></div>
+                        </div>
+                    </div>
+
+                    {/* Profile Content Skeleton */}
+                    <div className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Personal Information Skeleton */}
+                            <div>
+                                <div className="h-6 bg-gray-200 rounded w-32 mb-4 animate-pulse"></div>
+                                <div className="space-y-3">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                                    </div>
+                                    <div className="flex items-center space-x-3">
+                                        <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
+                                    </div>
+                                    <div className="flex items-center space-x-3">
+                                        <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-28 animate-pulse"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Orders Skeleton */}
+                            <div>
+                                <div className="h-6 bg-gray-200 rounded w-20 mb-4 animate-pulse"></div>
+                                <div className="h-20 bg-gray-200 rounded animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        {/* Addresses Skeleton */}
+                        <div className="mt-8">
+                            <div className="h-6 bg-gray-200 rounded w-40 mb-4 animate-pulse"></div>
+                            <div className="space-y-3">
+                                <div className="h-24 bg-gray-200 rounded animate-pulse"></div>
+                                <div className="h-24 bg-gray-200 rounded animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Show error state
+    if (profileError) {
+        return (
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="bg-white shadow-lg rounded-lg">
+                    <div className="p-8 text-center">
+                        <div className="flex justify-center mb-4">
+                            <div className="bg-red-100 rounded-full p-3">
+                                <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 className="text-xl font-semibold text-gray-900 mb-2">Unable to Load Profile</h2>
+                        <p className="text-gray-600 mb-6">{profileError}</p>
+                        <div className="space-x-4">
+                            <button
+                                onClick={retryProfileLoad}
+                                className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+                            >
+                                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Try Again
+                            </button>
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="inline-flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+                            >
+                                Refresh Page
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     // useEffect(() => {
@@ -256,10 +409,6 @@ const Profile = () => {
             setAddresses(addresses);
         }
     };
-
-    if (!userInfo) {
-        return <div className="text-center py-8">Loading...</div>;
-    }
 
     return (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
