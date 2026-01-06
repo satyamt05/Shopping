@@ -259,8 +259,7 @@ const ShippingShimmer = () => (
     const calculatedTaxPrice = itemsPrice * taxRate;
     const discountAmount = couponDiscount || 0;
     const calculatedTotal = itemsPrice + shippingPrice + calculatedTaxPrice - discountAmount;
-    // Ensure minimum total price of 1 for free orders to avoid server issues
-    const totalPrice = Math.max(calculatedTotal, 1);
+    const totalPrice = calculatedTotal;
 
     // Check if user has a valid address
     const hasValidAddress = () => {
