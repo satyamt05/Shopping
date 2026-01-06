@@ -28,23 +28,6 @@ const Wishlist = () => {
         }
     };
 
-    const handleAddToCart = async (product) => {
-        if (product.countInStock <= 0) {
-            showError('Product is out of stock');
-            return;
-        }
-
-        setActionLoading(prev => ({ ...prev, [product._id]: true }));
-        try {
-            await addToCart(product, 1);
-            success('Item added to cart');
-        } catch (error) {
-            showError(error.message);
-        } finally {
-            setActionLoading(prev => ({ ...prev, [product._id]: false }));
-        }
-    };
-
     const handleMoveToCart = async (product) => {
         if (product.countInStock <= 0) {
             showError('Product is out of stock');
@@ -169,40 +152,23 @@ const Wishlist = () => {
                                 {/* Action Buttons */}
                                 <div className="space-y-2">
                                     {item.product.countInStock > 0 ? (
-                                        <>
-                                            <button
-                                                onClick={() => handleAddToCart(item.product)}
-                                                disabled={actionLoading[item.product._id]}
-                                                className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                {actionLoading[item.product._id] ? (
-                                                    <span className="flex items-center">
-                                                        <Package className="h-4 w-4 mr-2 animate-spin" />
-                                                        Adding...
-                                                    </span>
-                                                ) : (
-                                                    <span className="flex items-center">
-                                                        <ShoppingCart className="h-4 w-4 mr-2" />
-                                                        Add to Cart
-                                                    </span>
-                                                )}
-                                            </button>
-
-                                            <button
-                                                onClick={() => handleMoveToCart(item.product)}
-                                                disabled={actionLoading[item.product._id]}
-                                                className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                {actionLoading[item.product._id] ? (
-                                                    <span className="flex items-center">
-                                                        <Package className="h-4 w-4 mr-2 animate-spin" />
-                                                        Moving...
-                                                    </span>
-                                                ) : (
-                                                    'Move to Cart'
-                                                )}
-                                            </button>
-                                        </>
+                                        <button
+                                            onClick={() => handleMoveToCart(item.product)}
+                                            disabled={actionLoading[item.product._id]}
+                                            className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {actionLoading[item.product._id] ? (
+                                                <span className="flex items-center">
+                                                    <Package className="h-4 w-4 mr-2 animate-spin" />
+                                                    Moving...
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center">
+                                                    <ShoppingCart className="h-4 w-4 mr-2" />
+                                                    Move to Cart
+                                                </span>
+                                            )}
+                                        </button>
                                     ) : (
                                         <button
                                             disabled

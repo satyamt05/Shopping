@@ -3,12 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { Trash2, ShoppingBag, RotateCcw } from 'lucide-react';
+import { useWishlist } from '../context/WishlistContext';
+import { useToast } from '../context/ToastContext';
+import { Trash2, ShoppingBag, RotateCcw, Heart } from 'lucide-react';
 import { formatCurrency, fetchShippingConfig } from '../utils/currency';
 
 const Cart = () => {
     const { cartItems, removeFromCart, addToCart, clearCart } = useCart();
     const { userInfo, isAuthenticated } = useAuth();
+    const { addToWishlist } = useWishlist();
+    const { success, error: showError } = useToast();
     const navigate = useNavigate();
 
     const [shippingConfig, setShippingConfig] = useState({
@@ -71,6 +75,16 @@ const ShippingShimmer = () => (
         }
     };
 
+    const moveToWishlistHandler = async (product) => {
+        try {
+            await addToWishlist(product._id);
+            removeFromCart(product._id);
+            success('Item moved to wishlist');
+        } catch (error) {
+            showError(error.message);
+        }
+    };
+
     if (cartItems.length === 0) {
         return (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
@@ -119,6 +133,13 @@ const ShippingShimmer = () => (
                                         </option>
                                     ))}
                                 </select>
+                                <button 
+                                    onClick={() => moveToWishlistHandler(item)} 
+                                    className="text-pink-500 hover:text-pink-700 p-2"
+                                    title="Move to Wishlist"
+                                >
+                                    <Heart className="h-5 w-5" />
+                                </button>
                                 <button onClick={() => removeFromCart(item._id)} className="text-red-500 hover:text-red-700 p-2">
                                     <Trash2 className="h-5 w-5" />
                                 </button>
