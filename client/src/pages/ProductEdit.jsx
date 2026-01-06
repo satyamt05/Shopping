@@ -3,6 +3,9 @@ import axios from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2, Upload, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Dropdown from '../components/ui/Dropdown';
 
 const ProductEdit = ({ productId, onSave, onCancel }) => {
     const { token } = useAuth();
@@ -125,12 +128,14 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center">
-                    <button
+                    <Button
                         onClick={onCancel}
+                        variant="ghost"
+                        size="sm"
                         className="mr-4 p-2 text-gray-600 hover:text-gray-900"
                     >
                         <ArrowLeft className="h-6 w-6" />
-                    </button>
+                    </Button>
                     <h1 className="text-3xl font-bold text-gray-900">
                         {productId ? 'Edit Product' : 'Create Product'}
                     </h1>
@@ -141,39 +146,31 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Product Name */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Product Name *
-                        </label>
-                        <input
+                        <Input
+                            label="Product Name *"
                             type="text"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
                     {/* Brand */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Brand
-                        </label>
-                        <input
+                        <Input
+                            label="Brand"
                             type="text"
                             name="brand"
                             value={formData.brand}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
                     {/* Price */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Price (₹) *
-                        </label>
-                        <input
+                        <Input
+                            label="Price (₹) *"
                             type="number"
                             name="price"
                             value={formData.price}
@@ -181,41 +178,31 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
                             required
                             min="0"
                             step="0.01"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
                     {/* Category */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Category *
-                        </label>
-                        <select
+                        <Dropdown
+                            label="Category *"
                             name="category"
                             value={formData.category}
-                            onChange={handleChange}
+                            onChange={(value) => handleChange({ target: { name: 'category', value } })}
+                            options={categories.map(cat => ({ value: cat.name, label: cat.name }))}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                            {categories.map(cat => (
-                                <option key={cat._id} value={cat.name}>{cat.name}</option>
-                            ))}
-                        </select>
+                        />
                     </div>
 
                     {/* Stock */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Count in Stock *
-                        </label>
-                        <input
+                        <Input
+                            label="Count in Stock *"
                             type="number"
                             name="countInStock"
                             value={formData.countInStock}
                             onChange={handleChange}
                             required
                             min="0"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -250,16 +237,18 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
                                 </div>
                             )}
                             {(formData.image || previewImage) && (
-                                <button
+                                <Button
                                     type="button"
                                     onClick={() => {
                                         setFormData(prev => ({ ...prev, image: '' }));
                                         setPreviewImage('');
                                     }}
-                                    className="text-red-600 hover:text-red-800"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-800 p-1"
                                 >
                                     <X className="h-4 w-4" />
-                                </button>
+                                </Button>
                             )}
                         </div>
                     </div>
@@ -309,21 +298,23 @@ const ProductEdit = ({ productId, onSave, onCancel }) => {
 
                 {/* Form Actions */}
                 <div className="flex justify-end space-x-4">
-                    <button
+                    <Button
                         type="button"
                         onClick={onCancel}
-                        className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                        variant="outline"
                     >
                         Cancel
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="submit"
                         disabled={loading || uploading}
-                        className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                        loading={loading || uploading}
+                        variant="primary"
+                        icon={Save}
+                        iconPosition="left"
                     >
-                        <Save className="inline h-4 w-4 mr-2" />
                         {loading ? 'Saving...' : 'Save Product'}
-                    </button>
+                    </Button>
                 </div>
             </form>
         </div>

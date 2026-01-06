@@ -4,6 +4,8 @@ import axios from '../utils/api';
 import { User, MapPin, Phone, Mail, Edit2, Save, X, Plus, Trash2, Package, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import AddressForm from '../components/AddressForm';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
 
 const Profile = () => {
     const { userInfo, token, login, isLoading, isAuthenticated } = useAuth();
@@ -244,21 +246,21 @@ const Profile = () => {
                         <h2 className="text-xl font-semibold text-gray-900 mb-2">Unable to Load Profile</h2>
                         <p className="text-gray-600 mb-6">{profileError}</p>
                         <div className="space-x-4">
-                            <button
+                            <Button
                                 onClick={retryProfileLoad}
-                                className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+                                variant="primary"
                             >
                                 <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
                                 Try Again
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 onClick={() => window.location.reload()}
-                                className="inline-flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+                                variant="secondary"
                             >
                                 Refresh Page
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -426,30 +428,37 @@ const Profile = () => {
                             </div>
                         </div>
                         {!isEditing ? (
-                            <button
+                            <Button
                                 onClick={() => setIsEditing(true)}
-                                className="bg-white text-indigo-600 px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-indigo-50 flex items-center whitespace-nowrap text-sm sm:text-base"
+                                variant="outline"
+                                icon={Edit2}
+                                iconPosition="left"
+                                className="text-sm sm:text-base"
                             >
-                                <Edit2 className="h-4 w-4 mr-2 flex-shrink-0" />
-                                <span className="whitespace-nowrap">Edit Profile</span>
-                            </button>
+                                Edit Profile
+                            </Button>
                         ) : (
                             <div className="flex flex-col sm:flex-row gap-2 sm:space-x-2">
-                                <button
+                                <Button
                                     onClick={() => setIsEditing(false)}
-                                    className="bg-indigo-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-indigo-400 flex items-center whitespace-nowrap text-sm sm:text-base"
+                                    variant="primary"
+                                    icon={X}
+                                    iconPosition="left"
+                                    className="text-sm sm:text-base"
                                 >
-                                    <X className="h-4 w-4 mr-2 flex-shrink-0" />
-                                    <span className="whitespace-nowrap">Cancel</span>
-                                </button>
-                                <button
+                                    Cancel
+                                </Button>
+                                <Button
                                     onClick={handleSubmit}
                                     disabled={loading}
-                                    className="bg-white text-indigo-600 px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-indigo-50 disabled:opacity-50 flex items-center whitespace-nowrap text-sm sm:text-base"
+                                    loading={loading}
+                                    variant="outline"
+                                    icon={Save}
+                                    iconPosition="left"
+                                    className="text-sm sm:text-base"
                                 >
-                                    <Save className="h-4 w-4 mr-2 flex-shrink-0" />
-                                    <span className="whitespace-nowrap">{loading ? 'Saving...' : 'Save'}</span>
-                                </button>
+                                    {loading ? 'Saving...' : 'Save'}
+                                </Button>
                             </div>
                         )}
                     </div>
@@ -465,76 +474,52 @@ const Profile = () => {
                             {isEditing ? (
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Name
-                                        </label>
-                                        <input
+                                        <Input
+                                            label="Name"
                                             type="text"
                                             name="name"
                                             value={formData.name}
                                             onChange={(e) => {
                                                 handleChange(e);
-                                                // Clear error when user starts typing
                                                 if (formErrors.name) {
                                                     setFormErrors({ ...formErrors, name: '' });
                                                 }
                                             }}
-                                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                                formErrors.name ? 'border-red-500' : 'border-gray-300'
-                                            }`}
+                                            error={formErrors.name}
                                         />
-                                        {formErrors.name && (
-                                            <p className="text-xs text-red-600 mt-1">{formErrors.name}</p>
-                                        )}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Email
-                                        </label>
-                                        <input
+                                        <Input
+                                            label="Email"
                                             type="email"
                                             name="email"
                                             value={formData.email}
                                             onChange={(e) => {
                                                 handleChange(e);
-                                                // Clear error when user starts typing
                                                 if (formErrors.email) {
                                                     setFormErrors({ ...formErrors, email: '' });
                                                 }
                                             }}
                                             disabled
-                                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-                                                formErrors.email ? 'border-red-500' : 'border-gray-300'
-                                            }`}
+                                            helperText="Email cannot be changed"
+                                            error={formErrors.email}
                                         />
-                                        <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
-                                        {formErrors.email && (
-                                            <p className="text-xs text-red-600 mt-1">{formErrors.email}</p>
-                                        )}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Phone
-                                        </label>
-                                        <input
+                                        <Input
+                                            label="Phone"
                                             type="tel"
                                             name="phone"
                                             value={formData.phone}
                                             onChange={(e) => {
                                                 handleChange(e);
-                                                // Clear error when user starts typing
                                                 if (formErrors.phone) {
                                                     setFormErrors({ ...formErrors, phone: '' });
                                                 }
                                             }}
                                             placeholder="9876543210"
-                                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                                formErrors.phone ? 'border-red-500' : 'border-gray-300'
-                                            }`}
+                                            error={formErrors.phone}
                                         />
-                                        {formErrors.phone && (
-                                            <p className="text-xs text-red-600 mt-1">{formErrors.phone}</p>
-                                        )}
                                     </div>
                                 </form>
                             ) : (
@@ -561,9 +546,10 @@ const Profile = () => {
                         <div>
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">Orders</h2>
                             <div className="space-y-3">
-                                <button
+                                <Button
                                     onClick={() => navigate('/orders')}
-                                    className="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                                    variant="outline"
+                                    className="w-full flex items-center justify-between p-3"
                                 >
                                     <div className="flex items-center">
                                         <Package className="h-5 w-5 text-indigo-600 mr-3" />
@@ -573,7 +559,7 @@ const Profile = () => {
                                         </div>
                                     </div>
                                     <span className="text-gray-400">→</span>
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -582,13 +568,15 @@ const Profile = () => {
                     <div className="mt-8">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                             <h2 className="text-lg font-semibold text-gray-900">Shipping Addresses</h2>
-                            <button
+                            <Button
                                 onClick={() => setShowAddressForm(true)}
-                                className="bg-indigo-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-indigo-700 flex items-center whitespace-nowrap text-sm sm:text-base"
+                                variant="primary"
+                                icon={Plus}
+                                iconPosition="left"
+                                className="text-sm sm:text-base"
                             >
-                                <Plus className="h-4 w-4 mr-2 flex-shrink-0" />
-                                <span className="whitespace-nowrap">Add Address</span>
-                            </button>
+                                Add Address
+                            </Button>
                         </div>
 
                         {showAddressForm && (
@@ -626,19 +614,23 @@ const Profile = () => {
                                             </div>
                                             <div className="flex space-x-2 ml-4">
                                                 {!address.isDefault && (
-                                                    <button
+                                                    <Button
                                                         onClick={() => handleSetDefaultAddress(index)}
-                                                        className="text-indigo-600 hover:text-indigo-800 text-sm"
+                                                        variant="link"
+                                                        size="sm"
+                                                        className="text-indigo-600 hover:text-indigo-800"
                                                     >
                                                         Set Default
-                                                    </button>
+                                                    </Button>
                                                 )}
-                                                <button
+                                                <Button
                                                     onClick={() => handleDeleteAddress(index)}
-                                                    className="text-red-600 hover:text-red-800"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-red-600 hover:text-red-800 p-1"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
-                                                </button>
+                                                </Button>
                                             </div>
                                         </div>
                                     </div>

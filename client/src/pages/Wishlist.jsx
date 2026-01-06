@@ -5,6 +5,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { formatCurrency } from '../utils/currency';
+import Button from '../components/ui/Button';
 
 const Wishlist = () => {
     const { wishlistItems, loading, error, removeFromWishlist, moveToCart, fetchWishlist } = useWishlist();
@@ -152,49 +153,41 @@ const Wishlist = () => {
                                 {/* Action Buttons */}
                                 <div className="space-y-2">
                                     {item.product.countInStock > 0 ? (
-                                        <button
+                                        <Button
                                             onClick={() => handleMoveToCart(item.product)}
                                             disabled={actionLoading[item.product._id]}
-                                            className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            loading={actionLoading[item.product._id]}
+                                            variant="primary"
+                                            size="sm"
+                                            icon={ShoppingCart}
+                                            iconPosition="left"
+                                            className="w-full"
                                         >
-                                            {actionLoading[item.product._id] ? (
-                                                <span className="flex items-center">
-                                                    <Package className="h-4 w-4 mr-2 animate-spin" />
-                                                    Moving...
-                                                </span>
-                                            ) : (
-                                                <span className="flex items-center">
-                                                    <ShoppingCart className="h-4 w-4 mr-2" />
-                                                    Move to Cart
-                                                </span>
-                                            )}
-                                        </button>
+                                            {actionLoading[item.product._id] ? 'Moving...' : 'Move to Cart'}
+                                        </Button>
                                     ) : (
-                                        <button
+                                        <Button
                                             disabled
-                                            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 cursor-not-allowed"
+                                            variant="outline"
+                                            size="sm"
+                                            className="w-full"
                                         >
                                             Out of Stock
-                                        </button>
+                                        </Button>
                                     )}
 
-                                    <button
+                                    <Button
                                         onClick={() => handleRemoveFromWishlist(item.product._id)}
                                         disabled={actionLoading[item.product._id]}
-                                        className="w-full flex items-center justify-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        loading={actionLoading[item.product._id]}
+                                        variant="outline"
+                                        size="sm"
+                                        icon={Trash2}
+                                        iconPosition="left"
+                                        className="w-full border-red-300 text-red-600 hover:bg-red-50"
                                     >
-                                        {actionLoading[item.product._id] ? (
-                                            <span className="flex items-center">
-                                                <Package className="h-4 w-4 mr-2 animate-spin" />
-                                                Removing...
-                                            </span>
-                                        ) : (
-                                            <span className="flex items-center">
-                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                Remove
-                                            </span>
-                                        )}
-                                    </button>
+                                        {actionLoading[item.product._id] ? 'Removing...' : 'Remove'}
+                                    </Button>
                                 </div>
                             </div>
                         </div>

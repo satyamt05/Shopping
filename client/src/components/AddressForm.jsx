@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Plus, X, Save } from 'lucide-react';
+import Button from './ui/Button';
+import Input from './ui/Input';
 
 const AddressForm = ({ 
     initialAddress = null, 
@@ -111,13 +113,15 @@ const AddressForm = ({
                     {initialAddress ? 'Edit Address' : 'Add New Address'}
                 </h3>
                 {onCancel && (
-                    <button
+                    <Button
                         type="button"
                         onClick={onCancel}
-                        className="text-gray-400 hover:text-gray-600"
+                        variant="ghost"
+                        size="sm"
+                        className="text-gray-400 hover:text-gray-600 p-1"
                     >
                         <X className="h-5 w-5" />
-                    </button>
+                    </Button>
                 )}
             </div>
             
@@ -125,107 +129,72 @@ const AddressForm = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Street Address */}
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Street Address *
-                        </label>
-                        <input
+                        <Input
+                            label="Street Address *"
                             type="text"
                             name="street"
                             value={formData.street}
                             onChange={handleChange}
                             placeholder="123 Main Street, Apartment 4B, Sector 15"
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                errors.street ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            error={errors.street}
                             required
                         />
-                        {errors.street && (
-                            <p className="text-xs text-red-600 mt-1">{errors.street}</p>
-                        )}
                     </div>
 
                     {/* City */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            City *
-                        </label>
-                        <input
+                        <Input
+                            label="City *"
                             type="text"
                             name="city"
                             value={formData.city}
                             onChange={handleChange}
                             placeholder="Mumbai"
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                errors.city ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            error={errors.city}
                             required
                         />
-                        {errors.city && (
-                            <p className="text-xs text-red-600 mt-1">{errors.city}</p>
-                        )}
                     </div>
 
                     {/* State */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            State *
-                        </label>
-                        <input
+                        <Input
+                            label="State *"
                             type="text"
                             name="state"
                             value={formData.state}
                             onChange={handleChange}
                             placeholder="Maharashtra"
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                errors.state ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            error={errors.state}
                             required
                         />
-                        {errors.state && (
-                            <p className="text-xs text-red-600 mt-1">{errors.state}</p>
-                        )}
                     </div>
 
                     {/* Postal Code */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Postal Code *
-                        </label>
-                        <input
+                        <Input
+                            label="Postal Code *"
                             type="text"
                             name="postalCode"
                             value={formData.postalCode}
                             onChange={handleChange}
                             placeholder="400001"
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                errors.postalCode ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            error={errors.postalCode}
                             required
                         />
-                        {errors.postalCode && (
-                            <p className="text-xs text-red-600 mt-1">{errors.postalCode}</p>
-                        )}
                     </div>
 
                     {/* Country */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Country *
-                        </label>
-                        <input
+                        <Input
+                            label="Country *"
                             type="text"
                             name="country"
                             value={formData.country}
                             onChange={handleChange}
                             placeholder="India"
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                                errors.country ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            error={errors.country}
                             required
                         />
-                        {errors.country && (
-                            <p className="text-xs text-red-600 mt-1">{errors.country}</p>
-                        )}
                     </div>
                 </div>
 
@@ -246,34 +215,27 @@ const AddressForm = ({
 
                 {/* Action Buttons */}
                 <div className="flex space-x-3 pt-4 border-t border-gray-200">
-                    <button
+                    <Button
                         type="button"
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        loading={loading}
+                        variant="primary"
+                        icon={Save}
+                        iconPosition="left"
                     >
-                        {loading ? (
-                            <>
-                                <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                Saving...
-                            </>
-                        ) : (
-                            <>
-                                <Save className="h-4 w-4 mr-2" />
-                                {submitButtonText}
-                            </>
-                        )}
-                    </button>
+                        {loading ? 'Saving...' : submitButtonText}
+                    </Button>
                     
                     {showCancelButton && onCancel && (
-                        <button
+                        <Button
                             type="button"
                             onClick={onCancel}
                             disabled={loading}
-                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                            variant="secondary"
                         >
                             Cancel
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>

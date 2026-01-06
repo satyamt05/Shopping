@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
+import Button from './ui/Button';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -68,13 +69,14 @@ const Navbar = () => {
                         )}
                         {isAuthenticated ? (
                             <div className="relative" ref={userMenuRef}>
-                                <button
+                                <Button
                                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                    className="text-gray-700 hover:text-indigo-600 transition flex items-center"
+                                    variant="ghost"
+                                    className="text-gray-700 hover:text-indigo-600 flex items-center"
                                 >
                                     <User className="h-6 w-6" />
                                     <span className="ml-2 text-sm">{userInfo?.name}</span>
-                                </button>
+                                </Button>
                                 {isUserMenuOpen && (
                                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
                                         {userInfo?.isAdmin && (
@@ -93,13 +95,16 @@ const Navbar = () => {
                                         >
                                             Profile
                                         </Link>
-                                        <button
+                                        <Button
                                             onClick={handleLogout}
-                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            variant="ghost"
+                                            size="sm"
+                                            icon={LogOut}
+                                            iconPosition="left"
+                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-none"
                                         >
-                                            <LogOut className="inline h-4 w-4 mr-2" />
                                             Logout
-                                        </button>
+                                        </Button>
                                     </div>
                                 )}
                             </div>
@@ -110,12 +115,14 @@ const Navbar = () => {
                         )}
                     </div>
                     <div className="-mr-2 flex md:hidden">
-                        <button
+                        <Button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none"
+                            variant="ghost"
+                            size="sm"
+                            className="p-2 text-gray-400 hover:text-gray-500"
                         >
                             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -147,15 +154,16 @@ const Navbar = () => {
                                 <Link to="/profile" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium transition ${location.pathname === '/profile' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50'}`}>
                                     Profile
                                 </Link>
-                                <button
+                                <Button
                                     onClick={() => {
                                         handleLogout();
                                         setIsOpen(false);
                                     }}
+                                    variant="ghost"
                                     className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
                                 >
                                     Logout
-                                </button>
+                                </Button>
                             </>
                         ) : (
                             <Link to="/login" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">Login</Link>

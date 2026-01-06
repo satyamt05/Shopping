@@ -3,6 +3,8 @@ import { Tag, Check, X, Loader, Gift } from 'lucide-react';
 import axios from '../utils/api';
 import { formatCurrency } from '../utils/currency';
 import AvailableCoupons from './AvailableCoupons';
+import Button from './ui/Button';
+import Input from './ui/Input';
 
 const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved }) => {
     const [couponCode, setCouponCode] = useState('');
@@ -86,27 +88,26 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
                 {!appliedCoupon ? (
                     <div className="space-y-3">
                         <div className="flex flex-col sm:flex-row gap-2">
-                            <input
+                            <Input
                                 type="text"
                                 value={couponCode}
                                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                                 onKeyPress={handleKeyPress}
                                 placeholder="Enter coupon code"
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 disabled={loading}
+                                className="flex-1"
                             />
-                            <button
+                            <Button
                                 onClick={handleApplyCoupon}
                                 disabled={loading || !couponCode.trim()}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+                                loading={loading}
+                                variant="primary"
+                                icon={Check}
+                                iconPosition="left"
+                                className="sm:w-auto"
                             >
-                                {loading ? (
-                                    <Loader className="h-4 w-4 animate-spin mr-2" />
-                                ) : (
-                                    <Check className="h-4 w-4 mr-2" />
-                                )}
                                 Apply
-                            </button>
+                            </Button>
                         </div>
 
                         {error && (
@@ -145,13 +146,15 @@ const CouponApply = ({ orderAmount, cartItems, onCouponApplied, onCouponRemoved 
                                         </span>
                                     </div>
                                 </div>
-                                <button
+                                <Button
                                     onClick={handleRemoveCoupon}
+                                    variant="ghost"
+                                    size="sm"
                                     className="text-red-600 hover:text-red-800 p-1"
                                     title="Remove coupon"
                                 >
                                     <X className="h-4 w-4" />
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>

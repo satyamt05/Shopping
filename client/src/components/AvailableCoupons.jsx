@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Tag, Calendar, Users, Check, Info, X } from 'lucide-react';
 import axios from '../utils/api';
 import { formatCurrency } from '../utils/currency';
+import Button from './ui/Button';
 
 const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
     const [coupons, setCoupons] = useState([]);
@@ -178,16 +179,19 @@ const AvailableCoupons = ({ onCouponSelect, orderAmount, cartItems }) => {
                         
                         {/* Expandable Details */}
                         <div className="mt-3 pt-3 border-t border-gray-100">
-                            <button
+                            <Button
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setShowDetails(showDetails === coupon._id ? null : coupon._id);
                                 }}
-                                className="flex items-center text-xs text-indigo-600 hover:text-indigo-800"
+                                variant="link"
+                                size="sm"
+                                icon={Info}
+                                iconPosition="left"
+                                className="text-xs"
                             >
-                                <Info className="h-3 w-3 mr-1 flex-shrink-0" />
                                 {showDetails === coupon._id ? 'Hide' : 'Show'} Details
-                            </button>
+                            </Button>
                             
                             {showDetails === coupon._id && (
                                 <div className="mt-2 text-xs text-gray-600 space-y-1">

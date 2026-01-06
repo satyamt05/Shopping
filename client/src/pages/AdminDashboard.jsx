@@ -8,6 +8,9 @@ import ProductEdit from './ProductEdit';
 import CategoryEdit from './CategoryEdit';
 import DiscountCouponManager from '../components/DiscountCouponManager';
 import { formatCurrency } from '../utils/currency';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Dropdown from '../components/ui/Dropdown';
 
 const AdminDashboard = () => {
     const [products, setProducts] = useState([]);
@@ -327,76 +330,83 @@ const AdminDashboard = () => {
             {/* Tabs */}
             <div className="border-b border-gray-200 mb-8">
                 <nav className="-mb-px flex space-x-8">
-                    <button
+                    <Button
                         onClick={() => setActiveTab('dashboard')}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        variant="ghost"
+                        className={`py-2 px-1 border-b-2 font-medium text-sm rounded-none ${
                             activeTab === 'dashboard'
                                 ? 'border-indigo-500 text-indigo-600'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     >
                         Dashboard
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => setActiveTab('products')}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        variant="ghost"
+                        className={`py-2 px-1 border-b-2 font-medium text-sm rounded-none ${
                             activeTab === 'products'
                                 ? 'border-indigo-500 text-indigo-600'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     >
                         Products
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => setActiveTab('categories')}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        variant="ghost"
+                        className={`py-2 px-1 border-b-2 font-medium text-sm rounded-none ${
                             activeTab === 'categories'
                                 ? 'border-indigo-500 text-indigo-600'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     >
                         Categories
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => setActiveTab('orders')}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        variant="ghost"
+                        className={`py-2 px-1 border-b-2 font-medium text-sm rounded-none ${
                             activeTab === 'orders'
                                 ? 'border-indigo-500 text-indigo-600'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     >
                         Orders
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => setActiveTab('users')}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        variant="ghost"
+                        className={`py-2 px-1 border-b-2 font-medium text-sm rounded-none ${
                             activeTab === 'users'
                                 ? 'border-indigo-500 text-indigo-600'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     >
                         Users
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => setActiveTab('coupons')}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        variant="ghost"
+                        className={`py-2 px-1 border-b-2 font-medium text-sm rounded-none ${
                             activeTab === 'coupons'
                                 ? 'border-indigo-500 text-indigo-600'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     >
                         Coupons
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => setActiveTab('settings')}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        variant="ghost"
+                        className={`py-2 px-1 border-b-2 font-medium text-sm rounded-none ${
                             activeTab === 'settings'
                                 ? 'border-indigo-500 text-indigo-600'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     >
                         Settings
-                    </button>
+                    </Button>
                 </nav>
             </div>
 
@@ -553,39 +563,38 @@ const AdminDashboard = () => {
                 <div>
                     <div className="flex justify-between items-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900">Product Management</h1>
-                        <button 
-                            onClick={handleCreateProduct} 
-                            className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                        <Button 
+                            onClick={handleCreateProduct}
+                            variant="primary"
+                            icon={Plus}
+                            iconPosition="left"
                         >
-                            <Plus className="h-5 w-5 mr-2" /> Add Product
-                        </button>
+                            Add Product
+                        </Button>
                     </div>
 
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
                 <div className="flex-1">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Search products..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                    </div>
+                    <Input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        icon={Search}
+                        iconPosition="left"
+                    />
                 </div>
                 <div className="sm:w-48">
-                    <select
+                    <Dropdown
                         value={filterCategory}
-                        onChange={(e) => setFilterCategory(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        <option value="">All Categories</option>
-                        {categoryOptions.map(cat => (
-                            <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                    </select>
+                        onChange={(value) => setFilterCategory(value)}
+                        options={[
+                            { value: '', label: 'All Categories' },
+                            ...categoryOptions.map(cat => ({ value: cat, label: cat }))
+                        ]}
+                        placeholder="All Categories"
+                    />
                 </div>
             </div>
 
@@ -656,20 +665,24 @@ const AdminDashboard = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div className="flex space-x-2">
-                                                <button
+                                                <Button
                                                     onClick={() => handleEditProduct(product)}
-                                                    className="text-indigo-600 hover:text-indigo-900"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-indigo-600 hover:text-indigo-900 p-1"
                                                     title="Edit product"
                                                 >
                                                     <Edit className="h-5 w-5" />
-                                                </button>
-                                                <button
+                                                </Button>
+                                                <Button
                                                     onClick={() => deleteHandler(product._id)}
-                                                    className="text-red-600 hover:text-red-900"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-red-600 hover:text-red-900 p-1"
                                                     title="Delete product"
                                                 >
                                                     <Trash2 className="h-5 w-5" />
-                                                </button>
+                                                </Button>
                                             </div>
                                         </td>
                                     </tr>
@@ -693,12 +706,14 @@ const AdminDashboard = () => {
                 <div>
                     <div className="flex justify-between items-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900">Category Management</h1>
-                        <button 
-                            onClick={handleCreateCategory} 
-                            className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                        <Button 
+                            onClick={handleCreateCategory}
+                            variant="primary"
+                            icon={Plus}
+                            iconPosition="left"
                         >
-                            <Plus className="h-5 w-5 mr-2" /> Add Category
-                        </button>
+                            Add Category
+                        </Button>
                     </div>
 
                     <div className="bg-white shadow overflow-hidden sm:rounded-md">
@@ -755,20 +770,24 @@ const AdminDashboard = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div className="flex space-x-2">
-                                                    <button
+                                                    <Button
                                                         onClick={() => handleEditCategory(category)}
-                                                        className="text-indigo-600 hover:text-indigo-900"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-indigo-600 hover:text-indigo-900 p-1"
                                                         title="Edit category"
                                                     >
                                                         <Edit className="h-5 w-5" />
-                                                    </button>
-                                                    <button
+                                                    </Button>
+                                                    <Button
                                                         onClick={() => deleteCategoryHandler(category._id)}
-                                                        className="text-red-600 hover:text-red-900"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-red-600 hover:text-red-900 p-1"
                                                         title="Delete category"
                                                     >
                                                         <Trash2 className="h-5 w-5" />
-                                                    </button>
+                                                    </Button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -884,13 +903,16 @@ const AdminDashboard = () => {
                                                 <div className="text-sm text-gray-900">
                                                     {order.orderItems?.length || 0} items
                                                 </div>
-                                                <button
+                                                <Button
                                                     onClick={() => handleViewOrderItems(order)}
-                                                    className="text-indigo-600 hover:text-indigo-900 text-xs font-medium flex items-center"
+                                                    variant="link"
+                                                    size="sm"
+                                                    icon={Eye}
+                                                    iconPosition="left"
+                                                    className="text-xs"
                                                 >
-                                                    <Eye className="h-3 w-3 mr-1" />
                                                     View Items
-                                                </button>
+                                                </Button>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div className="w-full">
@@ -942,31 +964,40 @@ const AdminDashboard = () => {
                                                     {/* Action Button */}
                                                     <div className="flex justify-center">
                                                         {order.status === 'Processing' && (
-                                                            <button
+                                                            <Button
                                                                 onClick={() => updateOrderStatus(order._id, 'Shipped')}
-                                                                className="inline-flex items-center px-3 py-1.5 border border-blue-300 text-xs font-medium rounded text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                icon={Truck}
+                                                                iconPosition="left"
+                                                                className="border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 text-xs"
                                                             >
-                                                                <Truck className="h-3 w-3 mr-1" />
                                                                 Mark as Shipped
-                                                            </button>
+                                                            </Button>
                                                         )}
                                                         {order.status === 'Shipped' && (
-                                                            <button
+                                                            <Button
                                                                 onClick={() => updateOrderStatus(order._id, 'Delivered')}
-                                                                className="inline-flex items-center px-3 py-1.5 border border-green-300 text-xs font-medium rounded text-green-700 bg-green-50 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                icon={CheckCircle}
+                                                                iconPosition="left"
+                                                                className="border-green-300 text-green-700 bg-green-50 hover:bg-green-100 text-xs"
                                                             >
-                                                                <CheckCircle className="h-3 w-3 mr-1" />
                                                                 Mark as Delivered
-                                                            </button>
+                                                            </Button>
                                                         )}
                                                         {order.status === 'Delivered' && (
-                                                            <button
+                                                            <Button
                                                                 onClick={() => updateOrderStatus(order._id, 'Processing')}
-                                                                className="inline-flex items-center px-3 py-1.5 border border-yellow-300 text-xs font-medium rounded text-yellow-700 bg-yellow-50 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                icon={Clock}
+                                                                iconPosition="left"
+                                                                className="border-yellow-300 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 text-xs"
                                                             >
-                                                                <Clock className="h-3 w-3 mr-1" />
                                                                 Reset to Processing
-                                                            </button>
+                                                            </Button>
                                                         )}
                                                     </div>
                                                 </div>
@@ -994,12 +1025,14 @@ const AdminDashboard = () => {
                             <h3 className="text-lg font-bold text-gray-900">
                                 Order Items - #{selectedOrder._id.slice(-8)}
                             </h3>
-                            <button
+                            <Button
                                 onClick={handleCloseOrderItems}
-                                className="text-gray-400 hover:text-gray-600"
+                                variant="ghost"
+                                size="sm"
+                                className="text-gray-400 hover:text-gray-600 p-1"
                             >
                                 <X className="h-6 w-6" />
-                            </button>
+                            </Button>
                         </div>
 
                         <div className="mb-4">
@@ -1090,12 +1123,13 @@ const AdminDashboard = () => {
                         </div>
 
                         <div className="flex justify-end mt-4 pt-4 border-t">
-                            <button
+                            <Button
                                 onClick={handleCloseOrderItems}
-                                className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-medium"
+                                variant="primary"
+                                size="sm"
                             >
                                 Close
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -1211,64 +1245,52 @@ const AdminDashboard = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {/* Standard Shipping Cost */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Standard Shipping Cost (₹)
-                                            </label>
-                                            <input
+                                            <Input
+                                                label="Standard Shipping Cost (₹)"
                                                 type="number"
                                                 min="0"
                                                 value={shippingConfig.standardShippingCost}
                                                 onChange={(e) => handleShippingConfigChange('standardShippingCost', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                helperText="Cost for standard delivery"
                                             />
-                                            <p className="mt-1 text-xs text-gray-500">Cost for standard delivery</p>
                                         </div>
 
                                         {/* Free Shipping Threshold */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Free Shipping Threshold (₹)
-                                            </label>
-                                            <input
+                                            <Input
+                                                label="Free Shipping Threshold (₹)"
                                                 type="number"
                                                 min="0"
                                                 value={shippingConfig.freeShippingThreshold}
                                                 onChange={(e) => handleShippingConfigChange('freeShippingThreshold', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                helperText="Order amount for free shipping"
                                             />
-                                            <p className="mt-1 text-xs text-gray-500">Order amount for free shipping</p>
                                         </div>
 
                                         {/* Express Shipping Cost */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Express Shipping Cost (₹)
-                                            </label>
-                                            <input
+                                            <Input
+                                                label="Express Shipping Cost (₹)"
                                                 type="number"
                                                 min="0"
                                                 value={shippingConfig.expressShippingCost}
                                                 onChange={(e) => handleShippingConfigChange('expressShippingCost', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                helperText="Cost for express delivery"
                                             />
-                                            <p className="mt-1 text-xs text-gray-500">Cost for express delivery</p>
                                         </div>
 
                                         {/* Tax Rate */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Tax Rate (GST %)
-                                            </label>
-                                            <input
+                                            <Input
+                                                label="Tax Rate (GST %)"
                                                 type="number"
                                                 min="0"
                                                 max="1"
                                                 step="0.01"
                                                 value={shippingConfig.taxRate * 100}
                                                 onChange={(e) => handleShippingConfigChange('taxRate', e.target.value / 100)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                helperText="Tax rate as percentage (e.g., 18 for 18%)"
                                             />
-                                            <p className="mt-1 text-xs text-gray-500">Tax rate as percentage (e.g., 18 for 18%)</p>
                                         </div>
                                     </div>
 
@@ -1321,20 +1343,14 @@ const AdminDashboard = () => {
 
                                     {/* Save Button */}
                                     <div className="flex justify-end">
-                                        <button
+                                        <Button
                                             type="submit"
                                             disabled={shippingSaving}
-                                            className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                                            loading={shippingSaving}
+                                            variant="primary"
                                         >
-                                            {shippingSaving ? (
-                                                <>
-                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                                    Saving...
-                                                </>
-                                            ) : (
-                                                'Save Configuration'
-                                            )}
-                                        </button>
+                                            {shippingSaving ? 'Saving...' : 'Save Configuration'}
+                                        </Button>
                                     </div>
                                 </form>
                             )}

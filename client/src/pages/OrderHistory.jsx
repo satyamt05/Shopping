@@ -6,6 +6,9 @@ import { useToast } from '../context/ToastContext';
 import { Package, Truck, CheckCircle, Clock, XCircle, Download, Eye, Search, Filter } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 import { downloadInvoicePDF } from '../utils/invoice';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Dropdown from '../components/ui/Dropdown';
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
@@ -123,30 +126,29 @@ const OrderHistory = () => {
             <div className="bg-white shadow rounded-lg p-4 mb-6">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex-1">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Search by order ID or product name..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                        </div>
+                        <Input
+                            type="text"
+                            placeholder="Search by order ID or product name..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            icon={Search}
+                            iconPosition="left"
+                        />
                     </div>
                     <div className="flex items-center space-x-2">
                         <Filter className="h-5 w-5 text-gray-400" />
-                        <select
+                        <Dropdown
                             value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                            <option value="all">All Orders</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
+                            onChange={(value) => setStatusFilter(value)}
+                            options={[
+                                { value: 'all', label: 'All Orders' },
+                                { value: 'Processing', label: 'Processing' },
+                                { value: 'Shipped', label: 'Shipped' },
+                                { value: 'Delivered', label: 'Delivered' },
+                                { value: 'Cancelled', label: 'Cancelled' }
+                            ]}
+                            className="min-w-[150px]"
+                        />
                     </div>
                 </div>
             </div>
@@ -162,12 +164,12 @@ const OrderHistory = () => {
                             : 'You haven\'t placed any orders yet'}
                     </p>
                     {!searchTerm && statusFilter === 'all' && (
-                        <button
+                        <Button
                             onClick={() => navigate('/shop')}
-                            className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition"
+                            variant="primary"
                         >
                             Start Shopping
-                        </button>
+                        </Button>
                     )}
                 </div>
             ) : (
@@ -240,20 +242,24 @@ const OrderHistory = () => {
                                         </p>
                                     </div>
                                     <div className="flex space-x-3">
-                                        <button
+                                        <Button
                                             onClick={() => navigate(`/order/${order._id}`)}
-                                            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                            variant="outline"
+                                            size="sm"
+                                            icon={Eye}
+                                            iconPosition="left"
                                         >
-                                            <Eye className="h-4 w-4 mr-2" />
                                             View Details
-                                        </button>
-                                        <button
+                                        </Button>
+                                        <Button
                                             onClick={() => handleDownloadInvoice(order)}
-                                            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                            variant="outline"
+                                            size="sm"
+                                            icon={Download}
+                                            iconPosition="left"
                                         >
-                                            <Download className="h-4 w-4 mr-2" />
                                             Invoice
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             </div>

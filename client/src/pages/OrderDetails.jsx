@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext';
 import { ArrowLeft, Package, Truck, DollarSign, CheckCircle, Download } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 import { downloadInvoicePDF } from '../utils/invoice';
+import Button from '../components/ui/Button';
 
 const OrderDetails = () => {
     const { id } = useParams();
@@ -193,25 +194,32 @@ const OrderDetails = () => {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button
+                <Button
                     onClick={() => navigate('/')}
-                    className="flex-1 sm:flex-none bg-indigo-600 text-white px-6 py-3 rounded-md font-medium hover:bg-indigo-700 transition"
+                    variant="primary"
+                    size="lg"
+                    className="flex-1 sm:flex-none"
                 >
                     Continue Shopping
-                </button>
-                <button
+                </Button>
+                <Button
                     onClick={() => navigate('/profile')}
-                    className="flex-1 sm:flex-none bg-gray-200 text-gray-800 px-6 py-3 rounded-md font-medium hover:bg-gray-300 transition"
+                    variant="secondary"
+                    size="lg"
+                    className="flex-1 sm:flex-none"
                 >
                     View Profile
-                </button>
-                <button
+                </Button>
+                <Button
                     onClick={handleDownloadInvoice}
-                    className="flex-1 sm:flex-none bg-green-600 text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 transition flex items-center justify-center"
+                    variant="success"
+                    size="lg"
+                    icon={Download}
+                    iconPosition="left"
+                    className="flex-1 sm:flex-none"
                 >
-                    <Download className="h-4 w-4 mr-2" />
                     Download Invoice
-                </button>
+                </Button>
             </div>
         </div>
     );

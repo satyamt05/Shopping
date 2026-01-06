@@ -7,6 +7,7 @@ import { formatCurrency } from '../utils/currency';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
+import Button from './ui/Button';
 
 const ProductCard = ({ product }) => {
     const { addToCart, cartItems } = useCart();
@@ -100,35 +101,28 @@ const ProductCard = ({ product }) => {
                     </div>
                     <div className="flex space-x-2">
                         {/* Wishlist Button */}
-                        <button 
+                        <Button 
                             onClick={handleWishlistToggle}
                             disabled={wishlistLoading}
-                            className={`p-2 rounded-lg transition-colors ${
-                                isInWishlist
-                                    ? 'bg-red-500 text-white hover:bg-red-600'
-                                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                            } ${wishlistLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            loading={wishlistLoading}
+                            variant={isInWishlist ? 'danger' : 'secondary'}
+                            size="sm"
+                            className="p-2"
                         >
-                            {wishlistLoading ? (
-                                <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
-                            ) : (
-                                <Heart className={`h-5 w-5 ${isInWishlist ? 'fill-current' : ''}`} />
-                            )}
-                        </button>
+                            <Heart className={`h-5 w-5 ${isInWishlist ? 'fill-current' : ''}`} />
+                        </Button>
                         
                         {/* Cart Button */}
                         {!isInCart && (
-                            <button 
+                            <Button 
                                 onClick={handleAddToCart}
                                 disabled={product.countInStock <= 0}
-                                className={`p-2 rounded-lg transition-colors ${
-                                    product.countInStock > 0 
-                                        ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                }`}
+                                variant={product.countInStock > 0 ? 'primary' : 'secondary'}
+                                size="sm"
+                                className="p-2"
                             >
                                 <ShoppingCart className="h-5 w-5" />
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </div>

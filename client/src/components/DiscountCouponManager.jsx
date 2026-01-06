@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Edit, Trash2, Calendar, Tag, Percent, DollarSign, Check, X, Eye } from 'lucide-react';
 import axios from '../utils/api';
 import { formatCurrency } from '../utils/currency';
+import Button from './ui/Button';
+import Input from './ui/Input';
+import Dropdown from './ui/Dropdown';
 
 const DiscountCouponManager = () => {
     const [coupons, setCoupons] = useState([]);
@@ -135,13 +138,14 @@ const DiscountCouponManager = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-900">Discount Coupons</h2>
-                <button
+                <Button
                     onClick={() => setShowForm(true)}
-                    className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    variant="primary"
+                    icon={Plus}
+                    iconPosition="left"
                 >
-                    <Plus className="h-5 w-5 mr-2" />
                     Add Coupon
-                </button>
+                </Button>
             </div>
 
             {showForm && (
@@ -152,88 +156,79 @@ const DiscountCouponManager = () => {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Coupon Code</label>
-                                <input
+                                <Input
+                                    label="Coupon Code"
                                     type="text"
                                     value={formData.code}
                                     onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Description</label>
-                                <input
+                                <Input
+                                    label="Description"
                                     type="text"
                                     value={formData.description}
                                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Discount Type</label>
-                                <select
+                                <Dropdown
+                                    label="Discount Type"
                                     value={formData.discountType}
-                                    onChange={(e) => setFormData({...formData, discountType: e.target.value})}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                >
-                                    <option value="PERCENTAGE">Percentage</option>
-                                    <option value="FIXED_AMOUNT">Fixed Amount</option>
-                                </select>
+                                    onChange={(value) => setFormData({...formData, discountType: value})}
+                                    options={[
+                                        { value: 'PERCENTAGE', label: 'Percentage' },
+                                        { value: 'FIXED_AMOUNT', label: 'Fixed Amount' }
+                                    ]}
+                                />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    {formData.discountType === 'PERCENTAGE' ? 'Discount (%)' : 'Discount Amount'}
-                                </label>
-                                <input
+                                <Input
+                                    label={formData.discountType === 'PERCENTAGE' ? 'Discount (%)' : 'Discount Amount'}
                                     type="number"
                                     value={formData.discountValue}
                                     onChange={(e) => setFormData({...formData, discountValue: e.target.value})}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     min="0"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Minimum Order Amount</label>
-                                <input
+                                <Input
+                                    label="Minimum Order Amount"
                                     type="number"
                                     value={formData.minimumOrderAmount}
                                     onChange={(e) => setFormData({...formData, minimumOrderAmount: e.target.value})}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     min="0"
                                 />
                             </div>
                             {formData.discountType === 'PERCENTAGE' && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Maximum Discount Amount</label>
-                                    <input
+                                    <Input
+                                        label="Maximum Discount Amount"
                                         type="number"
                                         value={formData.maximumDiscountAmount}
                                         onChange={(e) => setFormData({...formData, maximumDiscountAmount: e.target.value})}
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         min="0"
                                     />
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Usage Limit</label>
-                                <input
+                                <Input
+                                    label="Usage Limit"
                                     type="number"
                                     value={formData.usageLimit}
                                     onChange={(e) => setFormData({...formData, usageLimit: e.target.value})}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     min="1"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Valid Until</label>
-                                <input
+                                <Input
+                                    label="Valid Until"
                                     type="date"
                                     value={formData.validUntil}
                                     onChange={(e) => setFormData({...formData, validUntil: e.target.value})}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     required
                                 />
                             </div>
@@ -251,19 +246,19 @@ const DiscountCouponManager = () => {
                             </label>
                         </div>
                         <div className="flex justify-end space-x-3">
-                            <button
+                            <Button
                                 type="button"
                                 onClick={handleCancel}
-                                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                                variant="outline"
                             >
                                 Cancel
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 type="submit"
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                variant="primary"
                             >
                                 {editingCoupon ? 'Update' : 'Create'} Coupon
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>
@@ -352,18 +347,22 @@ const DiscountCouponManager = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div className="flex space-x-2">
-                                            <button
+                                            <Button
                                                 onClick={() => handleEdit(coupon)}
-                                                className="text-indigo-600 hover:text-indigo-900"
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-indigo-600 hover:text-indigo-900 p-1"
                                             >
                                                 <Edit className="h-4 w-4" />
-                                            </button>
-                                            <button
+                                            </Button>
+                                            <Button
                                                 onClick={() => handleDelete(coupon._id)}
-                                                className="text-red-600 hover:text-red-900"
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-red-600 hover:text-red-900 p-1"
                                             >
                                                 <Trash2 className="h-4 w-4" />
-                                            </button>
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>

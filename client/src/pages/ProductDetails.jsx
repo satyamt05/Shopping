@@ -5,6 +5,8 @@ import axios from '../utils/api';
 import { Star, ArrowLeft, ShoppingCart, Truck, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatCurrency, fetchShippingConfig } from '../utils/currency';
+import Button from '../components/ui/Button';
+import Dropdown from '../components/ui/Dropdown';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -90,31 +92,29 @@ const ProductDetails = () => {
                     <div className="border-t border-gray-200 pt-6">
                         <div className="flex items-center mb-6">
                             <label htmlFor="qty" className="mr-4 font-medium text-gray-700">Quantity:</label>
-                            <select
+                            <Dropdown
                                 id="qty"
                                 value={qty}
-                                onChange={(e) => setQty(Number(e.target.value))}
-                                className="bg-white border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                {[...Array(product.countInStock).keys()].map((x) => (
-                                    <option key={x + 1} value={x + 1}>
-                                        {x + 1}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={(value) => setQty(Number(value))}
+                                options={[...Array(product.countInStock).keys()].map((x) => ({
+                                    value: x + 1,
+                                    label: `${x + 1}`
+                                }))}
+                                className="w-24"
+                            />
                         </div>
 
-                        <button
+                        <Button
                             onClick={addToCartHandler}
                             disabled={product.countInStock === 0}
-                            className={`w-full flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-white ${product.countInStock > 0 ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-not-allowed'} transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                            variant={product.countInStock > 0 ? 'primary' : 'secondary'}
+                            size="lg"
+                            icon={ShoppingCart}
+                            iconPosition="right"
+                            className="w-full"
                         >
-                            {product.countInStock === 0 ? 'Out of Stock' : (
-                                <>
-                                    Add to Cart <ShoppingCart className="ml-2 h-6 w-6" />
-                                </>
-                            )}
-                        </button>
+                            {product.countInStock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                        </Button>
                     </div>
                 </div>
             </div>

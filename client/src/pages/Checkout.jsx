@@ -9,6 +9,7 @@ import { CreditCard, Truck, Package, DollarSign, Banknote, Download, MapPin, Hom
 import { downloadInvoicePDF } from '../utils/invoice';
 import CouponApply from '../components/CouponApply';
 import AddressForm from '../components/AddressForm';
+import Button from '../components/ui/Button';
 
 const Checkout = () => {
     const { cartItems, clearCart } = useCart();
@@ -498,13 +499,15 @@ const ShippingShimmer = () => (
                                             </div>
                                             <div className="ml-3">
                                                 <p className="text-sm text-red-800">{addressesError}</p>
-                                                <button
+                                                <Button
                                                     type="button"
                                                     onClick={loadAddresses}
-                                                    className="mt-2 text-sm text-red-600 underline hover:text-red-800"
+                                                    variant="link"
+                                                    size="sm"
+                                                    className="mt-2 text-red-600 hover:text-red-800"
                                                 >
                                                     Try again
-                                                </button>
+                                                </Button>
                                             </div>
                                         </div>
                                     </div>
@@ -555,17 +558,19 @@ const ShippingShimmer = () => (
                             {/* Add New Address Button - Show when not loading and no error */}
                             {!addressesLoading && !addressesError && (
                                 <div className="flex justify-center py-4">
-                                    <button
+                                    <Button
                                         type="button"
                                         onClick={() => {
                                             console.log('Add New Address button clicked');
                                             setShowAddressForm(true);
                                         }}
-                                        className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        variant="outline"
+                                        size="sm"
+                                        icon={MapPin}
+                                        iconPosition="left"
                                     >
-                                        <MapPin className="h-4 w-4 mr-2" />
                                         Add New Address
-                                    </button>
+                                    </Button>
                                 </div>
                             )}
 
@@ -634,29 +639,19 @@ const ShippingShimmer = () => (
                         </div>
                     </div>
 
-                    <button 
+                    <Button 
                         type="submit" 
                         disabled={loading || !hasValidAddress()}
+                        loading={loading}
                         onClick={handlePlaceOrderClick}
-                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                        variant="primary"
+                        size="lg"
+                        icon={!hasValidAddress() ? MapPin : Package}
+                        iconPosition="left"
+                        className="w-full mt-6"
                     >
-                        {loading ? (
-                            <>
-                                <div className="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                                Processing...
-                            </>
-                        ) : !hasValidAddress() ? (
-                            <>
-                                <MapPin className="h-5 w-5 mr-2" />
-                                Add Address to Place Order
-                            </>
-                        ) : (
-                            <>
-                                <Package className="h-5 w-5 mr-2" />
-                                Place Order
-                            </>
-                        )}
-                    </button>
+                        {loading ? 'Processing...' : !hasValidAddress() ? 'Add Address to Place Order' : 'Place Order'}
+                    </Button>
 
                     {!hasValidAddress() && (
                         <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
