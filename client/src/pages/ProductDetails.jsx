@@ -4,13 +4,16 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from '../utils/api';
 import { Star, ArrowLeft, ShoppingCart, Truck, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { formatCurrency } from '../utils/currency';
+import { formatCurrency, fetchShippingConfig } from '../utils/currency';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const [product, setProduct] = useState({});
     const [loading, setLoading] = useState(true);
     const [qty, setQty] = useState(1);
+    const [shippingConfig, setShippingConfig] = useState({
+        FREE_SHIPPING_THRESHOLD: 500
+    });
     const { addToCart } = useCart();
     const navigate = useNavigate();
 
@@ -27,7 +30,17 @@ const ProductDetails = () => {
             }
         };
 
+        const fetchConfig = async () => {
+            try {
+                const config = await fetchShippingConfig();
+                setShippingConfig(config);
+            } catch (error) {
+                console.error('Error fetching shipping config:', error);
+            }
+        };
+
         fetchProduct();
+        fetchConfig();
     }, [id]);
 
     const addToCartHandler = () => {
@@ -69,7 +82,7 @@ const ProductDetails = () => {
                     <div className="bg-gray-50 rounded-lg p-6 mb-8">
                         <p className="text-gray-700 leading-relaxed mb-4">{product.description}</p>
                         <div className="flex space-x-6 text-sm text-gray-600">
-                            <div className="flex items-center"><Truck className="h-5 w-5 mr-2 text-indigo-600" /> Free Shipping over ₹500</div>
+                            <div className="flex items-center"><Truck className="h-5 w-5 mr-2 text-indigo-600" /> Free Shipping over {formatCurrency(shippingConfig.FREE_SHIPPING_THRESHOLD)}</div>
                             <div className="flex items-center"><ShieldCheck className="h-5 w-5 mr-2 text-indigo-600" /> 1 Year Warranty</div>
                         </div>
                     </div>
