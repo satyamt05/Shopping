@@ -62,13 +62,33 @@ const Profile = () => {
     useEffect(() => {
         if (isAuthenticated) {
             axios.get('/auth/profile')
-                .then(({ data }) => {
+                .then(async ({ data }) => {
                     setFormData({
                         name: data.name || '',
                         email: data.email || '',
                         phone: data.phone || ''
                     });
-                    setAddresses(data.addresses || []);
+                    
+                    let addresses = data.addresses || [];
+                    
+                    // Auto-make single address default
+                    if (addresses.length === 1 && !addresses[0].isDefault) {
+                        try {
+                            const updatedAddresses = [{ ...addresses[0], isDefault: true }];
+                            await axios.put('/auth/profile', {
+                                name: data.name,
+                                email: data.email,
+                                phone: data.phone,
+                                addresses: updatedAddresses
+                            });
+                            console.log('Single address set as default in profile');
+                            addresses = updatedAddresses;
+                        } catch (error) {
+                            console.error('Error setting single address as default in profile:', error);
+                        }
+                    }
+                    
+                    setAddresses(addresses);
                 })
                 .catch(error => {
                     console.error('Error loading profile:', error);

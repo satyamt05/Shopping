@@ -28,6 +28,8 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const [loading, setLoading] = useState(false);
     const [addressSaving, setAddressSaving] = useState(false);
+    const [addressesLoading, setAddressesLoading] = useState(true);
+    const [addressesError, setAddressesError] = useState(null);
     const [userAddresses, setUserAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [couponDiscount, setCouponDiscount] = useState(0);
@@ -123,25 +125,68 @@ const Checkout = () => {
     // Load user addresses - moved before early returns
     const loadAddresses = useCallback(async () => {
         console.log('loadAddresses called');
+        setAddressesLoading(true);
+        setAddressesError(null);
+        
         try {
             const { data } = await axios.get('/auth/profile');
             console.log('Profile data received:', data);
-            setUserAddresses(data.addresses || []);
-            // Set default address if available
-            const defaultAddr = data.addresses?.find(addr => addr.isDefault);
-            if (defaultAddr) {
-                console.log('Setting default address:', defaultAddr);
-                setSelectedAddress(defaultAddr);
+            const addresses = data.addresses || [];
+            setUserAddresses(addresses);
+            
+            // Auto-select logic
+            if (addresses.length === 1) {
+                // If there's only one address, select it and make it default
+                const singleAddress = addresses[0];
+                console.log('Auto-selecting single address:', singleAddress);
+                
+                // Update the address to be default if it's not already
+                if (!singleAddress.isDefault) {
+                    try {
+                        await axios.put('/auth/profile', {
+                            name: data.name,
+                            email: data.email,
+                            phone: data.phone,
+                            addresses: [{ ...singleAddress, isDefault: true }]
+                        });
+                        console.log('Single address set as default');
+                        // Update local state with default flag
+                        singleAddress.isDefault = true;
+                        setUserAddresses([{ ...singleAddress, isDefault: true }]);
+                    } catch (error) {
+                        console.error('Error setting single address as default:', error);
+                        // Still select the address even if setting default fails
+                    }
+                }
+                
+                setSelectedAddress(singleAddress);
                 setAddress({
-                    street: defaultAddr.street,
-                    city: defaultAddr.city,
-                    state: defaultAddr.state,
-                    postalCode: defaultAddr.postalCode,
-                    country: defaultAddr.country
+                    street: singleAddress.street,
+                    city: singleAddress.city,
+                    state: singleAddress.state,
+                    postalCode: singleAddress.postalCode,
+                    country: singleAddress.country
                 });
+            } else {
+                // Set default address if available (for multiple addresses)
+                const defaultAddr = addresses.find(addr => addr.isDefault);
+                if (defaultAddr) {
+                    console.log('Setting default address:', defaultAddr);
+                    setSelectedAddress(defaultAddr);
+                    setAddress({
+                        street: defaultAddr.street,
+                        city: defaultAddr.city,
+                        state: defaultAddr.state,
+                        postalCode: defaultAddr.postalCode,
+                        country: defaultAddr.country
+                    });
+                }
             }
         } catch (error) {
             console.error('Error loading addresses:', error);
+            setAddressesError('Failed to load your addresses. Please try refreshing the page.');
+        } finally {
+            setAddressesLoading(false);
         }
     }, []);
 
@@ -313,8 +358,47 @@ const Checkout = () => {
                             <p className="mt-1 text-sm text-gray-500">Where should we send your order?</p>
                         </div>
                         <div className="sm:mt-4 lg:mt-0 lg:col-span-2">
+                            {/* Loading State */}
+                            {addressesLoading && (
+                                <div className="mb-4">
+                                    <div className="animate-pulse">
+                                        <div className="h-4 bg-gray-200 rounded w-1/4 mb-3"></div>
+                                        <div className="space-y-2">
+                                            <div className="h-16 bg-gray-200 rounded"></div>
+                                            <div className="h-16 bg-gray-200 rounded"></div>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm text-gray-500 mt-2">Loading your addresses...</p>
+                                </div>
+                            )}
+
+                            {/* Error State */}
+                            {addressesError && !addressesLoading && (
+                                <div className="mb-4">
+                                    <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                                        <div className="flex">
+                                            <div className="flex-shrink-0">
+                                                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                                </svg>
+                                            </div>
+                                            <div className="ml-3">
+                                                <p className="text-sm text-red-800">{addressesError}</p>
+                                                <button
+                                                    type="button"
+                                                    onClick={loadAddresses}
+                                                    className="mt-2 text-sm text-red-600 underline hover:text-red-800"
+                                                >
+                                                    Try again
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Address Selection */}
-                            {userAddresses.length > 0 && (
+                            {!addressesLoading && !addressesError && userAddresses.length > 0 && (
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Select Address</label>
                                     <div className="space-y-2">
@@ -341,6 +425,11 @@ const Checkout = () => {
                                                         <p className="text-sm font-medium">{addr.street}</p>
                                                         <p className="text-sm text-gray-500">{addr.city}, {addr.state} {addr.postalCode}</p>
                                                         <p className="text-sm text-gray-500">{addr.country}</p>
+                                                        {addr.isDefault && (
+                                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 mt-1">
+                                                                Default
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -348,21 +437,23 @@ const Checkout = () => {
                                     </div>
                                 </div>
                             )}
-                            
-                            {/* Add New Address Button */}
-                            <div className="flex justify-center py-4">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        console.log('Add New Address button clicked');
-                                        setShowAddressForm(true);
-                                    }}
-                                    className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    <MapPin className="h-4 w-4 mr-2" />
-                                    Add New Address
-                                </button>
-                            </div>
+
+                            {/* Add New Address Button - Show when not loading and no error */}
+                            {!addressesLoading && !addressesError && (
+                                <div className="flex justify-center py-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            console.log('Add New Address button clicked');
+                                            setShowAddressForm(true);
+                                        }}
+                                        className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    >
+                                        <MapPin className="h-4 w-4 mr-2" />
+                                        Add New Address
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Address Form Modal */}
                             {showAddressForm && (
