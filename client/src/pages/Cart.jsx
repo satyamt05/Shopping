@@ -112,36 +112,42 @@ const ShippingShimmer = () => (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div className="lg:col-span-8">
                     {cartItems.map((item) => (
-                        <div key={item._id} className="flex items-center justify-between border-b border-gray-200 py-6">
-                            <div className="flex items-center">
-                                <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
-                                <div className="ml-4">
-                                    <Link to={`/product/${item._id}`} className="text-lg font-medium text-gray-900 hover:text-indigo-600">{item.name}</Link>
-                                    <p className="text-gray-500 text-sm">{item.brand}</p>
-                                    <p className="text-gray-900 font-bold mt-1">{formatCurrency(item.price)}</p>
+                        <div key={item._id} className="border-b border-gray-200 py-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center">
+                                    <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
+                                    <div className="ml-4">
+                                        <Link to={`/product/${item._id}`} className="text-lg font-medium text-gray-900 hover:text-indigo-600">{item.name}</Link>
+                                        <p className="text-gray-500 text-sm">{item.brand}</p>
+                                        <p className="text-gray-900 font-bold mt-1">{formatCurrency(item.price)}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-4">
+                                    <select
+                                        value={item.qty}
+                                        onChange={(e) => addToCart(item, Number(e.target.value))}
+                                        className="border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    >
+                                        {[...Array(item.countInStock).keys()].map((x) => (
+                                            <option key={x + 1} value={x + 1}>
+                                                {x + 1}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <button onClick={() => removeFromCart(item._id)} className="text-red-500 hover:text-red-700 p-2">
+                                        <Trash2 className="h-5 w-5" />
+                                    </button>
                                 </div>
                             </div>
-                            <div className="flex items-center space-x-4">
-                                <select
-                                    value={item.qty}
-                                    onChange={(e) => addToCart(item, Number(e.target.value))}
-                                    className="border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                >
-                                    {[...Array(item.countInStock).keys()].map((x) => (
-                                        <option key={x + 1} value={x + 1}>
-                                            {x + 1}
-                                        </option>
-                                    ))}
-                                </select>
+                            
+                            {/* Move to Wishlist button below price */}
+                            <div className="flex justify-start">
                                 <button 
                                     onClick={() => moveToWishlistHandler(item)} 
-                                    className="text-pink-500 hover:text-pink-700 text-sm font-medium p-2"
+                                    className="text-pink-500 hover:text-pink-700 text-sm font-medium py-2"
                                     title="Move to Wishlist"
                                 >
                                     Move to Wishlist
-                                </button>
-                                <button onClick={() => removeFromCart(item._id)} className="text-red-500 hover:text-red-700 p-2">
-                                    <Trash2 className="h-5 w-5" />
                                 </button>
                             </div>
                         </div>
