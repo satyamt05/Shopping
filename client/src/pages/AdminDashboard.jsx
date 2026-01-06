@@ -518,7 +518,7 @@ const AdminDashboard = () => {
                                     <div key={order._id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                                         <div>
                                             <p className="text-sm font-medium text-gray-900">#{order._id.slice(-8)}</p>
-                                            <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
+                                            <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleString()}</p>
                                         </div>
                                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                                             order.status === 'Delivered' 
@@ -858,7 +858,7 @@ const AdminDashboard = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-900">
-                                                    {new Date(order.createdAt).toLocaleDateString()}
+                                                    {new Date(order.createdAt).toLocaleString()}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
@@ -1044,7 +1044,7 @@ const AdminDashboard = () => {
                                 </div>
                                 <div>
                                     <span className="font-medium text-gray-700">Order Date:</span>
-                                    <p className="text-gray-900">{new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
+                                    <p className="text-gray-900">{new Date(selectedOrder.createdAt).toLocaleString()}</p>
                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                                         selectedOrder.status === 'Delivered'
                                             ? 'bg-green-100 text-green-800'
@@ -1197,7 +1197,7 @@ const AdminDashboard = () => {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">
-                                                        {new Date(user.createdAt).toLocaleDateString()}
+                                                        {new Date(user.createdAt).toLocaleString()}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
