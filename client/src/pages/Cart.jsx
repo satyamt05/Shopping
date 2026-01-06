@@ -3,11 +3,11 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { Trash2, ShoppingBag } from 'lucide-react';
+import { Trash2, ShoppingBag, RotateCcw } from 'lucide-react';
 import { formatCurrency, SHIPPING_COSTS, TAX_RATE } from '../utils/currency';
 
 const Cart = () => {
-    const { cartItems, removeFromCart, addToCart } = useCart();
+    const { cartItems, removeFromCart, addToCart, clearCart } = useCart();
     const { userInfo, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
@@ -24,6 +24,12 @@ const Cart = () => {
         }
     };
 
+    const clearCartHandler = () => {
+        if (window.confirm('Are you sure you want to clear all items from your cart?')) {
+            clearCart();
+        }
+    };
+
     if (cartItems.length === 0) {
         return (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
@@ -37,7 +43,16 @@ const Cart = () => {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+                <button
+                    onClick={clearCartHandler}
+                    className="flex items-center px-4 py-2 text-red-600 border border-red-300 rounded-md hover:bg-red-50 transition"
+                >
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Clear All
+                </button>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div className="lg:col-span-8">

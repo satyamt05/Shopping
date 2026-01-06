@@ -351,6 +351,75 @@ const Checkout = () => {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">Checkout</h1>
             <form onSubmit={placeOrderHandler} className="space-y-4 sm:space-y-6">
+                {/* Order Summary Section - Moved to first position */}
+                <div className="bg-white px-3 sm:px-4 py-4 sm:py-5 shadow sm:rounded-lg sm:p-6">
+                    <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Order Summary</h3>
+                    
+                    {/* Order Items */}
+                    <div className="space-y-3 mb-6">
+                        {cartItems.map((item) => (
+                            <div key={item._id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex items-center mb-2 sm:mb-0">
+                                    <img 
+                                        src={item.image} 
+                                        alt={item.name} 
+                                        className="h-12 w-12 object-cover rounded-md mr-3"
+                                    />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-900">{item.name}</p>
+                                        <p className="text-sm text-gray-500">Qty: {item.qty} × {formatCurrency(item.price)}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-medium text-gray-900">
+                                        {formatCurrency(item.qty * item.price)}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Price Breakdown */}
+                    <div className="border-t pt-4 space-y-2">
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Items ({cartItems.reduce((acc, item) => acc + item.qty, 0)})</span>
+                            <span className="font-medium">{formatCurrency(itemsPrice)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Shipping</span>
+                            <span className="font-medium">
+                                {shippingPrice === 0 ? 'FREE' : formatCurrency(shippingPrice)}
+                            </span>
+                        </div>
+                        {shippingPrice === 0 && (
+                            <p className="text-xs text-green-600">Free shipping on orders over ₹500!</p>
+                        )}
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">GST (18%)</span>
+                            <span className="font-medium">{formatCurrency(taxPrice)}</span>
+                        </div>
+                        {couponDiscount > 0 && (
+                            <div className="flex justify-between text-sm">
+                                <span className="text-green-600">Discount ({appliedCoupon.code})</span>
+                                <span className="font-medium text-green-600">-{formatCurrency(couponDiscount)}</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
+                            <span>Total</span>
+                            <span>{formatCurrency(totalPrice)}</span>
+                        </div>
+                    </div>
+
+                    {/* Coupon Apply Section */}
+                    <CouponApply
+                        orderAmount={itemsPrice + shippingPrice + taxPrice}
+                        cartItems={cartItems}
+                        onCouponApplied={handleCouponApplied}
+                        onCouponRemoved={handleCouponRemoved}
+                    />
+                </div>
+
+                {/* Shipping Address Section - Second position */}
                 <div className="bg-white px-3 sm:px-4 py-4 sm:py-5 shadow sm:rounded-lg sm:p-6" id="shipping-address-section">
                     <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-3 lg:gap-6">
                         <div className="sm:col-span-1">
@@ -476,6 +545,7 @@ const Checkout = () => {
                     </div>
                 </div>
 
+                {/* Payment Method Section - Third position */}
                 <div className="bg-white px-3 sm:px-4 py-4 sm:py-5 shadow sm:rounded-lg sm:p-6">
                     <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-3 lg:gap-6">
                         <div className="sm:col-span-1">
@@ -518,73 +588,6 @@ const Checkout = () => {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div className="bg-white px-3 sm:px-4 py-4 sm:py-5 shadow sm:rounded-lg sm:p-6">
-                    <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Order Summary</h3>
-                    
-                    {/* Order Items */}
-                    <div className="space-y-3 mb-6">
-                        {cartItems.map((item) => (
-                            <div key={item._id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                                <div className="flex items-center mb-2 sm:mb-0">
-                                    <img 
-                                        src={item.image} 
-                                        alt={item.name} 
-                                        className="h-12 w-12 object-cover rounded-md mr-3"
-                                    />
-                                    <div>
-                                        <p className="text-sm font-medium text-gray-900">{item.name}</p>
-                                        <p className="text-sm text-gray-500">Qty: {item.qty} × {formatCurrency(item.price)}</p>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-sm font-medium text-gray-900">
-                                        {formatCurrency(item.qty * item.price)}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Price Breakdown */}
-                    <div className="border-t pt-4 space-y-2">
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Items ({cartItems.reduce((acc, item) => acc + item.qty, 0)})</span>
-                            <span className="font-medium">{formatCurrency(itemsPrice)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Shipping</span>
-                            <span className="font-medium">
-                                {shippingPrice === 0 ? 'FREE' : formatCurrency(shippingPrice)}
-                            </span>
-                        </div>
-                        {shippingPrice === 0 && (
-                            <p className="text-xs text-green-600">Free shipping on orders over ₹500!</p>
-                        )}
-                        <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">GST (18%)</span>
-                            <span className="font-medium">{formatCurrency(taxPrice)}</span>
-                        </div>
-                        {couponDiscount > 0 && (
-                            <div className="flex justify-between text-sm">
-                                <span className="text-green-600">Discount ({appliedCoupon.code})</span>
-                                <span className="font-medium text-green-600">-{formatCurrency(couponDiscount)}</span>
-                            </div>
-                        )}
-                        <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
-                            <span>Total</span>
-                            <span>{formatCurrency(totalPrice)}</span>
-                        </div>
-                    </div>
-
-                    {/* Coupon Apply Section */}
-                    <CouponApply
-                        orderAmount={itemsPrice + shippingPrice + taxPrice}
-                        cartItems={cartItems}
-                        onCouponApplied={handleCouponApplied}
-                        onCouponRemoved={handleCouponRemoved}
-                    />
 
                     <button 
                         type="submit" 
