@@ -4,6 +4,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import { Search, X, Filter, ChevronDown } from 'lucide-react';
+import RangeSlider from '../components/ui/RangeSlider';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
@@ -125,24 +126,16 @@ const Shop = () => {
         setSearchParams(newParams);
     };
 
-    // Handle price filter changes with single slider
-    const handlePriceRangeChange = (value) => {
-        // Calculate the range width based on slider position (0-100)
-        const range = priceRange.max - priceRange.min;
-        const rangeWidth = (value / 100) * range;
-        const centerPoint = priceRange.min + range / 2;
-        
-        // Calculate min and max based on center point and range width
-        let newMin = Math.max(priceRange.min, centerPoint - rangeWidth / 2);
-        let newMax = Math.min(priceRange.max, centerPoint + rangeWidth / 2);
-        
-        setPriceFilter({ min: newMin, max: newMax });
+    // Handle price filter changes with dual-handle range slider (debouncing built-in)
+    const handlePriceRangeChange = (newValue) => {
+        setPriceFilter(newValue);
         
         // Update URL params
         const newParams = new URLSearchParams(searchParams);
-        if (value < 100) {
-            newParams.set('minPrice', Math.round(newMin));
-            newParams.set('maxPrice', Math.round(newMax));
+        // Only set params if different from full range
+        if (Math.round(newValue.min) !== priceRange.min || Math.round(newValue.max) !== priceRange.max) {
+            newParams.set('minPrice', Math.round(newValue.min));
+            newParams.set('maxPrice', Math.round(newValue.max));
         } else {
             newParams.delete('minPrice');
             newParams.delete('maxPrice');
@@ -244,22 +237,18 @@ const Shop = () => {
                                 </div>
                                 
                                 <div className="space-y-4">
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-700 mb-2 block">
-                                            Price Range: ₹{Math.round(priceFilter.min)} - ₹{Math.round(priceFilter.max)}
-                                        </label>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="100"
-                                            value={((priceFilter.min + priceFilter.max) / 2 - priceRange.min) / (priceRange.max - priceRange.min) * 100}
-                                            onChange={(e) => handlePriceRangeChange(parseInt(e.target.value))}
-                                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                                        <h3 className="font-semibold text-gray-800 mb-2">
+                                            Price Range
+                                        </h3>
+                                        <RangeSlider
+                                            min={priceRange.min}
+                                            max={priceRange.max}
+                                            value={priceFilter}
+                                            onChange={handlePriceRangeChange}
+                                            step={1}
+                                            debounceMs={300}
                                         />
-                                        <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                            <span>₹{priceRange.min}</span>
-                                            <span>₹{priceRange.max}</span>
-                                        </div>
                                     </div>
                                     
                                     <div className="flex gap-3">
