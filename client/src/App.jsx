@@ -14,19 +14,22 @@ import Profile from './pages/Profile';
 import OrderHistory from './pages/OrderHistory';
 import OrderDetails from './pages/OrderDetails';
 import AdminDashboard from './pages/AdminDashboard';
+import Wishlist from './pages/Wishlist';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { WishlistProvider } from './context/WishlistContext';
 
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <ToastProvider>
-          <Router>
-            <div className="flex flex-col min-h-screen">
-              <Navbar />
-              <main className="flex-grow pt-16">
+        <WishlistProvider>
+          <ToastProvider>
+            <Router>
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                <main className="flex-grow pt-16">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/shop" element={<Shop />} />
@@ -38,13 +41,15 @@ function App() {
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/orders" element={<OrderHistory />} />
                   <Route path="/order/:id" element={<OrderDetails />} />
+                  <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/admin" element={<AdminDashboard />} />
                 </Routes>
               </main>
               <Footer />
             </div>
           </Router>
-        </ToastProvider>
+          </ToastProvider>
+        </WishlistProvider>
       </CartProvider>
     </AuthProvider>
   );

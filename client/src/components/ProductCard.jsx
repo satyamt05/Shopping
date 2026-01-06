@@ -1,15 +1,55 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, ShoppingCart } from 'lucide-react';
+import { Star, ShoppingCart, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { formatCurrency } from '../utils/currency';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 
 const ProductCard = ({ product }) => {
     const { addToCart, cartItems } = useCart();
+    const { addToWishlist, removeFromWishlist, checkInWishlist } = useWishlist();
     const { success, error } = useToast();
+    const [isInWishlist, setIsInWishlist] = useState(false);
+    const [wishlistLoading, setWishlistLoading] = useState(false);
+
+    // Check if product is in wishlist
+    useEffect(() => {
+        const checkWishlistStatus = async () => {
+            try {
+                const inWishlist = await checkInWishlist(product._id);
+                setIsInWishlist(inWishlist);
+            } catch (error) {
+                // User not authenticated or other error
+                setIsInWishlist(false);
+            }
+        };
+        checkWishlistStatus();
+    }, [product._id, checkInWishlist]);
+
+    const handleWishlistToggle = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        setWishlistLoading(true);
+        try {
+            if (isInWishlist) {
+                await removeFromWishlist(product._id);
+                success('Removed from wishlist');
+                setIsInWishlist(false);
+            } else {
+                await addToWishlist(product._id);
+                success('Added to wishlist');
+                setIsInWishlist(true);
+            }
+        } catch (error) {
+            // Error is already handled by the context
+        } finally {
+            setWishlistLoading(false);
+        }
+    };
 
     const handleAddToCart = (e) => {
         e.preventDefault();
@@ -72,19 +112,39 @@ const ProductCard = ({ product }) => {
                             }
                         </div>
                     </div>
-                    {!isInCart && (
+                    <div className="flex space-x-2">
+                        {/* Wishlist Button */}
                         <button 
-                            onClick={handleAddToCart}
-                            disabled={product.countInStock <= 0}
+                            onClick={handleWishlistToggle}
+                            disabled={wishlistLoading}
                             className={`p-2 rounded-lg transition-colors ${
-                                product.countInStock > 0 
-                                    ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
-                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            }`}
+                                isInWishlist
+                                    ? 'bg-red-500 text-white hover:bg-red-600'
+                                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                            } ${wishlistLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                            <ShoppingCart className="h-5 w-5" />
+                            {wishlistLoading ? (
+                                <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                            ) : (
+                                <Heart className={`h-5 w-5 ${isInWishlist ? 'fill-current' : ''}`} />
+                            )}
                         </button>
-                    )}
+                        
+                        {/* Cart Button */}
+                        {!isInCart && (
+                            <button 
+                                onClick={handleAddToCart}
+                                disabled={product.countInStock <= 0}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    product.countInStock > 0 
+                                        ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                            >
+                                <ShoppingCart className="h-5 w-5" />
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </motion.div>

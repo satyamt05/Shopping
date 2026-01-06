@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 
 const Navbar = () => {
@@ -10,6 +11,7 @@ const Navbar = () => {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const { userInfo, isAuthenticated, logout } = useAuth();
     const { cartItems, clearCart } = useCart();
+    const { wishlistItems } = useWishlist();
     const { success } = useToast();
     const navigate = useNavigate();
     const userMenuRef = useRef(null);
@@ -58,6 +60,16 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
+                        {isAuthenticated && (
+                            <Link to="/wishlist" className="text-gray-700 hover:text-indigo-600 transition relative">
+                                <Heart className="h-6 w-6" />
+                                {wishlistItems.length > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                        {wishlistItems.length > 99 ? '99+' : wishlistItems.length}
+                                    </span>
+                                )}
+                            </Link>
+                        )}
                         {isAuthenticated ? (
                             <div className="relative" ref={userMenuRef}>
                                 <button
@@ -121,6 +133,11 @@ const Navbar = () => {
                         <Link to="/cart" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">
                             Cart {cartItemCount > 0 && `(${cartItemCount})`}
                         </Link>
+                        {isAuthenticated && (
+                            <Link to="/wishlist" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">
+                                Wishlist {wishlistItems.length > 0 && `(${wishlistItems.length})`}
+                            </Link>
+                        )}
                         {isAuthenticated ? (
                             <>
                                 <div className="px-3 py-2 text-base font-medium text-gray-700">
