@@ -231,7 +231,7 @@ const Checkout = () => {
                                         id="street" 
                                         value={address.street} 
                                         onChange={(e) => setAddress({ ...address, street: e.target.value })} 
-                                        placeholder="123 Main Street, Apartment 4B"
+                                        placeholder="123 Main Street, Apartment 4B, Sector 15"
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
@@ -248,7 +248,7 @@ const Checkout = () => {
                                         id="city" 
                                         value={address.city} 
                                         onChange={(e) => setAddress({ ...address, city: e.target.value })} 
-                                        placeholder="New York"
+                                        placeholder="Mumbai"
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
@@ -265,7 +265,7 @@ const Checkout = () => {
                                         id="state" 
                                         value={address.state} 
                                         onChange={(e) => setAddress({ ...address, state: e.target.value })} 
-                                        placeholder="NY"
+                                        placeholder="Maharashtra"
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
@@ -282,7 +282,7 @@ const Checkout = () => {
                                         id="postalCode" 
                                         value={address.postalCode} 
                                         onChange={(e) => setAddress({ ...address, postalCode: e.target.value })} 
-                                        placeholder="10001"
+                                        placeholder="400001"
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
@@ -299,7 +299,7 @@ const Checkout = () => {
                                         id="country" 
                                         value={address.country} 
                                         onChange={(e) => setAddress({ ...address, country: e.target.value })} 
-                                        placeholder="United States"
+                                        placeholder="India"
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm" 
                                     />
                                 </div>
@@ -339,9 +339,10 @@ const Checkout = () => {
                                         value="CARD"
                                         checked={paymentMethod === 'CARD'}
                                         onChange={(e) => setPaymentMethod(e.target.value)}
-                                        className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" 
+                                        disabled
+                                        className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 opacity-50 cursor-not-allowed" 
                                     />
-                                    <label htmlFor="card" className="ml-3 block text-sm font-medium text-gray-700">
+                                    <label htmlFor="card" className="ml-3 block text-sm font-medium text-gray-400 cursor-not-allowed">
                                         <CreditCard className="h-4 w-4 inline mr-2" />
                                         Credit/Debit Card (Coming Soon)
                                     </label>
