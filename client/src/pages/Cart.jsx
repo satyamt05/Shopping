@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { Trash2, ShoppingBag, RotateCcw } from 'lucide-react';
-import { formatCurrency, fetchShippingConfig, fetchTaxRate } from '../utils/currency';
+import { formatCurrency, fetchShippingConfig } from '../utils/currency';
 
 const Cart = () => {
     const { cartItems, removeFromCart, addToCart, clearCart } = useCart();
@@ -26,13 +26,11 @@ const Cart = () => {
         const fetchConfig = async () => {
             try {
                 setConfigLoading(true);
-                const [shippingData, taxData] = await Promise.all([
-                    fetchShippingConfig(),
-                    fetchTaxRate()
-                ]);
+                // Make only one API call to get both shipping config and tax rate
+                const shippingData = await fetchShippingConfig();
                 console.log('Cart - Fetched shipping config:', shippingData); // Debug log
                 setShippingConfig(shippingData);
-                setTaxRate(taxData);
+                setTaxRate(shippingData.taxRate || 0);
             } catch (error) {
                 console.error('Error fetching configuration:', error);
             } finally {

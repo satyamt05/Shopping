@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from '../utils/api';
-import { formatCurrency, fetchShippingConfig, fetchTaxRate } from '../utils/currency';
+import { formatCurrency, fetchShippingConfig } from '../utils/currency';
 import { CreditCard, Truck, Package, DollarSign, Banknote, Download, MapPin, Home, Building2, Globe } from 'lucide-react';
 import { downloadInvoicePDF } from '../utils/invoice';
 import CouponApply from '../components/CouponApply';
@@ -215,13 +215,11 @@ const ShippingShimmer = () => (
     const fetchConfig = useCallback(async () => {
         try {
             setConfigLoading(true);
-            const [shippingData, taxData] = await Promise.all([
-                fetchShippingConfig(),
-                fetchTaxRate()
-            ]);
+            // Make only one API call to get both shipping config and tax rate
+            const shippingData = await fetchShippingConfig();
             console.log('Checkout - Fetched shipping config:', shippingData); // Debug log
             setShippingConfig(shippingData);
-            setTaxRate(taxData);
+            setTaxRate(shippingData.taxRate || 0);
         } catch (error) {
             console.error('Error fetching configuration:', error);
         } finally {

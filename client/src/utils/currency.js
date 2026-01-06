@@ -47,6 +47,7 @@ export const fetchShippingConfig = async () => {
             STANDARD: config.standardShippingCost || DEFAULT_SHIPPING_COSTS.STANDARD,
             FREE_SHIPPING_THRESHOLD: config.freeShippingThreshold || DEFAULT_SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD,
             EXPRESS: config.expressShippingCost || DEFAULT_SHIPPING_COSTS.EXPRESS,
+            taxRate: config.taxRate || DEFAULT_TAX_RATE,
             freeShippingEnabled: config.freeShippingEnabled !== false,
             expressShippingEnabled: config.expressShippingEnabled === true,
         };
@@ -57,23 +58,8 @@ export const fetchShippingConfig = async () => {
     // Return default values if API call fails
     return {
         ...DEFAULT_SHIPPING_COSTS,
+        taxRate: DEFAULT_TAX_RATE,
         freeShippingEnabled: true,
         expressShippingEnabled: false,
     };
-};
-
-// Fetch tax rate from API
-export const fetchTaxRate = async () => {
-    try {
-        // Add cache-busting timestamp to prevent browser caching
-        const timestamp = Date.now();
-        const response = await axios.get(`/shipping/config?t=${timestamp}`);
-        const config = response.data;
-        console.log('Fetched tax rate:', config.taxRate); // Debug log
-        return config.taxRate || DEFAULT_TAX_RATE;
-    } catch (error) {
-        console.warn('Failed to fetch tax rate, using default:', error);
-    }
-    
-    return DEFAULT_TAX_RATE;
 };
