@@ -11,6 +11,83 @@ const Profile = () => {
     const [loading, setLoading] = useState(false);
     const [addresses, setAddresses] = useState([]);
     const [showAddressForm, setShowAddressForm] = useState(false);
+    const [formErrors, setFormErrors] = useState({});
+    const [addressErrors, setAddressErrors] = useState({});
+
+    // Validation functions
+    const validateProfileForm = () => {
+        const errors = {};
+        
+        // Name validation
+        if (!formData.name.trim()) {
+            errors.name = 'Name is required';
+        } else if (formData.name.trim().length < 2) {
+            errors.name = 'Name must be at least 2 characters';
+        } else if (!/^[a-zA-Z\s]+$/.test(formData.name.trim())) {
+            errors.name = 'Name should contain only letters and spaces';
+        } else if (formData.name.trim().length > 50) {
+            errors.name = 'Name should not exceed 50 characters';
+        }
+        
+        // Email validation
+        if (!formData.email.trim()) {
+            errors.email = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+            errors.email = 'Please enter a valid email address';
+        }
+        
+        // Phone validation (Indian phone format)
+        if (formData.phone.trim()) {
+            if (!/^[6-9]\d{9}$/.test(formData.phone.replace(/\s/g, ''))) {
+                errors.phone = 'Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9';
+            }
+        }
+        
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const validateAddressForm = () => {
+        const errors = {};
+        
+        // Street validation
+        if (!addressForm.street.trim()) {
+            errors.street = 'Street address is required';
+        } else if (addressForm.street.trim().length < 5) {
+            errors.street = 'Street address must be at least 5 characters';
+        }
+        
+        // City validation
+        if (!addressForm.city.trim()) {
+            errors.city = 'City is required';
+        } else if (!/^[a-zA-Z\s]+$/.test(addressForm.city.trim())) {
+            errors.city = 'City should contain only letters and spaces';
+        }
+        
+        // State validation
+        if (!addressForm.state.trim()) {
+            errors.state = 'State is required';
+        } else if (!/^[a-zA-Z\s]+$/.test(addressForm.state.trim())) {
+            errors.state = 'State should contain only letters and spaces';
+        }
+        
+        // Postal code validation (India PIN code format)
+        if (!addressForm.postalCode.trim()) {
+            errors.postalCode = 'Postal code is required';
+        } else if (!/^\d{6}$/.test(addressForm.postalCode.trim())) {
+            errors.postalCode = 'Postal code must be 6 digits';
+        }
+        
+        // Country validation
+        if (!addressForm.country.trim()) {
+            errors.country = 'Country is required';
+        } else if (!/^[a-zA-Z\s]+$/.test(addressForm.country.trim())) {
+            errors.country = 'Country should contain only letters and spaces';
+        }
+        
+        setAddressErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
     
     const [formData, setFormData] = useState({
         name: '',
@@ -111,6 +188,12 @@ const Profile = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Validate form before submission
+        if (!validateProfileForm()) {
+            return;
+        }
+        
         setLoading(true);
 
         try {
@@ -133,6 +216,11 @@ const Profile = () => {
 
     const handleAddAddress = async (e) => {
         e.preventDefault();
+        
+        // Validate address form before submission
+        if (!validateAddressForm()) {
+            return;
+        }
         
         const newAddress = {
             street: addressForm.street,
@@ -275,9 +363,20 @@ const Profile = () => {
                                             type="text"
                                             name="name"
                                             value={formData.name}
-                                            onChange={handleChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            onChange={(e) => {
+                                                handleChange(e);
+                                                // Clear error when user starts typing
+                                                if (formErrors.name) {
+                                                    setFormErrors({ ...formErrors, name: '' });
+                                                }
+                                            }}
+                                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                                                formErrors.name ? 'border-red-500' : 'border-gray-300'
+                                            }`}
                                         />
+                                        {formErrors.name && (
+                                            <p className="text-xs text-red-600 mt-1">{formErrors.name}</p>
+                                        )}
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -287,11 +386,22 @@ const Profile = () => {
                                             type="email"
                                             name="email"
                                             value={formData.email}
-                                            onChange={handleChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            onChange={(e) => {
+                                                handleChange(e);
+                                                // Clear error when user starts typing
+                                                if (formErrors.email) {
+                                                    setFormErrors({ ...formErrors, email: '' });
+                                                }
+                                            }}
                                             disabled
+                                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                                                formErrors.email ? 'border-red-500' : 'border-gray-300'
+                                            }`}
                                         />
                                         <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                                        {formErrors.email && (
+                                            <p className="text-xs text-red-600 mt-1">{formErrors.email}</p>
+                                        )}
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -301,10 +411,21 @@ const Profile = () => {
                                             type="tel"
                                             name="phone"
                                             value={formData.phone}
-                                            onChange={handleChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                            placeholder="Enter your phone number"
+                                            onChange={(e) => {
+                                                handleChange(e);
+                                                // Clear error when user starts typing
+                                                if (formErrors.phone) {
+                                                    setFormErrors({ ...formErrors, phone: '' });
+                                                }
+                                            }}
+                                            placeholder="9876543210"
+                                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                                                formErrors.phone ? 'border-red-500' : 'border-gray-300'
+                                            }`}
                                         />
+                                        {formErrors.phone && (
+                                            <p className="text-xs text-red-600 mt-1">{formErrors.phone}</p>
+                                        )}
                                     </div>
                                 </form>
                             ) : (
@@ -359,57 +480,136 @@ const Profile = () => {
                                 <Plus className="h-4 w-4 mr-2 flex-shrink-0" />
                                 <span className="whitespace-nowrap">Add Address</span>
                             </button>
-                        </div>
 
                         {showAddressForm && (
                             <div className="bg-gray-50 p-4 rounded-lg mb-4">
                                 <h3 className="font-medium text-gray-900 mb-3">Add New Address</h3>
                                 <form onSubmit={handleAddAddress} className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <input
-                                        type="text"
-                                        name="street"
-                                        value={addressForm.street}
-                                        onChange={handleAddressChange}
-                                        placeholder="Street Address"
-                                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={addressForm.city}
-                                        onChange={handleAddressChange}
-                                        placeholder="City"
-                                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        name="state"
-                                        value={addressForm.state}
-                                        onChange={handleAddressChange}
-                                        placeholder="State"
-                                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        name="postalCode"
-                                        value={addressForm.postalCode}
-                                        onChange={handleAddressChange}
-                                        placeholder="Postal Code"
-                                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        required
-                                    />
-                                    <input
-                                        type="text"
-                                        name="country"
-                                        value={addressForm.country}
-                                        onChange={handleAddressChange}
-                                        placeholder="Country"
-                                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        required
-                                    />
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Street Address
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="street"
+                                            value={addressForm.street}
+                                            onChange={(e) => {
+                                                handleAddressChange(e);
+                                                // Clear error when user starts typing
+                                                if (addressErrors.street) {
+                                                    setAddressErrors({ ...addressErrors, street: '' });
+                                                }
+                                            }}
+                                            placeholder="Street Address"
+                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                                                addressErrors.street ? 'border-red-500' : 'border-gray-300'
+                                            }`}
+                                            required
+                                        />
+                                        {addressErrors.street && (
+                                            <p className="text-xs text-red-600 mt-1">{addressErrors.street}</p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            City
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            value={addressForm.city}
+                                            onChange={(e) => {
+                                                handleAddressChange(e);
+                                                // Clear error when user starts typing
+                                                if (addressErrors.city) {
+                                                    setAddressErrors({ ...addressErrors, city: '' });
+                                                }
+                                            }}
+                                            placeholder="City"
+                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                                                addressErrors.city ? 'border-red-500' : 'border-gray-300'
+                                            }`}
+                                            required
+                                        />
+                                        {addressErrors.city && (
+                                            <p className="text-xs text-red-600 mt-1">{addressErrors.city}</p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            State
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="state"
+                                            value={addressForm.state}
+                                            onChange={(e) => {
+                                                handleAddressChange(e);
+                                                // Clear error when user starts typing
+                                                if (addressErrors.state) {
+                                                    setAddressErrors({ ...addressErrors, state: '' });
+                                                }
+                                            }}
+                                            placeholder="State"
+                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                                                addressErrors.state ? 'border-red-500' : 'border-gray-300'
+                                            }`}
+                                            required
+                                        />
+                                        {addressErrors.state && (
+                                            <p className="text-xs text-red-600 mt-1">{addressErrors.state}</p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Postal Code
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="postalCode"
+                                            value={addressForm.postalCode}
+                                            onChange={(e) => {
+                                                handleAddressChange(e);
+                                                // Clear error when user starts typing
+                                                if (addressErrors.postalCode) {
+                                                    setAddressErrors({ ...addressErrors, postalCode: '' });
+                                                }
+                                            }}
+                                            placeholder="Postal Code"
+                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                                                addressErrors.postalCode ? 'border-red-500' : 'border-gray-300'
+                                            }`}
+                                            required
+                                        />
+                                        {addressErrors.postalCode && (
+                                            <p className="text-xs text-red-600 mt-1">{addressErrors.postalCode}</p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Country
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="country"
+                                            value={addressForm.country}
+                                            onChange={(e) => {
+                                                handleAddressChange(e);
+                                                // Clear error when user starts typing
+                                                if (addressErrors.country) {
+                                                    setAddressErrors({ ...addressErrors, country: '' });
+                                                }
+                                            }}
+                                            placeholder="Country"
+                                            className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                                                addressErrors.country ? 'border-red-500' : 'border-gray-300'
+                                            }`}
+                                            required
+                                        />
+                                        {addressErrors.country && (
+                                            <p className="text-xs text-red-600 mt-1">{addressErrors.country}</p>
+                                        )}
+                                    </div>
                                     <div className="flex items-center">
                                         <input
                                             type="checkbox"
@@ -426,9 +626,10 @@ const Profile = () => {
                                     <div className="md:col-span-2 flex space-x-2">
                                         <button
                                             type="submit"
-                                            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                                            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center"
                                         >
-                                            Add Address
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Save Address
                                         </button>
                                         <button
                                             type="button"
