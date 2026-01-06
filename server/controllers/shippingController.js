@@ -6,6 +6,7 @@ const ShippingConfig = require('../models/ShippingConfig');
 // @access  Public
 const getShippingConfig = asyncHandler(async (req, res) => {
     const config = await ShippingConfig.getConfig();
+    console.log('Server - Returning shipping config:', config); // Debug log
     res.json(config);
 });
 
@@ -22,6 +23,8 @@ const updateShippingConfig = asyncHandler(async (req, res) => {
         expressShippingEnabled
     } = req.body;
 
+    console.log('Server - Updating shipping config with:', req.body); // Debug log
+
     const config = await ShippingConfig.updateConfig({
         standardShippingCost,
         freeShippingThreshold,
@@ -31,6 +34,7 @@ const updateShippingConfig = asyncHandler(async (req, res) => {
         expressShippingEnabled
     });
 
+    console.log('Server - Updated shipping config:', config); // Debug log
     res.json(config);
 });
 
