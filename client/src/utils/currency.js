@@ -36,9 +36,12 @@ export const DEFAULT_TAX_RATE = 0.18; // 18% GST in India
 // Fetch shipping configuration from API
 export const fetchShippingConfig = async () => {
     try {
-        const response = await fetch('/api/shipping/config');
+        // Add cache-busting timestamp to prevent browser caching
+        const timestamp = Date.now();
+        const response = await fetch(`/api/shipping/config?t=${timestamp}`);
         if (response.ok) {
             const config = await response.json();
+            console.log('Fetched shipping config:', config); // Debug log
             return {
                 STANDARD: config.standardShippingCost || DEFAULT_SHIPPING_COSTS.STANDARD,
                 FREE_SHIPPING_THRESHOLD: config.freeShippingThreshold || DEFAULT_SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD,
@@ -62,9 +65,12 @@ export const fetchShippingConfig = async () => {
 // Fetch tax rate from API
 export const fetchTaxRate = async () => {
     try {
-        const response = await fetch('/api/shipping/config');
+        // Add cache-busting timestamp to prevent browser caching
+        const timestamp = Date.now();
+        const response = await fetch(`/api/shipping/config?t=${timestamp}`);
         if (response.ok) {
             const config = await response.json();
+            console.log('Fetched tax rate:', config.taxRate); // Debug log
             return config.taxRate || DEFAULT_TAX_RATE;
         }
     } catch (error) {

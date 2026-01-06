@@ -207,6 +207,7 @@ const Checkout = () => {
                 fetchShippingConfig(),
                 fetchTaxRate()
             ]);
+            console.log('Checkout - Fetched shipping config:', shippingData); // Debug log
             setShippingConfig(shippingData);
             setTaxRate(taxData);
         } catch (error) {

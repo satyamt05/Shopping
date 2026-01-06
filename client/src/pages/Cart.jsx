@@ -30,6 +30,7 @@ const Cart = () => {
                     fetchShippingConfig(),
                     fetchTaxRate()
                 ]);
+                console.log('Cart - Fetched shipping config:', shippingData); // Debug log
                 setShippingConfig(shippingData);
                 setTaxRate(taxData);
             } catch (error) {
