@@ -1,19 +1,50 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { Trash2, ShoppingBag, RotateCcw } from 'lucide-react';
-import { formatCurrency, SHIPPING_COSTS, TAX_RATE } from '../utils/currency';
+import { formatCurrency, fetchShippingConfig, fetchTaxRate } from '../utils/currency';
 
 const Cart = () => {
     const { cartItems, removeFromCart, addToCart, clearCart } = useCart();
     const { userInfo, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
+    const [shippingConfig, setShippingConfig] = useState({
+        STANDARD: 40,
+        FREE_SHIPPING_THRESHOLD: 500,
+        EXPRESS: 80,
+        freeShippingEnabled: true,
+        expressShippingEnabled: false
+    });
+    const [taxRate, setTaxRate] = useState(0.18);
+    const [configLoading, setConfigLoading] = useState(true);
+
+    // Fetch shipping configuration
+    useEffect(() => {
+        const fetchConfig = async () => {
+            try {
+                setConfigLoading(true);
+                const [shippingData, taxData] = await Promise.all([
+                    fetchShippingConfig(),
+                    fetchTaxRate()
+                ]);
+                setShippingConfig(shippingData);
+                setTaxRate(taxData);
+            } catch (error) {
+                console.error('Error fetching configuration:', error);
+            } finally {
+                setConfigLoading(false);
+            }
+        };
+
+        fetchConfig();
+    }, []);
+
     const itemsPrice = cartItems.reduce((acc, item) => acc + item.qty * item.price, 0);
-    const shippingPrice = itemsPrice > SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COSTS.STANDARD;
-    const taxPrice = itemsPrice * TAX_RATE;
+    const shippingPrice = (shippingConfig.freeShippingEnabled && itemsPrice > shippingConfig.FREE_SHIPPING_THRESHOLD) ? 0 : shippingConfig.STANDARD;
+    const taxPrice = itemsPrice * taxRate;
     const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
     const checkoutHandler = () => {
@@ -99,13 +130,13 @@ const Cart = () => {
                                 {shippingPrice === 0 ? 'FREE' : formatCurrency(shippingPrice)}
                             </span>
                         </div>
+                        {shippingPrice === 0 && shippingConfig.freeShippingEnabled && (
+                            <p className="text-xs text-green-600 mb-2">Free shipping on orders over {formatCurrency(shippingConfig.FREE_SHIPPING_THRESHOLD)}!</p>
+                        )}
                         <div className="flex justify-between mb-2">
-                            <span className="text-gray-600">GST (18%)</span>
+                            <span className="text-gray-600">GST ({(taxRate * 100).toFixed(0)}%)</span>
                             <span className="text-gray-900">{formatCurrency(taxPrice)}</span>
                         </div>
-                        {shippingPrice === 0 && (
-                            <p className="text-xs text-green-600 mb-2">Free shipping on orders over ₹500!</p>
-                        )}
                         <div className="border-t border-gray-200 pt-4 mb-6">
                             <div className="flex justify-between">
                                 <span className="text-lg font-bold text-gray-900">Total</span>

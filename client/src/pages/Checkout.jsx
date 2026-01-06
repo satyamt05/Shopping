@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from '../utils/api';
-import { formatCurrency, SHIPPING_COSTS, TAX_RATE } from '../utils/currency';
+import { formatCurrency, fetchShippingConfig, fetchTaxRate } from '../utils/currency';
 import { CreditCard, Truck, Package, DollarSign, Banknote, Download, MapPin, Home, Building2, Globe } from 'lucide-react';
 import { downloadInvoicePDF } from '../utils/invoice';
 import CouponApply from '../components/CouponApply';
@@ -34,6 +34,15 @@ const Checkout = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [couponDiscount, setCouponDiscount] = useState(0);
     const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [shippingConfig, setShippingConfig] = useState({
+        STANDARD: 40,
+        FREE_SHIPPING_THRESHOLD: 500,
+        EXPRESS: 80,
+        freeShippingEnabled: true,
+        expressShippingEnabled: false
+    });
+    const [taxRate, setTaxRate] = useState(0.18);
+    const [configLoading, setConfigLoading] = useState(true);
 
     // Validation function
     const validateForm = () => {
@@ -190,12 +199,29 @@ const Checkout = () => {
         }
     }, []);
 
+    // Fetch shipping configuration
+    const fetchConfig = useCallback(async () => {
+        try {
+            setConfigLoading(true);
+            const [shippingData, taxData] = await Promise.all([
+                fetchShippingConfig(),
+                fetchTaxRate()
+            ]);
+            setShippingConfig(shippingData);
+            setTaxRate(taxData);
+        } catch (error) {
+            console.error('Error fetching configuration:', error);
+        } finally {
+            setConfigLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
-        console.log('useEffect triggered, isAuthenticated:', isAuthenticated, 'isLoading:', isLoading);
         if (isAuthenticated && !isLoading) {
+            fetchConfig();
             loadAddresses();
         }
-    }, [loadAddresses, isAuthenticated, isLoading]);
+    }, [isAuthenticated, isLoading, fetchConfig]);
 
     // Early returns after all hooks
     if (isLoading) {
@@ -217,10 +243,10 @@ const Checkout = () => {
     }
 
     const itemsPrice = cartItems.reduce((acc, item) => acc + (item.qty || 0) * (item.price || 0), 0);
-    const shippingPrice = itemsPrice > SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COSTS.STANDARD;
-    const taxPrice = itemsPrice * TAX_RATE;
+    const shippingPrice = (shippingConfig.freeShippingEnabled && itemsPrice > shippingConfig.FREE_SHIPPING_THRESHOLD) ? 0 : shippingConfig.STANDARD;
+    const calculatedTaxPrice = itemsPrice * taxRate;
     const discountAmount = couponDiscount || 0;
-    const calculatedTotal = itemsPrice + shippingPrice + taxPrice - discountAmount;
+    const calculatedTotal = itemsPrice + shippingPrice + calculatedTaxPrice - discountAmount;
     // Ensure minimum total price of 1 for free orders to avoid server issues
     const totalPrice = Math.max(calculatedTotal, 1);
 
@@ -312,7 +338,7 @@ const Checkout = () => {
                 paymentMethod: paymentMethod,
                 itemsPrice: itemsPrice.toFixed(2),
                 shippingPrice: shippingPrice.toFixed(2),
-                taxPrice: taxPrice.toFixed(2),
+                taxPrice: calculatedTaxPrice.toFixed(2),
                 totalPrice: totalPrice.toFixed(2),
                 // Only include coupon fields if they exist
                 ...(couponDiscount > 0 && {
@@ -391,12 +417,12 @@ const Checkout = () => {
                                 {shippingPrice === 0 ? 'FREE' : formatCurrency(shippingPrice)}
                             </span>
                         </div>
-                        {shippingPrice === 0 && (
-                            <p className="text-xs text-green-600">Free shipping on orders over ₹500!</p>
+                        {shippingPrice === 0 && shippingConfig.freeShippingEnabled && (
+                            <p className="text-xs text-green-600">Free shipping on orders over {formatCurrency(shippingConfig.FREE_SHIPPING_THRESHOLD)}!</p>
                         )}
                         <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">GST (18%)</span>
-                            <span className="font-medium">{formatCurrency(taxPrice)}</span>
+                            <span className="text-gray-600">GST ({(taxRate * 100).toFixed(0)}%)</span>
+                            <span className="font-medium">{formatCurrency(calculatedTaxPrice)}</span>
                         </div>
                         {couponDiscount > 0 && (
                             <div className="flex justify-between text-sm">
@@ -412,7 +438,7 @@ const Checkout = () => {
 
                     {/* Coupon Apply Section */}
                     <CouponApply
-                        orderAmount={itemsPrice + shippingPrice + taxPrice}
+                        orderAmount={itemsPrice + shippingPrice + calculatedTaxPrice}
                         cartItems={cartItems}
                         onCouponApplied={handleCouponApplied}
                         onCouponRemoved={handleCouponRemoved}

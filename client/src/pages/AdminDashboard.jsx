@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from '../utils/api';
-import { Trash2, Plus, Edit, Search, Filter, FolderOpen, Package, Truck, CheckCircle, Clock, XCircle, User, DollarSign, Eye, X, Tag } from 'lucide-react';
+import { Trash2, Plus, Edit, Search, Filter, FolderOpen, Package, Truck, CheckCircle, Clock, XCircle, User, DollarSign, Eye, X, Tag, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProductEdit from './ProductEdit';
@@ -27,6 +27,16 @@ const AdminDashboard = () => {
     const [filterCategory, setFilterCategory] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showOrderItems, setShowOrderItems] = useState(false);
+    const [shippingConfig, setShippingConfig] = useState({
+        standardShippingCost: 40,
+        freeShippingThreshold: 500,
+        expressShippingCost: 80,
+        taxRate: 0.18,
+        freeShippingEnabled: true,
+        expressShippingEnabled: false
+    });
+    const [shippingLoading, setShippingLoading] = useState(false);
+    const [shippingSaving, setShippingSaving] = useState(false);
     const { token, userInfo, isLoading, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
@@ -145,6 +155,12 @@ const AdminDashboard = () => {
         }
     }, [token]);
 
+    useEffect(() => {
+        if (activeTab === 'settings' && token) {
+            fetchShippingConfig();
+        }
+    }, [activeTab, token]);
+
     const deleteHandler = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
@@ -221,6 +237,41 @@ const AdminDashboard = () => {
     const handleCloseOrderItems = () => {
         setSelectedOrder(null);
         setShowOrderItems(false);
+    };
+
+    const fetchShippingConfig = async () => {
+        setShippingLoading(true);
+        try {
+            const { data } = await axios.get('/shipping/config');
+            setShippingConfig(data);
+        } catch (error) {
+            console.error('Error fetching shipping config:', error);
+        } finally {
+            setShippingLoading(false);
+        }
+    };
+
+    const updateShippingConfig = async (configData) => {
+        setShippingSaving(true);
+        try {
+            const { data } = await axios.put('/shipping/config', configData);
+            setShippingConfig(data);
+            alert('Shipping configuration updated successfully!');
+        } catch (error) {
+            console.error('Error updating shipping config:', error);
+            alert('Error updating shipping configuration');
+        } finally {
+            setShippingSaving(false);
+        }
+    };
+
+    const handleShippingConfigChange = (field, value) => {
+        setShippingConfig(prev => ({
+            ...prev,
+            [field]: field === 'taxRate' ? parseFloat(value) : 
+                     field.includes('Cost') || field === 'freeShippingThreshold' ? parseInt(value) : 
+                     value
+        }));
     };
 
     // Filter products based on search and category
@@ -335,6 +386,16 @@ const AdminDashboard = () => {
                         }`}
                     >
                         Coupons
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('settings')}
+                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === 'settings'
+                                ? 'border-indigo-500 text-indigo-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                    >
+                        Settings
                     </button>
                 </nav>
             </div>
@@ -1123,6 +1184,163 @@ const AdminDashboard = () => {
             {/* Coupons Tab */}
             {activeTab === 'coupons' && (
                 <DiscountCouponManager />
+            )}
+
+            {/* Settings Tab */}
+            {activeTab === 'settings' && (
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
+                    
+                    <div className="bg-white shadow-lg rounded-lg">
+                        <div className="p-6">
+                            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                                <Settings className="h-6 w-6 mr-2 text-indigo-600" />
+                                Shipping Configuration
+                            </h2>
+                            
+                            {shippingLoading ? (
+                                <div className="text-center py-8">
+                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                                    <p className="mt-2 text-gray-600">Loading shipping configuration...</p>
+                                </div>
+                            ) : (
+                                <form onSubmit={(e) => {
+                                    e.preventDefault();
+                                    updateShippingConfig(shippingConfig);
+                                }} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Standard Shipping Cost */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Standard Shipping Cost (₹)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={shippingConfig.standardShippingCost}
+                                                onChange={(e) => handleShippingConfigChange('standardShippingCost', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                            <p className="mt-1 text-xs text-gray-500">Cost for standard delivery</p>
+                                        </div>
+
+                                        {/* Free Shipping Threshold */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Free Shipping Threshold (₹)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={shippingConfig.freeShippingThreshold}
+                                                onChange={(e) => handleShippingConfigChange('freeShippingThreshold', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                            <p className="mt-1 text-xs text-gray-500">Order amount for free shipping</p>
+                                        </div>
+
+                                        {/* Express Shipping Cost */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Express Shipping Cost (₹)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={shippingConfig.expressShippingCost}
+                                                onChange={(e) => handleShippingConfigChange('expressShippingCost', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                            <p className="mt-1 text-xs text-gray-500">Cost for express delivery</p>
+                                        </div>
+
+                                        {/* Tax Rate */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Tax Rate (GST %)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                max="1"
+                                                step="0.01"
+                                                value={shippingConfig.taxRate * 100}
+                                                onChange={(e) => handleShippingConfigChange('taxRate', e.target.value / 100)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                            <p className="mt-1 text-xs text-gray-500">Tax rate as percentage (e.g., 18 for 18%)</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Toggle Switches */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <label className="text-sm font-medium text-gray-700">
+                                                    Enable Free Shipping
+                                                </label>
+                                                <p className="text-xs text-gray-500">Allow free shipping for orders above threshold</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleShippingConfigChange('freeShippingEnabled', !shippingConfig.freeShippingEnabled)}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                                    shippingConfig.freeShippingEnabled ? 'bg-indigo-600' : 'bg-gray-200'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                        shippingConfig.freeShippingEnabled ? 'translate-x-6' : 'translate-x-1'
+                                                    }`}
+                                                />
+                                            </button>
+                                        </div>
+
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <label className="text-sm font-medium text-gray-700">
+                                                    Enable Express Shipping
+                                                </label>
+                                                <p className="text-xs text-gray-500">Offer express delivery option to customers</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleShippingConfigChange('expressShippingEnabled', !shippingConfig.expressShippingEnabled)}
+                                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                                    shippingConfig.expressShippingEnabled ? 'bg-indigo-600' : 'bg-gray-200'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                        shippingConfig.expressShippingEnabled ? 'translate-x-6' : 'translate-x-1'
+                                                    }`}
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Save Button */}
+                                    <div className="flex justify-end">
+                                        <button
+                                            type="submit"
+                                            disabled={shippingSaving}
+                                            className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                                        >
+                                            {shippingSaving ? (
+                                                <>
+                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                    Saving...
+                                                </>
+                                            ) : (
+                                                'Save Configuration'
+                                            )}
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

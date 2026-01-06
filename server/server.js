@@ -80,6 +80,7 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
 app.use('/api/wishlist', require('./routes/wishlistRoutes'));
+app.use('/api/shipping', require('./routes/shippingRoutes'));
 // Health check endpoint for mobile debugging
 app.get('/api/health', (req, res) => {
     res.json({ 

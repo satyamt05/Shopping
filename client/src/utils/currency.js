@@ -23,12 +23,53 @@ export const formatCurrencyWithDecimals = (amount) => {
     }).format(amount);
 };
 
-// Indian shipping costs (in rupees)
-export const SHIPPING_COSTS = {
+// Default shipping costs (fallback values)
+export const DEFAULT_SHIPPING_COSTS = {
     STANDARD: 40, // ₹40 for standard shipping
     FREE_SHIPPING_THRESHOLD: 500, // Free shipping over ₹500
     EXPRESS: 80, // ₹80 for express shipping
 };
 
-// Indian tax rate (GST)
-export const TAX_RATE = 0.18; // 18% GST in India
+// Default tax rate (fallback value)
+export const DEFAULT_TAX_RATE = 0.18; // 18% GST in India
+
+// Fetch shipping configuration from API
+export const fetchShippingConfig = async () => {
+    try {
+        const response = await fetch('/api/shipping/config');
+        if (response.ok) {
+            const config = await response.json();
+            return {
+                STANDARD: config.standardShippingCost || DEFAULT_SHIPPING_COSTS.STANDARD,
+                FREE_SHIPPING_THRESHOLD: config.freeShippingThreshold || DEFAULT_SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD,
+                EXPRESS: config.expressShippingCost || DEFAULT_SHIPPING_COSTS.EXPRESS,
+                freeShippingEnabled: config.freeShippingEnabled !== false,
+                expressShippingEnabled: config.expressShippingEnabled === true,
+            };
+        }
+    } catch (error) {
+        console.warn('Failed to fetch shipping config, using defaults:', error);
+    }
+    
+    // Return default values if API call fails
+    return {
+        ...DEFAULT_SHIPPING_COSTS,
+        freeShippingEnabled: true,
+        expressShippingEnabled: false,
+    };
+};
+
+// Fetch tax rate from API
+export const fetchTaxRate = async () => {
+    try {
+        const response = await fetch('/api/shipping/config');
+        if (response.ok) {
+            const config = await response.json();
+            return config.taxRate || DEFAULT_TAX_RATE;
+        }
+    } catch (error) {
+        console.warn('Failed to fetch tax rate, using default:', error);
+    }
+    
+    return DEFAULT_TAX_RATE;
+};
