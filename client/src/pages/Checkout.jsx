@@ -81,8 +81,11 @@ const Checkout = () => {
             const { data } = await axios.get('/auth/profile');
             const updatedAddresses = [...(data.addresses || []), addressData];
             
+            // Update user profile with new address
             await axios.put('/auth/profile', {
-                ...data,
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
                 addresses: updatedAddresses
             });
             

@@ -147,8 +147,10 @@ const Profile = () => {
 
         try {
             const { data } = await axios.put('/auth/profile', {
-                ...formData,
-                addresses
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                addresses: addresses
             });
             
             // Update local user info
@@ -179,7 +181,9 @@ const Profile = () => {
         try {
             // Save to database immediately
             await axios.put('/auth/profile', {
-                ...formData,
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
                 addresses: updatedAddresses
             });
         } catch (error) {
@@ -199,7 +203,9 @@ const Profile = () => {
         try {
             // Save to database immediately
             await axios.put('/auth/profile', {
-                ...formData,
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
                 addresses: updatedAddresses
             });
         } catch (error) {
