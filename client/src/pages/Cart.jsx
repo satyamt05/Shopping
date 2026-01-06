@@ -131,7 +131,7 @@ const ShippingShimmer = () => (
                     <div className="bg-gray-50 rounded-lg p-6 sticky top-24">
                         <h2 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h2>
                         <div className="flex justify-between mb-2">
-                            <span className="text-gray-600">Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)} items)</span>
+                            <span className="text-gray-600">Subtotal ({cartItems.length} items)</span>
                             <span className="font-bold text-gray-900">{formatCurrency(itemsPrice)}</span>
                         </div>
                         

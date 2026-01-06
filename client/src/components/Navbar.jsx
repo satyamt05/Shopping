@@ -16,8 +16,8 @@ const Navbar = () => {
     const navigate = useNavigate();
     const userMenuRef = useRef(null);
 
-    // Calculate total items in cart
-    const cartItemCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+    // Calculate total unique items in cart (not total quantity)
+    const cartItemCount = cartItems.length;
 
     // Close user menu when clicking outside
     useEffect(() => {
