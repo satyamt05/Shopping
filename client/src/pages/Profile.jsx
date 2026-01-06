@@ -480,6 +480,7 @@ const Profile = () => {
                                 <Plus className="h-4 w-4 mr-2 flex-shrink-0" />
                                 <span className="whitespace-nowrap">Add Address</span>
                             </button>
+                        </div>
 
                         {showAddressForm && (
                             <div className="bg-gray-50 p-4 rounded-lg mb-4">
