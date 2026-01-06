@@ -61,13 +61,8 @@ const Navbar = () => {
                             )}
                         </Link>
                         {isAuthenticated && (
-                            <Link to="/wishlist" className="text-gray-700 hover:text-indigo-600 transition relative">
+                            <Link to="/wishlist" className="text-gray-700 hover:text-indigo-600 transition">
                                 <Heart className="h-6 w-6" />
-                                {wishlistItems.length > 0 && (
-                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                                        {wishlistItems.length > 99 ? '99+' : wishlistItems.length}
-                                    </span>
-                                )}
                             </Link>
                         )}
                         {isAuthenticated ? (
@@ -135,7 +130,7 @@ const Navbar = () => {
                         </Link>
                         {isAuthenticated && (
                             <Link to="/wishlist" onClick={() => setIsOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">
-                                Wishlist {wishlistItems.length > 0 && `(${wishlistItems.length})`}
+                                Wishlist
                             </Link>
                         )}
                         {isAuthenticated ? (

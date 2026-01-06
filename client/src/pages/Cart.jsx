@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
-import { Trash2, ShoppingBag, RotateCcw, Heart } from 'lucide-react';
+import { Trash2, ShoppingBag, RotateCcw } from 'lucide-react';
 import { formatCurrency, fetchShippingConfig } from '../utils/currency';
 
 const Cart = () => {
@@ -135,10 +135,10 @@ const ShippingShimmer = () => (
                                 </select>
                                 <button 
                                     onClick={() => moveToWishlistHandler(item)} 
-                                    className="text-pink-500 hover:text-pink-700 p-2"
+                                    className="text-pink-500 hover:text-pink-700 text-sm font-medium p-2"
                                     title="Move to Wishlist"
                                 >
-                                    <Heart className="h-5 w-5" />
+                                    Move to Wishlist
                                 </button>
                                 <button onClick={() => removeFromCart(item._id)} className="text-red-500 hover:text-red-700 p-2">
                                     <Trash2 className="h-5 w-5" />
