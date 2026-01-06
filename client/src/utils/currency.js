@@ -1,3 +1,5 @@
+import axios from './api';
+
 // Currency utility for Indian Rupees
 export const formatCurrency = (amount) => {
     if (amount === null || amount === undefined || isNaN(amount)) {
@@ -38,18 +40,16 @@ export const fetchShippingConfig = async () => {
     try {
         // Add cache-busting timestamp to prevent browser caching
         const timestamp = Date.now();
-        const response = await fetch(`/api/shipping/config?t=${timestamp}`);
-        if (response.ok) {
-            const config = await response.json();
-            console.log('Fetched shipping config:', config); // Debug log
-            return {
-                STANDARD: config.standardShippingCost || DEFAULT_SHIPPING_COSTS.STANDARD,
-                FREE_SHIPPING_THRESHOLD: config.freeShippingThreshold || DEFAULT_SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD,
-                EXPRESS: config.expressShippingCost || DEFAULT_SHIPPING_COSTS.EXPRESS,
-                freeShippingEnabled: config.freeShippingEnabled !== false,
-                expressShippingEnabled: config.expressShippingEnabled === true,
-            };
-        }
+        const response = await axios.get(`/shipping/config?t=${timestamp}`);
+        const config = response.data;
+        console.log('Fetched shipping config:', config); // Debug log
+        return {
+            STANDARD: config.standardShippingCost || DEFAULT_SHIPPING_COSTS.STANDARD,
+            FREE_SHIPPING_THRESHOLD: config.freeShippingThreshold || DEFAULT_SHIPPING_COSTS.FREE_SHIPPING_THRESHOLD,
+            EXPRESS: config.expressShippingCost || DEFAULT_SHIPPING_COSTS.EXPRESS,
+            freeShippingEnabled: config.freeShippingEnabled !== false,
+            expressShippingEnabled: config.expressShippingEnabled === true,
+        };
     } catch (error) {
         console.warn('Failed to fetch shipping config, using defaults:', error);
     }
@@ -67,12 +67,10 @@ export const fetchTaxRate = async () => {
     try {
         // Add cache-busting timestamp to prevent browser caching
         const timestamp = Date.now();
-        const response = await fetch(`/api/shipping/config?t=${timestamp}`);
-        if (response.ok) {
-            const config = await response.json();
-            console.log('Fetched tax rate:', config.taxRate); // Debug log
-            return config.taxRate || DEFAULT_TAX_RATE;
-        }
+        const response = await axios.get(`/shipping/config?t=${timestamp}`);
+        const config = response.data;
+        console.log('Fetched tax rate:', config.taxRate); // Debug log
+        return config.taxRate || DEFAULT_TAX_RATE;
     } catch (error) {
         console.warn('Failed to fetch tax rate, using default:', error);
     }
