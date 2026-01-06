@@ -14,16 +14,16 @@ const Button = ({
   type = 'button',
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-0';
   
   const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-sm',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
-    outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm',
-    ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
-    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-sm',
-    link: 'text-indigo-600 hover:text-indigo-800 focus:ring-indigo-500 p-0 h-auto'
+    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm',
+    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
+    outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50',
+    danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm',
+    ghost: 'text-gray-700 hover:bg-gray-100',
+    success: 'bg-green-600 text-white hover:bg-green-700 shadow-sm',
+    link: 'text-indigo-600 hover:text-indigo-800 p-0 h-auto'
   };
 
   const sizes = {
