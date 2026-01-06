@@ -27,6 +27,7 @@ const Checkout = () => {
     const [formErrors, setFormErrors] = useState({});
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const [loading, setLoading] = useState(false);
+    const [addressSaving, setAddressSaving] = useState(false);
     const [userAddresses, setUserAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [couponDiscount, setCouponDiscount] = useState(0);
@@ -78,6 +79,8 @@ const Checkout = () => {
     const handleSaveAddress = async (addressData) => {
         console.log('handleSaveAddress called with:', addressData);
         
+        setAddressSaving(true);
+        
         // Save to user profile
         try {
             const { data } = await axios.get('/auth/profile');
@@ -112,6 +115,8 @@ const Checkout = () => {
         } catch (error) {
             console.error('Error saving address:', error);
             error('Failed to save address');
+        } finally {
+            setAddressSaving(false);
         }
     };
 
@@ -174,6 +179,22 @@ const Checkout = () => {
     // Ensure minimum total price of 1 for free orders to avoid server issues
     const totalPrice = Math.max(calculatedTotal, 1);
 
+    // Check if user has a valid address
+    const hasValidAddress = () => {
+        // Check if user has selected an address from their saved addresses
+        if (selectedAddress && selectedAddress.street && selectedAddress.city && 
+            selectedAddress.state && selectedAddress.postalCode && selectedAddress.country) {
+            return true;
+        }
+        
+        // Check if user has manually entered a complete address
+        if (address.street && address.city && address.state && address.postalCode && address.country) {
+            return true;
+        }
+        
+        return false;
+    };
+
     const handleCouponApplied = (discountAmount, coupon) => {
         setCouponDiscount(discountAmount || 0);
         setAppliedCoupon(coupon);
@@ -184,6 +205,25 @@ const Checkout = () => {
         setAppliedCoupon(null);
     };
 
+
+    // Handle click on disabled Place Order button to scroll to address section
+    const handlePlaceOrderClick = (e) => {
+        if (!hasValidAddress()) {
+            e.preventDefault();
+            // Scroll to the shipping address section
+            const addressSection = document.getElementById('shipping-address-section');
+            if (addressSection) {
+                addressSection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                // Fallback: scroll to top of form
+                document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
+            }
+            // Show the address form if it's not already visible
+            if (!showAddressForm && userAddresses.length === 0) {
+                setShowAddressForm(true);
+            }
+        }
+    };
 
     const placeOrderHandler = async (e) => {
         e.preventDefault();
@@ -266,7 +306,7 @@ const Checkout = () => {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">Checkout</h1>
             <form onSubmit={placeOrderHandler} className="space-y-4 sm:space-y-6">
-                <div className="bg-white px-3 sm:px-4 py-4 sm:py-5 shadow sm:rounded-lg sm:p-6">
+                <div className="bg-white px-3 sm:px-4 py-4 sm:py-5 shadow sm:rounded-lg sm:p-6" id="shipping-address-section">
                     <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-3 lg:gap-6">
                         <div className="sm:col-span-1">
                             <h3 className="text-lg font-medium leading-6 text-gray-900">Shipping Address</h3>
@@ -332,7 +372,7 @@ const Checkout = () => {
                                             <AddressForm
                                                 onSave={handleSaveAddress}
                                                 onCancel={() => setShowAddressForm(false)}
-                                                loading={loading}
+                                                loading={addressSaving}
                                                 submitButtonText="Save & Use This Address"
                                                 showCancelButton={true}
                                             />
@@ -457,13 +497,19 @@ const Checkout = () => {
 
                     <button 
                         type="submit" 
-                        disabled={loading}
+                        disabled={loading || !hasValidAddress()}
+                        onClick={handlePlaceOrderClick}
                         className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                     >
                         {loading ? (
                             <>
                                 <div className="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                                 Processing...
+                            </>
+                        ) : !hasValidAddress() ? (
+                            <>
+                                <MapPin className="h-5 w-5 mr-2" />
+                                Add Address to Place Order
                             </>
                         ) : (
                             <>
@@ -473,7 +519,15 @@ const Checkout = () => {
                         )}
                     </button>
 
-                    {paymentMethod === 'COD' && (
+                    {!hasValidAddress() && (
+                        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                            <p className="text-sm text-amber-800">
+                                <strong>Please add a shipping address:</strong> You need to provide a delivery address to place your order. Click the "Add New Address" button above or select an existing address.
+                            </p>
+                        </div>
+                    )}
+
+                    {paymentMethod === 'COD' && hasValidAddress() && (
                         <div className="mt-4 p-3 bg-blue-50 rounded-md">
                             <p className="text-sm text-blue-800">
                                 <strong>Cash on Delivery:</strong> Pay when you receive your order. Delivery within 3-5 business days.
