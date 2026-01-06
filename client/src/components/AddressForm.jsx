@@ -92,11 +92,15 @@ const AddressForm = ({
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log('AddressForm handleSubmit called');
+        console.log('Form data:', formData);
         
         if (!validateForm()) {
+            console.log('Form validation failed');
             return;
         }
         
+        console.log('Calling onSave with:', formData);
         onSave(formData);
     };
 

@@ -76,10 +76,14 @@ const Checkout = () => {
     };
 
     const handleSaveAddress = async (addressData) => {
+        console.log('handleSaveAddress called with:', addressData);
+        
         // Save to user profile
         try {
             const { data } = await axios.get('/auth/profile');
+            console.log('Current user profile:', data);
             const updatedAddresses = [...(data.addresses || []), addressData];
+            console.log('Updated addresses:', updatedAddresses);
             
             // Update user profile with new address
             await axios.put('/auth/profile', {
@@ -88,6 +92,7 @@ const Checkout = () => {
                 phone: data.phone,
                 addresses: updatedAddresses
             });
+            console.log('Profile updated successfully');
             
             // Update local state
             setUserAddresses(updatedAddresses);
